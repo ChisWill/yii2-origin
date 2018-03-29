@@ -1,0 +1,62 @@
+body {
+    color: white;
+    font-size: 16px;
+}
+header {
+    background: url(../images/index-header.png) center  85% no-repeat;
+}
+
+.content {
+    margin-top: 50px;
+}
+.aboutme-title, .tech-title, .platform-title, .question-title {
+    margin: 50px 0px;
+}
+.aboutme-content {
+    width: 100%;
+    height: 120px;
+    background: #666666;
+    border: 1px solid #666666;
+}
+.aboutme-content p {
+    width: 80%;
+    height: 80px;
+    margin: 0px auto;
+    margin-top: 20px;
+    line-height: 30px;
+    text-align: left;
+    text-indent: 2rem;
+}
+.tech-icon{
+    width: 998px;
+    height: 250px;
+    margin: auto;
+    background: url(../images/icon.png) no-repeat;
+    margin-top: 50px;
+}
+.question-list {
+    width: 50%;
+    margin: auto;
+    text-align: left;
+}
+.encrypticon {
+    width: 826px;
+    height: 321px;
+    margin: auto;
+    background: url(../images/encryptimg.png) no-repeat;
+}
+.question-list ul li {
+    line-height: 30px;
+}
+.question-list ul li p {
+    width: 90%;
+    display: inline-block;
+    vertical-align: top;
+}
+.border-img {
+    width: 5%;
+    margin:10px auto;
+    height: 2px;
+    background: url('../images/border.png') no-repeat;
+    background-size: 100% 100%；
+}

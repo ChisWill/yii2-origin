@@ -1,0 +1,152 @@
+body {
+    /*color: white;*/
+    font-size: 16px;
+}
+.wrap {
+    color: white;
+}
+html,body {
+    height: 100%;
+}
+.content {
+    width: 1200px;
+    margin: auto;
+    margin-top: 30px;
+    /*border: 1px solid red;*/
+}
+header {
+    background: url(../images/encrypt-header.png) center  85% no-repeat;
+}
+.fl {
+    float: left;
+}
+.fr {
+    float: right;
+}
+.clear-fix:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+.content-left,.content-right {
+    width: 50%;
+    
+}
+.content ul li {
+    line-height: 55px;
+
+}
+.content ul li div label{
+    cursor: pointer;
+    
+}
+.content ul li div input{
+    cursor: pointer;
+    
+}
+.content ul li .control-label {
+    cursor: default;
+}
+.content-left ul {
+    /*margin-left: 20%;*/
+}
+.content-right ul {
+    margin-left: 32%;
+    text-align: right;
+}
+
+.content .control-label:before {
+    content: "●  ";
+    color: red;
+    font-size: 5px;
+}
+.content label {
+    display: inline-block;
+}
+.content-left ul li>span:first-child {
+    display: inline-block;
+    width: 140px;
+}
+.content-right ul li>span:first-child {
+    display: inline-block;
+    width: 220px;
+}
+.content-right ul {
+    text-align: left;
+}
+.content input[type="text"] {
+    width: 70%;
+    height: 64px;
+    color: white;
+    display: block;
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 10px;
+    text-indent: 2rem;
+}
+.content input[type="file"] {
+    margin-top: 18px;
+    margin-left: 10px;
+
+}
+#encryptBtn {
+    width: 100px;
+    height: 40px;
+    background:#ea123b;
+    border-radius: 10px;
+    color: white; 
+    margin-top: 20px;
+    border: none;
+    cursor: pointer;
+}
+.content-bottom {
+    margin-top: 40px;
+}
+footer {
+    margin-top: 30px !important;
+}
+.content-left  li .form-group div {
+    display: inline-block;
+}
+.content-left .form-group .control-label {
+    width: 120px;
+}
+.content-left ul li .form-group div label {
+    width: 140px;
+}
+.content-left ul li .form-group div label input {
+    /*width: 120px;*/
+    margin: 0px 10px;
+}
+#obfuscate-file {
+    border: 1px solid white;
+    padding: 8px;
+
+    border-radius: 10px;
+    cursor: pointer;
+}
+.content-bottom label {
+    display: inline-block;
+}
+.upload-label:before {
+    content: "●  ";
+    color: red;
+    font-size: 5px;
+}
+.content  input[type="radio"] {
+    width: 25px;
+    height: 25px;
+}
+.content textarea {
+    display: block;
+    width: 400px;
+    height: 60px;
+    background: transparent;
+    border-radius: 7px;
+    font-size: 14px;
+    color: white;
+    resize: none;
+}
+.content-right div {
+    margin-bottom: 5px;
+}

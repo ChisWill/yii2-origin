@@ -1,0 +1,192 @@
+html, body {
+    height: 100%;
+    color: white;
+}
+
+.wrap {
+    background: black;
+}
+header {
+    background: url(../images/user-header.png) center  85% no-repeat;
+}
+footer {
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
+}
+.content {
+    width: 70%;
+    height: 700px;
+    margin: 50px auto;
+}
+.content .title {
+    display: inline-block;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+.content-wrap {
+    border-top: 1px solid #666;
+}
+.fl {
+    float: left;
+}
+.fr {
+    float: right;
+}
+.clear-fix:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+.wrap-left {
+    width: 23%;
+    height: 100%;
+    text-align: center;
+    margin-top: 50px; 
+}
+.wrap-right {
+    width: 76%;
+    margin-top: 50px;
+    height: 100%;
+    border-left: 1px solid #666;
+    
+}
+.wrap-left div {
+    height: 77px;
+    width: 125px;
+    margin: auto;
+    line-height: 77px; 
+    cursor: pointer;
+}
+.wrap-left .user-active {
+    height: 75px;
+    color: #ed1a43;
+    border-bottom: 2px solid #ed1a43;
+
+}
+.baseinfo input {
+    width: 300px;
+    height: 30px;
+    line-height: 30px;
+    background: transparent;
+    border: 1px solid lightgray;
+    color: #ed1a43;
+}
+.baseinfo div,.record div {
+    width: 80%;
+    height: 75px;
+    line-height: 75px;
+    margin-left: 7%;
+    border-bottom: 1px solid #666;
+
+}
+.baseinfo div>span:first-child {
+    display: inline-block;
+    width: 40%;
+    text-indent: 1rem;
+}
+.record div>span:first-child {
+    display: inline-block;
+    width: 40%;
+    text-indent: 1rem;
+}
+.baseinfo div>span:last-child {
+    color: #ed1a43;
+}
+.radio {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    border: 2px solid #ea123b;
+    position: relative;
+    vertical-align: middle;
+    cursor: pointer;
+    margin-right: 60px;
+    margin-left: 10px;
+}
+.active {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 14px;
+    background: #ea123b;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+}
+.modify {
+    width: 420px;
+    margin: auto;
+}
+.modify div {
+    height: 75px;
+    line-height: 75px;
+}
+.modify input {
+    width: 205px;
+    height: 30px;
+    border: 1px solid white;
+    border-radius: 5px;
+    line-height: 30px;
+    background: transparent;
+    color: white;
+    text-indent: 1rem;
+    margin-left: 20px;
+}
+.modify div>span:first-child {
+    display: inline-block;
+    width: 170px;
+    text-align: right; 
+}
+#confirmBtn {
+    width: 75px;
+    height: 30px;
+    background: #ea123b;
+    text-align: center;
+    border: none;
+    line-height: 30px;
+    text-indent: 0px;
+    margin-left: 47%;
+    cursor: pointer;
+}
+.username {
+    margin-left: 20px;
+}
+.prompt {
+    text-align: right;
+    font-size: 10px;
+
+}
+#modifyBtn {
+    width: 80px;
+    height: 35px;
+    background: #ea123b;
+    text-align: center;
+    border: none;
+    line-height: 30px;
+    text-indent: 0px;
+    margin-left: 47%;
+    cursor: pointer;
+    color: white;
+    border-radius: 8px;
+    margin-top: 40px;
+
+}
+.email-text {
+    padding: 5px;
+    border-radius: 6px;
+}
+.address-text {
+    padding: 5px;
+    border-radius: 6px;
+}
+.gender {
+    cursor: pointer;
+}
+.gender label {
+    cursor: pointer;
+}
+.male {
+    color: #ea123b;
+}

@@ -1,0 +1,51 @@
+html,body {
+    height: 100%;
+    color: white;
+}
+header {
+    background: #ed1a43;
+}
+
+footer {
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
+}
+.content {
+    height: 90%;
+    position: relative;
+}
+.content-wrap {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    top: 42%;
+    left: 50%;
+    margin-left: -200px;
+    margin-top: -200px;
+}
+.content-wrap label {
+    display: block;
+    margin: 10px 0px;
+}
+.content-wrap input {
+    width: 400px;
+    height: 40px;
+    border: 1px solid #ed1a43;
+    background: transparent;
+    color: white;
+    text-indent: 1rem; 
+}
+.content-wrap div {
+    margin-bottom: 40px;
+}
+.content-wrap span{
+    display: inline-block;
+    margin: 20px 0px;
+    font-size: 18px;
+}
+#registBtn,#loginBtn {
+    background: #ed1a43;
+    border-radius: 5px;
+
+}
