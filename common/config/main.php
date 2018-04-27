@@ -72,6 +72,22 @@ return [
                         'yii\web\HttpException:404'
                     ]
                 ],
+                YII_DEBUG ?
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'logFile' => '@runtime/logs/execute.log',
+                    'categories' => [
+                        'yii\db\Command::execute'
+                    ]
+                ] :
+                [
+                    'class' => 'yii\log\DbTarget',
+                    'levels' => ['info'],
+                    'categories' => [
+                        'yii\db\Command::execute'
+                    ]
+                ],
                 [
                     'class' => 'yii\log\FileTarget',
                     'logFile' => '@runtime/logs/self.log',

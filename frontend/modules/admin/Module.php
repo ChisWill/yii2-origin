@@ -31,6 +31,7 @@ class Module extends \common\components\Module
         // 修改错误日志路径
         Yii::$app->log->targets['system']->logFile = Yii::getAlias('@runtime/logs/admin.log');
         // 修改用户组件配置
+        Yii::$app->user->idParam = '__admin';
         Yii::$app->user->loginUrl = ['admin/site/login'];
         Yii::$app->user->identityClass = 'admin\components\AdminWebUser';
         // 定制表格样式

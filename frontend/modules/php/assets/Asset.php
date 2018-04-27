@@ -16,7 +16,8 @@ class Asset extends \common\components\AssetBundle
         'css/reset.css'
     ];
     public $depends = [
-        'common\assets\CommonAsset'
+        'common\assets\CommonAsset',
+        'common\assets\JqueryFormAsset'
     ];
 
     public function init()
