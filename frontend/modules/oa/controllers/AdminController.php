@@ -297,14 +297,15 @@ class AdminController extends \oa\components\Controller
             }],
             'rule_name' => ['type' => 'text', 'value' => function ($item) {
                 return Hui::textInput(null, $item->rule_name, ['placeholder' => '规则名或是规则类名']);
-            }]
+            }],
+            ['type' => ['delete']]
         ], [
             'beforeRow' => function ($item) use (&$controllerName, $categoryMap) {
                 $name = Inflector::camel2id($item->name);
                 $namePieces = explode('-', $name);
                 if ($controllerName != $namePieces[1]) {
                     $controllerName = $namePieces[1];
-                    return Html::tag('tr', Html::tag('th', ArrayHelper::getValue($categoryMap, $controllerName, '常规'), ['colspan' => 3, 'class' => 'text-c']));
+                    return Html::tag('tr', Html::tag('th', ArrayHelper::getValue($categoryMap, $controllerName, '常规'), ['colspan' => 4, 'class' => 'text-c']));
                 }
             },
             'isSort' => false,

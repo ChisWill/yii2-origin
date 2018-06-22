@@ -32,6 +32,7 @@ class Module extends \common\components\Module
         Yii::$app->log->targets['system']->logFile = Yii::getAlias('@runtime/logs/admin.log');
         // 修改用户组件配置
         Yii::$app->user->idParam = '__admin';
+        Yii::$app->user->identityCookie = ['name' => '_identityAdmin', 'httpOnly' => true];
         Yii::$app->user->loginUrl = ['admin/site/login'];
         Yii::$app->user->identityClass = 'admin\components\AdminWebUser';
         // 定制表格样式

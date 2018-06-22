@@ -21,12 +21,19 @@ class Controller extends \common\components\WebController
     public function behaviors()
     {
         return [
+            'verbs' => [
+                'class' => \yii\filters\VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['post'],
+                    'delete-all' => ['post']
+                ]
+            ],
             'access' => [
                 'class' => \yii\filters\AccessControl::className(),
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['error', 'delete', 'upload', 'captcha', 'ajax-update', 'delete-all']
+                        'actions' => ['error', 'upload', 'captcha', 'ajax-update']
                     ],
                     [
                         'allow' => true,

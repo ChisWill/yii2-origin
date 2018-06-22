@@ -80,6 +80,7 @@ class FinanceController extends \oa\components\Controller
     public function actionAddIncome()
     {
         $type = OaFinance::TYPE_INCOME;
+
         return $this->add($type);
     }
 
@@ -89,6 +90,7 @@ class FinanceController extends \oa\components\Controller
     public function actionAddSpend()
     {
         $type = OaFinance::TYPE_SPEND;
+
         return $this->add($type);
     }
 
@@ -145,6 +147,7 @@ class FinanceController extends \oa\components\Controller
     {
         $model = new OaFinanceCategory;
         $model->type = OaFinance::TYPE_INCOME;
+
         if ($model->load()) {
             if ($model->save()) {
                 return success();

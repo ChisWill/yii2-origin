@@ -35,7 +35,7 @@ class AppController extends \oa\components\Controller
                 if ($row->server_id == 0) {
                     return '无';
                 } else {
-                    return $row->server->server_name;
+                    return $row->server['server_name'];
                 }
             }],
             'type' => ['type' => 'select'],
@@ -142,7 +142,8 @@ class AppController extends \oa\components\Controller
             'platform_id' => ['type' => 'select'],
             'account_id' => ['type' => 'select'],
             'remark' => ['type' => 'text'],
-            'use_state' => ['type' => 'select']
+            'use_state' => ['type' => 'select'],
+            ['type' => ['delete']]
         ], [
             'addBtn' => ['addServer' => '添加服务器'],
             'ajaxUpdateAction' => 'ajaxUpdateApp',
@@ -285,7 +286,7 @@ class AppController extends \oa\components\Controller
                         return Html::successSpan($row->taskStateValue);
                 }
             }],
-            ['type' => ['edit' => 'saveTask'], 'width' => '100px', 'value' => function ($row) {
+            ['type' => ['edit' => 'saveTask', 'delete'], 'width' => '100px', 'value' => function ($row) {
                 if ($row->task_state == OaTask::TASK_STATE_ING) {
                     return Hui::secondaryBtn('完成', ['overTask', 'id' => $row->id], ['class' => 'overBtn', 'data' => ['info' => '确认将 ' . $row->id . ' 号任务标记完成？']]);
                 }

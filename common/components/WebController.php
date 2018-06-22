@@ -209,9 +209,6 @@ class WebController extends \yii\web\Controller
      */
     public function actionDeleteAll()
     {
-        if (!req()->isPost) {
-            throwex('Access Denied');
-        }
         $list = post('list');
         $model = post('model');
 
@@ -239,6 +236,8 @@ class WebController extends \yii\web\Controller
             } catch (\Exception $e) {
                 throwex($e);
             }
+        } else {
+            throwex();
         }
     }
 
@@ -248,9 +247,6 @@ class WebController extends \yii\web\Controller
      */
     public function actionDelete()
     {
-        if (!req()->isPost) {
-            throwex('Access Denied');
-        }
         $id = post('id');
         $model = post('model');
 
