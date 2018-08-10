@@ -7,7 +7,7 @@ use common\helpers\FileHelper;
 use common\helpers\ArrayHelper;
 
 /**
- * 加强 UploadedFile 的功能，增加公共的快捷方法
+ * 加强 yii\web\UploadedFile 的功能，增加公共的快捷方法
  * 
  * @author ChisWill
  */
@@ -35,6 +35,14 @@ class UploadedFile extends \yii\web\UploadedFile
         parent::init();
 
         $this->_uploadPath = config('uploadPath') . '/' . date('Ymd') . '/';
+    }
+
+    /**
+     * 设置上传路径
+     */
+    public function setUploadPath($path)
+    {
+        $this->_uploadPath = $path;
     }
 
     /**

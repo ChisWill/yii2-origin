@@ -37,7 +37,7 @@ common\traits\ChisWill::$time = date('Y-m-d H:i:s');
  */
 common\components\Event::on('yii\base\Model', common\components\ARModel::EVENT_BEFORE_VALIDATE, function ($event) {
     foreach ($event->sender->rules() as $rule) {
-        if ($rule[1] === 'file') {
+        if (in_array($rule[1], ['file', 'image'])) {
             $fieldArr = (array) $rule[0];
             foreach ($fieldArr as $field) {
                 $event->sender->setUploadedFile($field);
