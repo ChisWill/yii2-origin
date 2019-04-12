@@ -1,86 +1,102 @@
-<?php use common\helpers\Html; ?>
-<?php use common\helpers\System; ?>
-
-<table class="table table-border table-bordered table-bg">
-    <thead>
-        <tr>
-            <th colspan="2" scope="col">服务器信息</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th width="30%">系统类型</th>
-            <td><span id="lbServerName"><?= @php_uname('s') ?></span></td>
-        </tr>
-        <tr>
-            <td>服务器操作系统</td>
-            <td><?= @php_uname() ?></td>
-        </tr>
-        <tr>
-            <td>PHP版本</td>
-            <td><?= PHP_VERSION ?></td>
-        </tr>
-        <tr>
-            <td>Mysql版本</td>
-            <td><?= self::db('SELECT VERSION()')->queryScalar() ?></td>
-        </tr>
-        <tr>
-            <td>PHP内存使用上限</td>
-            <td><?= @ini_get('memory_limit') ?></td>
-        </tr>
-        <tr>
-            <td>服务器脚本超时时间</td>
-            <td><?= @ini_get('max_execution_time') ?>秒</td>
-        </tr>
-        <tr>
-            <td>POST上传大小限制</td>
-            <td><?= @ini_get('post_max_size') ?></td>
-        </tr>
-        <tr>
-            <td>上传附件大小限制</td>
-            <td><?= @ini_get('upload_max_filesize') ?: Html::errorSpan('不允许上传附件') ?></td>
-        </tr>
-        <tr>
-            <td>服务器域名</td>
-            <td><?= req()->getHostInfo() ?></td>
-        </tr>
-        <tr>
-            <td>服务器端口</td>
-            <td><?= $_SERVER['SERVER_PORT'] ?></td>
-        </tr>
-        <tr>
-            <td>服务器的语言种类</td>
-            <td><?= @ini_get('date.timezone') ?></td>
-        </tr>
-        <tr>
-            <td>服务器当前时间</td>
-            <td><?= self::$time ?></td>
-        </tr>
-        <?php if (!System::isWindowsOs() && u()->isMe): ?>
-        <tr>
-            <td>服务器上次启动到现在已运行</td>
-            <td><?= @explode(',', exec('uptime'))[0] ?></td>
-        </tr>
-        <?php endif ?>
-        <tr>
-            <td>系统所在文件夹</td>
-            <td><?= Yii::$app->basePath ?></td>
-        </tr>
-        <tr>
-            <td>PHP安装路径</td>
-            <td><?= DEFAULT_INCLUDE_PATH ?></td>
-        </tr>
-        <tr>
-            <td>当前系统用户名</td>
-            <td><?= @get_current_user() ?></td>
-        </tr>
-        <tr>
-            <td>浏览器信息</td>
-            <td><?= req()->getUserAgent() ?></td>
-        </tr>
-        <tr>
-            <td>当前SessionID</td>
-            <td><?= session()->getId() ?></td>
-        </tr>
-    </tbody>
-</table>
+<?php use oa\models\OaNotice; ?>
+<style type="text/css">
+    .notice-box {
+        width: 100%;
+    }
+    .notice-left {
+        width: 850px;
+        background: url('/images/notice-box.png') center center no-repeat;
+        background-size: 100% 100%;
+        margin: 0 auto;
+        box-shadow: 0px 0px 20px 0px rgba(34, 23, 20, 0.18);
+        position: relative;
+    }
+    .notice-left .title {
+        text-align: center;
+        font-size: 30px;
+        margin-bottom: 20px;
+        margin-top: -50px;
+    }
+    .notice-left .content {
+        min-height: 200px;
+    }
+    .notice-left .content, .notice-left .download {
+        width: 530px;
+        margin: 0 auto;
+    }
+    .notice-left .download span {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .notice-left .download a {
+        font-size: 18px;
+        color: #27c0b8;
+        font-weight: bold;
+    }
+    .notice-left .download a:hover {
+        text-decoration: underline;
+    }
+    .notice-left .content img {
+        max-width: 100%;
+    }
+    .notice-left .realname, .notice-left .time {
+        text-align: right;
+        position: absolute;
+    }
+    .notice-left .realname {
+        color: #27c0b8;
+        font-weight: bold;
+        margin-bottom: 5px;
+        bottom: 158px;
+        right: 150px;
+        font-size: 18px;
+    }
+    .notice-left .time {
+        bottom: 128px;
+        font-weight: bold;
+        font-size: 16px;
+        right: 150px;
+    }
+    .notice-left .notice-img {
+        width: 100%;
+    }
+    @media screen and (max-width: 640px) {
+        .notice-left {
+            width: 100%;
+            margin: 0 auto;
+        }
+        .notice-left .content, .notice-left .download {
+            width: 80%;
+            margin-left: 10%;
+        }
+        .notice-left .title {
+            margin-top: -20px;
+        }
+        .notice-left .realname, .notice-left .time {
+            position: static;
+            text-align: center;
+            font-size: 16px;
+        }
+        .notice-left .realname {
+            margin-top: -90px;
+        }
+    }
+</style>
+<div class="notice-box">
+    <div class="notice-left">
+        <?php foreach (OaNotice::getNoticeQuery()->limit(1)->all() as $notice): ?>
+            <img class="notice-img" src="/images/notice-top.png">
+            <div class="title"><?= $notice['title'] ?></div>
+            <div class="content"><?= $notice['content'] ?></div>
+            <?php if ($notice['attach']): ?>
+                <div class="download">
+                    <span>附件：</span>   
+                    <a href="<?= url(['system/downloadAttach', 'id' => $notice['id']]) ?>"><?= $notice['origin_name'] ?></a>
+                </div>
+            <?php endif ?>
+            <img class="notice-img" src="/images/notice-bottom.png">
+            <div class="realname">发布人：<?= $notice['adminUser']['realname'] ?></div>
+            <div class="time"><?= $notice['created_at'] ?></div>
+        <?php endforeach ?>
+    </div>
+</div>

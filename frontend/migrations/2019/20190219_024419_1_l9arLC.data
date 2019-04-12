@@ -1,0 +1,2 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:99:"ALTER TABLE `admin_action`
+ADD COLUMN `ip`  varchar(100) NULL DEFAULT '' COMMENT 'IP' AFTER `type`;";s:4:"desc";s:12:"admin_action";s:7:"warning";a:0:{}}

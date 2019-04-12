@@ -177,7 +177,13 @@ class Setting extends \common\components\Model
                 $settings[$key]['value'] = $value;
             } elseif (isset($_FILES['Upload']['name'][$setting['id']])) {
                 $upload = self::getUpload(['uploadPath' => 'setting', 'extensions' => null, 'uploadName' => $setting['id']]);
-                if ($upload->move()) {
+                try {
+                    $isMove = $upload->move();
+                } catch (\Exception $e) {
+                    $this->addError('name', '上传文件失败：上传目录没有写入权限');
+                    return false;
+                }
+                if ($isMove) {
                     $settings[$key]['value'] = $upload->filePath;
                     $this->uploads[$setting['id']] = $settings[$key]['value'];
                 } else {

@@ -33,3 +33,68 @@ form .hint-role {
     font-size: 14px;
     position: absolute;
 }
+.fl {
+    float: left;
+}
+.fr {
+    float: right;
+}
+/*表格样式定制*/
+.table-container {
+    overflow-x: auto;
+}
+.table-container table {
+    min-width: 600px;
+}
+.menu-aside {
+    transition: none;
+}
+.nav-toggle, a.nav-toggle {
+    width: 25px;
+    height: 25px;
+    right: auto;
+    left: 15px;
+    position: inherit;
+    background: url(/images/menu-icon.png) center center no-repeat;
+    background-size: 100% 100%;
+    margin-top: 12.5px;
+    padding: 0;
+    margin-right: 15px;
+    cursor: pointer;
+}
+.navbar .web-name-m {
+    width: calc(100% - 80px);
+    font-size: 16px;
+    color: #fff;
+    text-align: center;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.navbar .logout-icon {
+    width: 25px;
+    height: 25px;
+    background: url(/images/logout-icon.png) center center no-repeat;
+    background-size: 100% 100%;
+    margin-top: 12.5px;
+    margin-left: 15px;
+    cursor: pointer;
+}
+.linkage-ul .linkage-row:hover {
+    background: #f9f9f9 !important;
+}
+/*标题框*/
+.fieldset-box {
+    margin-bottom: 10px;
+    padding: 0;
+    border-width: 1px solid #e6e6e6;
+}
+.fieldset-box legend {
+    width: auto;
+    margin-left: 20px;
+    padding: 0 10px;
+    font-size: 20px;
+    font-weight: 300;
+    border: none;
+    margin-bottom: 0;
+}

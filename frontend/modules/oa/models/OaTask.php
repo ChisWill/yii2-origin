@@ -12,6 +12,7 @@ class OaTask extends \common\components\ARModel
     const TASK_STATE_WAIT = 1;
     const TASK_STATE_ING = 2;
     const TASK_STATE_OVER = 3;
+    const TASK_STATE_DONE = 4;
 
     const URGENCY_LEVEL_LOW = 1;
     const URGENCY_LEVEL_NORMAL = 2;
@@ -34,7 +35,7 @@ class OaTask extends \common\components\ARModel
             'id' => 'ID',
             'app_id' => '项目ID',
             'content' => '任务内容',
-            'hour' => '小时',
+            'hour' => '天数',
             'user_id' => '处理人',
             'urgency_level' => '紧急度',
             'task_state' => '任务状态：1未处理，2处理中，3已完成',
@@ -93,7 +94,8 @@ class OaTask extends \common\components\ARModel
         return $this
             ->search()
             ->joinWith(['user', 'app', 'publish'])
-            ->orderBy('task_state ASC, urgency_level DESC, oaTask.id DESC');
+            ->active()
+            ->orderBy(self::dbExpression('task_state ASC, DATE_ADD(oaTask.created_at, INTERVAL `hour` DAY) ASC, urgency_level DESC'));
     }
 
     /****************************** 以下为字段的映射方法和格式化方法 ******************************/
@@ -104,7 +106,8 @@ class OaTask extends \common\components\ARModel
         $map = [
             self::TASK_STATE_WAIT => '等待中',
             self::TASK_STATE_ING => '处理中',
-            self::TASK_STATE_OVER => '已完成',
+            self::TASK_STATE_OVER => '标记完成',
+            self::TASK_STATE_DONE => '结束'
         ];
 
         return self::resetMap($map, $prepend);

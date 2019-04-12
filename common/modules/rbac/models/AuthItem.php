@@ -7,7 +7,7 @@ use common\helpers\Inflector;
 use common\helpers\FileHelper;
 
 /**
- * 这是表 `hsh_auth_item` 的模型
+ * 这是表 `auth_item` 的模型
  */
 class AuthItem extends \common\components\ARModel
 {
@@ -203,7 +203,9 @@ class AuthItem extends \common\components\ARModel
 
     public static function getCurrentAppId()
     {
-        return Yii::$app->controller->module->id;
+        $module = Yii::$app->controller->module;
+        $pieces = explode('\\', $module::className());
+        return array_shift($pieces);
     }
 
     protected static function detectLoop($parent, $child)

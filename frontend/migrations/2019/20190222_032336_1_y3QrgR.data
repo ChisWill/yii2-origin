@@ -1,0 +1,2 @@
+a:4:{s:4:"user";s:10:"suyuanyuan";s:3:"sql";s:47:"ALTER TABLE `oa_notice`
+DROP COLUMN `position`;";s:4:"desc";s:9:"oa_notice";s:7:"warning";a:1:{i:0;s:4:"DROP";}}

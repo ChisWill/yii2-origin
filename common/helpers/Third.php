@@ -2,8 +2,70 @@
 
 namespace common\helpers;
 
+use Yii;
+
 class Third
 {
+    /**
+     * 生成二维码
+     * 
+     * @param  string  $url  二维码内容
+     * @param  int     $size 尺寸大小等级
+     * @return string
+     */
+    public static function qrcode($url, $size = 6)
+    {
+        $filePath = config('uploadPath') . '/qrcode/' . date('Ymd') . '/';
+        $dir = Yii::getAlias('@webroot' . $filePath);
+        FileHelper::mkdir($dir);
+        if (user()->isGuest) {
+            $fileName = substr(md5($url . $size), 8, 16) . '.png';
+        } else {
+            $fileName = substr(md5(u()->id . $url . $size), 8, 16) . '.png';
+        }
+        if (!file_exists($dir . $fileName)) {
+            \QRcode::png($url, $dir . $fileName, 'L', $size, 1);
+        }
+        return $filePath . $fileName;
+    }
+
+    /**
+     * 获取 ip 信息
+     * 每个IP最多尝试去获取 3 次
+     *
+     * @param  string ip
+     * @return array
+     */
+    private static $_ips = null;
+    public static function getIpInfo($ip)
+    {
+        if (self::$_ips === null) {
+            self::$_ips = cache('IP_INFO_MAPS') ?: [];
+        }
+        if (isset(self::$_ips[$ip]) 
+            && is_int(self::$_ips[$ip]) && self::$_ips[$ip] <= 3 
+            || !isset(self::$_ips[$ip])) {
+            $result = json_decode(Curl::get('http://opendata.baidu.com/api.php?co=&resource_id=6006&t=1433920989928&ie=utf8&oe=utf-8&format=json&query=' . $ip), true);
+            $location = ArrayHelper::getValue($result, 'data.0.location', '-');
+            if ($location === '-') {
+                if (isset(self::$_ips[$ip])) {
+                    if (is_int(self::$_ips[$ip])) {
+                        self::$_ips[$ip]++;
+                    }
+                    if (self::$_ips[$ip] > 3) {
+                        self::$_ips[$ip] = $location;
+                    }
+                } else {
+                    self::$_ips[$ip] = 1;
+                }
+            }
+            cache('IP_INFO_MAPS', self::$_ips);
+            return $location;
+        } else {
+            return self::$_ips[$ip];
+        }
+    }
+
     /**
      * 获取短链接
      * 

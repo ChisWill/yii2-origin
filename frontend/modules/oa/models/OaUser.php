@@ -122,15 +122,8 @@ class OaUser extends \oa\components\Model
             ->andWhere(['<>', 'id', u()->id])
             ->select('id')
             ->column();
-        $pushApiUrl = config('webDomain') . ':' . config('httpPushPort');
 
-        $data = [
-           'info' => $info,
-           'uids' => implode(',', $uids),
-           'event' => 'notify'
-        ];
-
-        Curl::get(Url::create($pushApiUrl, $data));
+        OaNotice::notify($uids, $info);
 
         return $uids;
     }
@@ -262,6 +255,7 @@ class OaUser extends \oa\components\Model
             foreach (OaUser::find()->joinWith('adminUser')->groupBy('oaUser.created_by')->select('oaUser.created_by')->asArray()->all() as $value) {
                 self::$_uids[$value['adminUser']['id']] = $value['adminUser']['realname'];
             }
+            self::$_uids = self::$_uids ?: [];
         }
 
         return self::resetMap(self::$_uids, $prepend);

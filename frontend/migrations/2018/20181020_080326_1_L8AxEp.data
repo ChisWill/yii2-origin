@@ -1,0 +1,10 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:413:"CREATE TABLE `picture` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `path` varchar(100) NOT NULL,
+  `url` varchar(250) DEFAULT '' COMMENT '跳转地址',
+  `type` tinyint(4) DEFAULT '1' COMMENT '类型',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+ALTER TABLE `picture`
+MODIFY COLUMN `path`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '图片路径' AFTER `id`;";s:4:"desc";s:7:"picture";s:7:"warning";a:0:{}}

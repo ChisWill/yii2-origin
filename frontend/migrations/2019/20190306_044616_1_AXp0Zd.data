@@ -1,0 +1,5 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:222:"ALTER TABLE `user`
+ADD COLUMN `old_pass`  varchar(80) NULL DEFAULT '' COMMENT '旧密码' AFTER `password`;
+
+ALTER TABLE `admin_user`
+ADD COLUMN `old_pass`  varchar(80) NULL DEFAULT '' COMMENT '旧密码' AFTER `realname`;";s:4:"desc";s:8:"old_pass";s:7:"warning";a:0:{}}

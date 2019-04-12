@@ -194,14 +194,16 @@ class AppController extends \oa\components\Controller
     {
         $app = OaApp::findModel($id);
         if ($field == 'process_info') {
-            $processes = OaProcess::find()->with(['adminUser'])->where(['app_id' => $id])->asArray()->all();
+            $title = $app->code . '-' . $app->label('process_info');
+            $processes = OaProcess::getList($id, OaProcess::TYPE_APP);
             if ($type == 'view') {
                 $app->readTips('process_info');
-                return $this->renderPartial('processView', compact('app', 'processes'));
+                return $this->renderPartial('processView', compact('title', 'processes'));
             } elseif ($type == 'update') {
                 $process = new OaProcess;
                 if ($process->load()) {
-                    $process->app_id = $app->id;
+                    $process->target_id = $app->id;
+                    $process->type = OaProcess::TYPE_APP;
                     if ($process->save()) {
                         $app->process_info = $process->desc;
                         $app->update();
@@ -211,7 +213,7 @@ class AppController extends \oa\components\Controller
                         return error($process);
                     }
                 }
-                return $this->render('processUpdate', compact('process', 'app', 'processes'));
+                return $this->render('processUpdate', compact('process', 'title', 'processes'));
             }
         } else {
             $value = unserialize($app->$field);
@@ -244,12 +246,26 @@ class AppController extends \oa\components\Controller
     public function actionTaskList()
     {
         $query = (new OaTask)->taskListQuery();
+        $waitCount = (new OaTask)->taskListQuery()->andWhere(['<>', 'task_state', OaTask::TASK_STATE_DONE])->count();
 
-        $waitCount = (new OaTask)->taskListQuery()->andWhere(['<>', 'task_state', OaTask::TASK_STATE_OVER])->count();
+        $operationWidth = '130';
+        if (u()->can('app/verifyTask')) {
+            $operationWidth += 70;
+        }
+        if (u()->can('app/delayTask')) {
+            $operationWidth += 70;
+        }
 
         $html = $query->getTable([
-            'id',
+            'id' => '序号',
             'app.code',
+            'user.realname' => ['header' => '处理人', 'value' => function ($row) {
+                if ($row->user_id) {
+                    return $row->user->realname;
+                } else {
+                    return '无';
+                }
+            }],
             'content',
             'urgency_level' => function ($row) {
                 switch ($row->urgency_level) {
@@ -261,21 +277,7 @@ class AppController extends \oa\components\Controller
                         return Html::errorSpan($row->urgencyLevelValue);
                 }
             },
-            'hour',
-            'publish.realname' => '发布人',
-            'created_at' => function ($row) {
-                return substr($row->created_at, 5, 11);
-            },
-            'user.realname' => ['header' => '处理人', 'value' => function ($row) {
-                if ($row->user_id) {
-                    return $row->user->realname;
-                } else {
-                    return '无';
-                }
-            }],
-            'updated_at' => function ($row) {
-                return substr($row->updated_at, 5, 11);
-            },
+            'hour' => ['width' => '100px'],
             'task_state' => ['header' => '任务状态', 'value' => function ($row) {
                 switch ($row->task_state) {
                     case OaTask::TASK_STATE_WAIT:
@@ -284,12 +286,28 @@ class AppController extends \oa\components\Controller
                         return Html::warningSpan($row->taskStateValue);
                     case OaTask::TASK_STATE_OVER:
                         return Html::successSpan($row->taskStateValue);
+                    case OaTask::TASK_STATE_DONE:
+                        return Html::finishSpan($row->taskStateValue);
                 }
             }],
-            ['type' => ['edit' => 'saveTask', 'delete'], 'width' => '100px', 'value' => function ($row) {
-                if ($row->task_state == OaTask::TASK_STATE_ING) {
-                    return Hui::secondaryBtn('完成', ['overTask', 'id' => $row->id], ['class' => 'overBtn', 'data' => ['info' => '确认将 ' . $row->id . ' 号任务标记完成？']]);
+            'updated_at' => function ($row) {
+                return substr($row->updated_at, 5, 11);
+            },
+            'publish.realname' => '发布人',
+            'created_at' => function ($row) {
+                return substr($row->created_at, 5, 11);
+            },
+            ['type' => ['edit' => 'saveTask', 'delete' => 'deleteTask'], 'width' => $operationWidth . 'px', 'value' => function ($row) {
+                $btns = [Hui::successBtn('历史', ['viewHistory', 'id' => $row->id], ['class' => 'view-fancybox fancybox.iframe view-btn'])];
+                if ($row->task_state == OaTask::TASK_STATE_ING && $row->user_id == u()->id) {
+                    $btns[] = Hui::secondaryBtn('标记完成', ['overTask', 'id' => $row->id], ['class' => 'overBtn', 'data' => ['info' => '确认将 ' . $row->id . ' 号任务标记完成？']]);
+                } else if ($row->task_state == OaTask::TASK_STATE_OVER && u()->can('app/verifyTask')) {
+                    $btns[] = Hui::secondaryBtn('审核', ['verifyTask', 'id' => $row->id], ['class' => 'verifyBtn', 'data' => ['info' => '确认 ' . $row->id . ' 号任务已完成？']]);
                 }
+                if ($row->task_state == OaTask::TASK_STATE_ING && u()->can('app/delayTask')) {
+                    $btns[] = Hui::dangerBtn('延期', ['delayTask', 'id' => $row->id], ['class' => 'delayBtn', 'data' => ['info' => '请输入' . $row->id . ' 号任务延期天数']]);
+                }
+                return implode('&nbsp;&nbsp;', $btns);
             }]
         ], [
             'showFooter' => true,
@@ -300,7 +318,7 @@ class AppController extends \oa\components\Controller
             'searchColumns' => [
                 'app.code',
                 'content',
-                'user.realname',
+                'user.realname' => ['header' => '处理人'],
                 'urgency_level' => 'select',
                 'task_state' => 'select'
             ]
@@ -310,14 +328,77 @@ class AppController extends \oa\components\Controller
     }
 
     /**
+     * @authname 项目延期
+     */
+    public function actionDelayTask($id)
+    {
+        $task = OaTask::findModel($id);
+        $day = post('day');
+        $reason = post('reason');
+        $task->hour += $day;
+        if ($task->update()) {
+            OaProcess::append($id, sprintf('%s延期了项目%d天，理由：%s', u()->realname, $day, $reason), OaProcess::TYPE_TASK);
+            return success();
+        } else {
+            return error($task);
+        }
+    }
+
+    /**
+     * @authname 查看任务历史进度
+     */
+    public function actionViewHistory($id)
+    {
+        $task = OaTask::findModel($id);
+        $title = $task->content;
+        $processes = OaProcess::getList($id, OaProcess::TYPE_TASK);
+
+        return $this->render('processView', compact('title', 'processes'));
+    }
+
+    /**
+     * @authname 删除任务
+     */
+    public function actionDeleteTask()
+    {
+        return parent::actionDelete();
+    }
+
+    /**
      * @authname 任务标记完成
      */
     public function actionOverTask($id)
     {
         $task = OaTask::findModel($id);
         $task->task_state = OaTask::TASK_STATE_OVER;
-        $task->update();
-        return success();
+        if ($task->update()) {
+            OaProcess::append($id, u()->realname . '提交了任务完成申请', OaProcess::TYPE_TASK);
+            return success();
+        } else {
+            return error($task);
+        }
+    }
+
+    /**
+     * @authname 任务审核
+     */
+    public function actionVerifyTask($id)
+    {
+        $task = OaTask::findModel($id);
+        if (post('state') == 1) {
+            $desc = u()->realname . '确认完成任务';
+            $state = OaTask::TASK_STATE_DONE;
+        } else {
+            $desc = u()->realname . '驳回了申请，理由：' . post('info');
+            $state = OaTask::TASK_STATE_ING;
+        }
+        $task->task_state = $state;
+        if ($task->update()) {
+            OaProcess::append($id, $desc, OaProcess::TYPE_TASK);
+            return success();
+        } else {
+            return error($task);
+        }
     }
 
     /**
@@ -331,7 +412,13 @@ class AppController extends \oa\components\Controller
             if ($model->user_id) {
                 $model->task_state = OaTask::TASK_STATE_ING;
             }
+            if ($model->isNewRecord) {
+                $desc = u()->realname . '创建了任务';
+            } else {
+                $desc = u()->realname . '编辑了任务内容';
+            }
             if ($model->save()) {
+                OaProcess::append($model->id, $desc, OaProcess::TYPE_TASK);
                 return success();
             } else {
                 return error($model);

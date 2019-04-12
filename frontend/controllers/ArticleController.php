@@ -4,7 +4,9 @@ namespace frontend\controllers;
 
 use Yii;
 use common\helpers\Inflector;
+use common\helpers\ArrayHelper;
 use frontend\models\User;
+use frontend\models\Form;
 use frontend\models\Article;
 use frontend\models\ArticleMenu;
 
@@ -33,11 +35,12 @@ class ArticleController extends \frontend\components\Controller
      */
     public function actionIndex()
     {
-        $this->url = lcfirst(Inflector::id2camel(get('url', 'index')));
-        $exceptActions = ['index', 'detail'];
+        $this->url = get('url', 'index');
+        $url = lcfirst(Inflector::id2camel($this->url));
+        $exceptActions = ['index', 'detail', 'submit', 'search', 'data'];
 
-        if (in_array($this->url, $exceptActions)) {
-            return $this->{$this->url}();
+        if (in_array($url, $exceptActions)) {
+            return $this->{$url}();
         } else {
             return $this->category();
         }
@@ -54,19 +57,42 @@ class ArticleController extends \frontend\components\Controller
     }
 
     /**
-     * 分类信息页
+     * 分类页
      */
     public function category()
     {
-        $id = get('id', 0);
+        $id = get('id') ?: get('aid');
         $url = $this->url;
+        $article = Article::findModel($id);
+        $self = ArticleMenu::findModel(['url' => $url]);
+        $subMenu = $self;
+        if ($self->top_id != 0) {//二级菜单
+            $menu = $self->top;
+        } else {//一级菜单
+            $menu = $self;
+        }
+        if ($id) {
+            $this->links[] = ['label' => $subMenu->name, 'url' => url([$menu->url, 'id' => $subMenu->id])];
+            $this->links[] = $article->title;
+        } else {
+            $this->links[] = $subMenu->name;
+        }
 
-        $menu = ArticleMenu::findModel(['url' => $url]);
         $this->view->title = $menu->name;
-        $subMenus = ArticleMenu::find()->where(['pid' => $menu->id, 'state' => ArticleMenu::STATE_VALID])->orderBy('sort')->all();
+        $subMenus = ArticleMenu::getSubMenus($menu->id);
 
-        if (!$id && $subMenus) {
-            $id = $subMenus[0]['id'];
+        if ($self->template) {
+            $articleId = get('aid');
+            if ($articleId) {
+                $article = Article::findModel($articleId);
+                $article->updateCounters(['count' => 1]);
+                return $this->renderTemplate($menu->url . '/' . $self->template, compact('self', 'menu', 'subMenus', 'article'));
+            } else {
+                return $this->renderTemplate($menu->url . '/' . $self->template, compact('self', 'menu', 'subMenus'));
+            }
+        }
+        if (!$id) {
+            $id = ArrayHelper::getValue($subMenus, '0.id', 0);
         }
         if ($id) {
             $subMenu = ArticleMenu::findModel($id);
@@ -75,8 +101,8 @@ class ArticleController extends \frontend\components\Controller
                 return $this->redirect(['checkPasswd', 'id' => $subMenu->id]);
             }
             list($view, $params) = $subMenu->prepare();
-            if (count($params['list']) === 1) {
-                return $this->redirect(['detail', 'id' => $params['list'][0]['id']]);
+            if (count($params['list']) === 1 || $view === 'detail') {
+                return $this->redirect(['detail', 'menuId' => $subMenu->id, 'id' => ArrayHelper::getValue($params, 'list.0.id', null)]);
             }
         } else {
             $view = 'list';
@@ -85,38 +111,76 @@ class ArticleController extends \frontend\components\Controller
         $params['menu'] = $menu;
         $params['subMenus'] = $subMenus;
 
-        $this->links[] = ['label' => $menu->name, 'url' => url([$menu->url])];
-        if (!empty($subMenu)) {
-            $this->links[] = $subMenu->name;
-        }
+        // if (!empty($subMenu)) {
+        //     $this->links[] = ['label' => $menu->name, 'url' => url([$menu->url])];
+        //     $this->links[] = $subMenu->name;
+        // } else {
+        //     $this->links[] = $menu->name;
+        // }
 
         return $this->render($view, $params);
     }
 
     /**
-     * 文章详情页
+     * 内容页
      */
     public function detail()
     {
-        $article = Article::findModel(get('id', 0));
-        $this->view->title = $article->title;
-        $subMenu = $article->menu;
+        $id = get('id');
+        $menuId = get('mid');
+        $article = Article::findModel($id);
+        $subMenu = ArticleMenu::findModel($menuId);
+        if ($id) {
+            $title = $article->title;
+        } else {
+            $title = $subMenu->name;
+        }
+        $this->view->title = $title;
         $menu = $subMenu->parent;
         $this->url = $menu->url;
-        $subMenus = ArticleMenu::find()->where(['pid' => $subMenu['pid'], 'state' => ArticleMenu::STATE_VALID])->orderBy('sort')->all();
+        $subMenus = ArticleMenu::getSubMenus($subMenu['pid']);
 
         $this->links[] = ['label' => $menu->name, 'url' => url([$menu->url])];
-        $this->links[] = ['label' => $subMenu->name, 'url' => url([$menu->url, 'id' => $subMenu->id])];
-        $this->links[] = $article->title;
+        if ($id) {
+            $this->links[] = ['label' => $subMenu->name, 'url' => url([$menu->url, 'id' => $subMenu->id])];
+            $this->links[] = $article->title;
+        } else {
+            $this->links[] = $subMenu->name;
+        }
 
-        return $this->render('detail', compact('menu', 'subMenu', 'subMenus', 'article'));
+        if ($article->template) {
+            $view = 'template/' . $article->template;
+        } else {
+            $view = 'detail';
+        }
+
+        return $this->render($view, compact('menu', 'subMenu', 'subMenus', 'article'));
+    }
+
+    /**
+     * 表单提交
+     */
+    public function submit()
+    {
+        $model = new Form;
+
+        if ($model->load()) {
+            if ($model->add()) {
+                return success();
+            } else {
+                return error($model);
+            }
+        } else {
+            throwex();
+        }
     }
 
     /**
      * 搜索
      */
-    public function actionSearch($keywords)
+    public function search()
     {
+        $keywords = get('keywords', '');
         if ($keywords) {
             $article = Article::find()
                 ->joinWith(['menu'])
@@ -137,9 +201,9 @@ class ArticleController extends \frontend\components\Controller
         }
     }
 
-    public function actionCheckPasswd()
+    public function checkPasswd()
     {
-        $id = req('id');
+        $id = get('id');
         $this->view->title = '输入密码';
         $subMenu = Menu::findOne($id);
         $menu = $subMenu->parent;
@@ -159,5 +223,17 @@ class ArticleController extends \frontend\components\Controller
         }
 
         return $this->render('checkPasswd', compact('menus', 'menu', 'subMenu'));
+    }
+
+    public function data()
+    {
+        $data = Article::find()
+            ->joinWith(['menu'])
+            ->where(['menu.id' => get('id')])
+            ->active()
+            ->asArray()
+            ->all();
+            
+        return success($data);
     }
 }

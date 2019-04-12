@@ -127,15 +127,16 @@ $(function () {
         }
         $("#uploadForm").ajaxSubmit($.config('ajaxSubmit', {
             success: function (msg) {
-                if (!msg.state) {
+                if (msg.state) {
+                    var $textarea = $('#inputTextArea');
+                    $textarea.insertAtCaret('![](' + msg.info + ')');
+                    $textarea.trigger('keyup');
+                } else {
                     $.alert(msg.info);
                     return false;
                 }
-                var $textarea = $('#inputTextArea');
-                $textarea.insertAtCaret('![](' + msg.info + ')');
-                $("#inputTextArea").trigger('keyup');
             }
-        }))
+        }));
     });
 
     // 工具栏的按钮事件

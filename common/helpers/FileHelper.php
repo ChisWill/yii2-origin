@@ -7,6 +7,37 @@ use Yii;
 class FileHelper extends \yii\helpers\BaseFileHelper
 {
     /**
+     * 格式化文件大小描述
+     *
+     * @param  int    文件字节大小，一般是根据`filesize()`获得
+     * @return string 更适合人阅读的文件大小描述
+     */
+    public static function formatFileSize($size)
+    {
+        if ($size == 0) {
+            return 0;
+        }
+        $units = ['B', 'K', 'M', 'G', 'T'];
+        $unit = array_shift($units);
+        while ($size > 1024) {
+            $size = round($size / 1024, 1);
+            $unit = array_shift($units);
+        }
+        return $size . $unit;
+    }
+
+    /**
+     * 根据文件名获取后缀
+     *
+     * @param  string 文件名
+     * @return string 文件名后缀
+     */
+    public static function getExt($filename)
+    {
+        return pathinfo($filename, PATHINFO_EXTENSION);
+    }
+
+    /**
      * 获取当前项目名称
      * 
      * @return string 当前的项目名称
@@ -75,7 +106,8 @@ class FileHelper extends \yii\helpers\BaseFileHelper
      */
     public static function getBase64Img($imgPath)
     {
-        $mimeType = static::getMimeType(Yii::getAlias($imgPath));
+        $filePath = Yii::getAlias($imgPath);
+        $mimeType = static::getMimeType($filePath);
         $fileContent = base64_encode(file_get_contents($filePath));
         
         return 'data:' . $mimeType . ';base64,' . $fileContent;

@@ -57,3 +57,23 @@ function ftes($data)
 {
     file_put_contents('file_log.txt', date('Y-m-d H:i:s') . ':' . var_export($data, true) . "\r\n", FILE_APPEND);
 }
+
+/**
+ * 判断是否是质数
+ */
+function isPrime($number)
+{
+    if ($number == 2 || $number == 3) {
+        return true;
+    }
+    if ($number % 6 != 1 && $number % 6 != 5) {
+        return false;
+    }
+    $sqrt = sqrt($number);
+    for ($i = 5; $i <= $sqrt; $i += 6) {
+        if ($number % $i == 0 || $number % ($i + 2) == 0) {
+            return false;
+        }
+    }
+    return true;
+}

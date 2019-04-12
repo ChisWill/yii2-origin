@@ -1,0 +1,13 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:581:"CREATE TABLE `trace` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT '访问用户',
+  `page_name` varchar(100) NOT NULL COMMENT '页面路径',
+  `ip` varchar(100) NOT NULL COMMENT 'IP',
+  `page_title` varchar(100) DEFAULT '' COMMENT '页面标题',
+  `referrer` varchar(255) DEFAULT '' COMMENT '访问来源',
+  `duration` int(11) DEFAULT '0' COMMENT '访问时长',
+  `created_at` datetime DEFAULT NULL COMMENT '记录时间',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `page_name` (`page_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";s:4:"desc";s:5:"trace";s:7:"warning";a:0:{}}

@@ -1,1 +1,1 @@
-<?= $this->tab(['修改密码'], ['password']) ?>
+<?= $this->tab(['修改密码', '修改个人信息'], ['password', 'userInfo']) ?>

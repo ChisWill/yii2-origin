@@ -23,15 +23,25 @@ class Upload extends \common\components\Model
      */
     public $uploadName = 'uploadFile';
     /**
+     * 是否检查 mime 属性
+     * @var boolean
+     */
+    public $checkExtensionByMimeType = true;
+    /**
      * 是否必须上传图片
      * @var boolean
      */
     public $required = true;
     /**
+     * 指定文件后缀
+     * @var string
+     */
+    public $ext = '';
+    /**
      * 上传文件格式的限制
      * @var string
      */
-    public $extensions = 'png, jpg, gif';
+    public $extensions = 'png, jpg';
     /**
      * 上传文件大小，单位为KB
      * @var integer
@@ -66,7 +76,7 @@ class Upload extends \common\components\Model
      * 上传目录
      * @var string
      */
-    public $uploadPath = null;
+    public $uploadPath = '';
     
     /**
      * @var string 上传规则
@@ -111,6 +121,7 @@ class Upload extends \common\components\Model
                 [$this->uploadName],
                 'file',
                 'skipOnEmpty' => !$this->required, //如果没有上传，是否忽略所有规则
+                'checkExtensionByMimeType' => $this->checkExtensionByMimeType,
                 'uploadRequired' => $this->message,
                 'extensions' => $this->extensions,
                 'wrongExtension' => $this->wrongExtension,
@@ -239,8 +250,8 @@ class Upload extends \common\components\Model
     protected function setUploadPath()
     {
         if ($this->_uploadPath === null)  {
-            $uploadPath = $this->uploadPath ? '/' . trim($this->uploadPath, '/') . '/' : '/';
-            $this->_uploadPath = config('uploadPath') .  $uploadPath . date('Ymd') . '/';
+            $uploadPath = $this->uploadPath ? '/' . trim($this->uploadPath, '/') : '';
+            $this->_uploadPath = config('uploadPath') . $uploadPath . '/' .  date('Ymd') . '/';
         }
         
         return $this;
@@ -294,7 +305,8 @@ class Upload extends \common\components\Model
         $name = $this->uploadName;
         $file or $file = $this->$name;
         do {
-            $newName = date('His') . rand(100000, 999999) . '.' . $file->extension;
+            $ext = $this->ext ?: $file->extension;
+            $newName = date('His') . rand(100000, 999999) . '.' . $ext;
         } while (file_exists($this->_savePath . $newName));
 
         $this->_realName[] = $newName;

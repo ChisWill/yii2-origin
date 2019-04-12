@@ -68,4 +68,32 @@ class ARQuery extends \yii\db\ActiveQuery
         }
         return $this;
     }
+
+    /**
+     * 增加日期筛选条件
+     *
+     * @param  string $field 日期字段的名称
+     * @return object
+     */
+    public function andDateRange($start, $end, $field = 'created_at')
+    {
+        return $this
+            ->andFilterWhere(['>=', $field, $start ? date('Y-m-d', strtotime($start)) : null])
+            ->andFilterWhere(['<=', $field, $end ? date('Y-m-d', strtotime($end) + 3600 * 24) : null])
+        ;
+    }
+
+    /**
+     * 增加时间筛选条件
+     *
+     * @param  string $dateField 时间字段的名称
+     * @return object
+     */
+    public function andTimeRange($start, $end, $field = 'created_at')
+    {
+        return $this
+            ->andFilterWhere(['>=', $field, $start])
+            ->andFilterWhere(['<=', $field, $end])
+        ;
+    }
 }

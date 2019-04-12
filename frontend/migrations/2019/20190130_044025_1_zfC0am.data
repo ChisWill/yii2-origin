@@ -1,0 +1,7 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:407:"ALTER TABLE `admin_user`
+MODIFY COLUMN `login_time`  datetime NULL DEFAULT NULL COMMENT '登录时间' AFTER `realname`,
+ADD COLUMN `login_ip`  varchar(130) NULL DEFAULT '' COMMENT '登录IP' AFTER `login_time`,
+ADD COLUMN `last_ip`  varchar(130) NULL DEFAULT '' COMMENT '上次登录IP' AFTER `login_ip`;
+
+ALTER TABLE `admin_user`
+ADD COLUMN `position`  int NULL DEFAULT 0 COMMENT '职位' AFTER `last_ip`;";s:4:"desc";s:10:"admin_user";s:7:"warning";a:0:{}}

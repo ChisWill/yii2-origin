@@ -216,6 +216,36 @@ $(function () {
         $target.trigger('click');
     });
 
+    // 更换头像
+    $("#changeFaceBtn").click(function () {
+        $("#changeFaceInput").trigger('click');
+    });
+
+    $("#changeFaceInput").change(function (event) {
+        var fileSize = 0,
+            target = event.target;
+        if ($.isIe()) {
+            fileSize = 0;
+        } else {
+            fileSize = target.files[0].size;
+        }
+        var size = fileSize / 1024;
+        if (size > 2048) {
+            $.alert('图片不能大于2M~！');
+            return false;
+        }
+        $("#changeFaceForm").ajaxSubmit($.config('ajaxSubmit', {
+            success: function (msg) {
+                if (msg.state) {
+                    $("#changeFaceBtn").find('img').attr('src', msg.info);
+                } else {
+                    $.alert(msg.info);
+                    return false;
+                }
+            }
+        }));
+    });
+
     // 点击第一个菜单
     $(".js-tree-anchor:eq(0)").trigger('click');
 });

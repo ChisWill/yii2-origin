@@ -43,6 +43,22 @@ class CwController extends \common\components\WebController
         return $this->render('index');
     }
 
+    public function actionQiniu()
+    {
+        set_time_limit(0);
+        $ret = array_merge(FileHelper::findFiles(path('@webroot/images')), FileHelper::findFiles(path('@webroot/themes'), ['only' => ['*/images/*']]));
+        $path = path('@webroot');
+        foreach ($ret as $filePath) {
+            $fileName = ltrim(str_replace([$path, '\\'], ['', '/'], $filePath), '/');
+            list($ret, $err) = uploadCloud($filePath, $fileName);
+            if ($err !== null) {
+                tes($filePath, $fileName);
+            }
+        }
+
+        return $this->render('qiniu');
+    }
+
     public function actionCreateData()
     {
         $config = [

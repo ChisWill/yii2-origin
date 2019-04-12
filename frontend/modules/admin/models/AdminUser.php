@@ -53,8 +53,18 @@ class AdminUser extends \common\models\AdminUser
         return $query->getTable([
             'id' => ['search' => true],
             'username' => ['search' => true],
-            'realname' => ['search' => true, 'type' => 'text'],
+            'realname' => ['search' => true, u()->isMe ? 'type' : null => 'text', 'width' => '150px'],
             'login_time',
+            'login_ip',
+            'last_ip' => function ($row) {
+                if ($row->last_ip != $row->login_ip) {
+                    return Html::errorSpan($row->last_ip);
+                } else {
+                    return $row->last_ip;
+                }
+            },
+            'position' => u()->isMe ? ['type' => 'select'] : [],
+            u()->isMe ? 'power' : null => ['type' => 'text'],
             'roles' => ['header' => '角色', 'value' => function ($user) {
                 $roles = [];
                 foreach ($user->roles as $role) {

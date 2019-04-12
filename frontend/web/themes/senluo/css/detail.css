@@ -1,0 +1,66 @@
+body {
+    background: #fff;
+    visibility: hidden;
+}
+.detail-wrap {
+    width: 12rem;
+    margin: 0.25rem auto;
+    box-shadow: 0px 0px 15.52px 0.48px rgba(0, 0, 0, 0.21);
+    padding: 0.55rem;
+    border-radius: 0.04rem;
+    margin-bottom: 1rem;
+}
+.content .detail-img {
+    width: 100%;
+}
+.detail-top {
+    text-align: center;
+    border-bottom: 0.02rem dotted #929292;
+}
+.detail-top .detail-title {
+    font-size: 0.32rem;
+    color: #171717;
+    margin-bottom: 0.35rem;
+}
+.time-account {
+    font-size: 0.2rem;
+    color: #838181;
+    margin-bottom: 0.35rem;
+}
+.time-account img {
+    width: 0.3rem;
+    height: 0.3rem;
+    vertical-align: text-bottom;
+}
+.time-account span:last-child {
+    display: inline-block;
+    margin-left: 0.9rem;
+}
+.detail-bottom {
+    padding: 0.5rem 0.35rem;
+    min-height: 7rem;
+}
+.detail-abstract {
+    font-size: 0.16rem;
+    color: #333;
+    margin-bottom: 0.5rem; 
+}
+.detail-bottom img {
+    max-width: 100%;
+}
+/*手机ipad样式统一处理*/
+@media screen and (max-width: 1200px) {
+    .detail-wrap {
+        width: 80%;
+        margin: 20px auto;
+        padding: 15px;
+    }
+}
+/*适配手机样式*/
+@media screen and (max-width: 640px) {
+
+}
+/*适配ipad*/
+@media screen and (max-width: 1200px) and (min-width: 640px) {
+    
+}

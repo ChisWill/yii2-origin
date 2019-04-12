@@ -2,10 +2,15 @@
 /**
  * 路径别名定义
  */
+Yii::setAlias('base', dirname(dirname(__DIR__)));
 Yii::setAlias('common', dirname(__DIR__));
 Yii::setAlias('frontend', dirname(dirname(__DIR__)) . '/frontend');
 Yii::setAlias('console', dirname(dirname(__DIR__)) . '/console');
 Yii::setAlias('api', dirname(dirname(__DIR__)) . '/api');
+/**
+ * 引入第三方类文件
+ */
+Yii::$classMap['QRcode'] = '@vendor/phpqrcode/phpqrcode.php';
 /**
  * 引入自定义函数
  */
@@ -16,8 +21,9 @@ array_walk($files, function ($file) {
 /**
  * 公共常量定义
  */
+const FRAMEWORK_VERSION = '2.0.2.15';
 const PAGE_SIZE = 10;
-const THEME_NAME = 'basic';
+const THEME_NAME = 'senluo';
 const SECRET_KEY = 'ChisWill-459967016@qq.com';
 const ATTR_CREATED_AT = 'created_at';
 const ATTR_CREATED_BY = 'created_by';

@@ -66,7 +66,8 @@ $(function () {
             $("#topParentUl li.current").removeClass('current');
             $this.parent().addClass('current');
             if (msg.state) {
-                $("#settingContent").html(msg.info);
+                $("#settingContent").html(msg.info).hide();
+                $("#settingContent").fadeIn('3000');
                 keepShowMode();
             } else {
                 $.alert(msg.info);
@@ -271,6 +272,7 @@ $(function () {
         $obj.html('切换到编辑模式');
         changeShowText($obj);
         $obj.attr('mode', 1);
+
     };
     var changeShowMode = function () {
         var $this = $("#changeEditBtn");
@@ -278,8 +280,10 @@ $(function () {
 
         if (mode == '1') { // 模式1，表示当前为显示模式
             changeShowTextMode($this);
+            $(".setting-table").removeClass('table-show').addClass('table-edit');
         } else { // 模式2,表示当前为编辑模式
             changeShowEditMode($this);
+            $(".setting-table").removeClass('table-edit').addClass('table-show');
             $(".updateSettingInput").each(function () {
                 var $parent = $(this).parent();
                 $parent.html($parent.data('oldValue'));

@@ -29,7 +29,7 @@ $(function () {
             // 行收缩、伸展事件
             '.linkage-minus, .linkage-plus': function (event) {
                 var $this = $(this);
-
+                event.stopPropagation();
                 if ($this.attr('class').indexOf('linkage-minus') !== -1) {
                     // 收起
                     $this.addClass('linkage-plus');
@@ -388,41 +388,45 @@ $(function () {
 
     // 初始化
     (function () {
-        // 遍历所有列表
-        $(container).each(function () {
-            // 获得总列数
-            var length = $(this).find('.linkage-header > p').length;
-            // 如果不存在数据则直接跳过
-            if (length <= 0) {
-                return true;
-            }
-            // 初始化存储各列最大宽度的数组
-            var widthMap = [];
-            for (var i = 0; i < length; i++) {
-                widthMap[i] = 0;
-            }
-            // 遍历所有的列，获得每列最大宽度
-            $(this).find('ul > li > div > p').each(function () {
-                var width = $(this).width();
-                if (widthMap[$(this).index()] < width) {
-                    widthMap[$(this).index()] = width;
+        var resizeList = function () {
+            // 遍历所有列表
+            $(container).each(function () {
+                // 获得总列数
+                var length = $(this).find('.linkage-header > p').length;
+                // 如果不存在数据则直接跳过
+                if (length <= 0) {
+                    return true;
                 }
+                // 初始化存储各列最大宽度的数组
+                var widthMap = [];
+                for (var i = 0; i < length; i++) {
+                    widthMap[i] = 0;
+                }
+                // 遍历所有的列，获得每列最大宽度
+                $(this).find('ul > li > div > p').each(function () {
+                    var width = $(this).width();
+                    if (widthMap[$(this).index()] < width) {
+                        widthMap[$(this).index()] = width;
+                    }
+                });
+                // 获得总列宽
+                var sum = widthMap.reduce(function (a, b) {
+                    return a + b;
+                });
+                // 每列该增加的宽度
+                var avg = Math.round(($(this).find('.linkage-header').width() - sum) / length);
+                // 标题增加列宽
+                $(this).find('.linkage-header > p').each(function () {
+                    $(this).width(widthMap[$(this).index()] + avg); 
+                });
+                // 各行增加列宽
+                $(this).find('ul > li > div > p').each(function () {
+                    $(this).width(widthMap[$(this).index()] + avg); 
+                });
             });
-            // 获得总列宽
-            var sum = widthMap.reduce(function (a, b) {
-                return a + b;
-            });
-            // 每列该增加的宽度
-            var avg = ($(this).find('.linkage-header').width() - sum) / length;
-            // 标题增加列宽
-            $(this).find('.linkage-header > p').each(function () {
-                $(this).width(widthMap[$(this).index()] + avg); 
-            });
-            // 各行增加列宽
-            $(this).find('ul > li > div > p').each(function () {
-                $(this).width(widthMap[$(this).index()] + avg); 
-            });
-        });
+        }
+        resizeList();
+        $(window).resize(resizeList);
     })();
 
     // 拖拽事件绑定

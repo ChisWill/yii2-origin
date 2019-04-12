@@ -1,0 +1,3 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:130:"ALTER TABLE `article`
+ADD COLUMN `summary`  varchar(200) NULL DEFAULT '' COMMENT '摘要' AFTER `menu_id`,
+ADD INDEX (`menu_id`) ;";s:4:"desc";s:7:"article";s:7:"warning";a:0:{}}

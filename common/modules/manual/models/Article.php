@@ -5,7 +5,7 @@ namespace common\modules\manual\models;
 use Yii;
 
 /**
- * 这是表 `hsh_manual_article` 的模型
+ * 这是表 `manual_article` 的模型
  */
 class Article extends \common\components\ARModel
 {

@@ -6,13 +6,13 @@ use Yii;
 
 class Article extends \common\models\Article
 {
+    public $categories = null;
     public $file;
-    public $categoryType;
 
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['file'], 'file', 'skipOnEmpty' => $this->categoryType != 1, 'uploadRequired' => '新闻类必须上传{attribute}', 'extensions' => 'jpg,png,gif', 'maxSize' => 2048 * 1000]
+            [['file'], 'file', 'extensions' => 'jpg,png,gif', 'maxSize' => 2048 * 1000]
         ]);
     }
 
@@ -35,6 +35,7 @@ class Article extends \common\models\Article
         return $this->search()
             ->joinWith(['menu'])
             ->andWhere(['article.state' => self::STATE_VALID])
+            ->andFilterWhere(['menu_id' => $this->categories])
             ->orderBy('article.id DESC');
     }
 }

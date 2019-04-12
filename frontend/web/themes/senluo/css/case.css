@@ -1,0 +1,30 @@
+body {
+    background: #fff;
+    visibility: hidden;
+}
+.content .case-img {
+    width: 100%;
+}
+.case-content {
+    width: 12rem;
+    margin: 0.85rem auto;
+    box-shadow: 0px 0px 20px 10px rgba(226, 225, 227, 0.36);
+}
+.case-content img {
+    width: 100%;
+}
+/*手机ipad样式统一处理*/
+@media screen and (max-width: 1200px) {
+    .case-content {
+        width: 80%;
+        margin-left: 10%;
+    }
+}
+/*适配手机样式*/
+@media screen and (max-width: 640px) {
+
+}
+/*适配ipad*/
+@media screen and (max-width: 1200px) and (min-width: 640px) {
+    
+}

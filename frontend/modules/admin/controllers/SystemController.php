@@ -4,10 +4,15 @@ namespace admin\controllers;
 
 use Yii;
 use common\helpers\Hui;
+use common\helpers\Html;
+use common\helpers\Third;
+use common\helpers\FileHelper;
 use common\helpers\ArrayHelper;
 use common\helpers\StringHelper;
 use common\modules\setting\models\Setting;
+use common\models\LogSqlTask;
 use admin\models\Log;
+use admin\models\Trace;
 use admin\models\AdminMenu;
 use admin\models\AdminAction;
 
@@ -122,7 +127,8 @@ class SystemController extends \admin\components\Controller
      */
     public function actionLogList()
     {
-        $query = (new Log)->logListQuery();
+        // 日志表内容
+        $query = (new Log)->logListQuery()->orderBy('id DESC');
 
         $html = $query->getTable([
             'id',
@@ -136,11 +142,89 @@ class SystemController extends \admin\components\Controller
             ['type' => ['view' => 'logDetail']]
         ], [
             'searchColumns' => [
+                'level' => 'select',
+                'category',
+                'prefix' => ['header' => '额外信息'],
                 'time' => 'dateRange'
             ]
         ]);
+        // 日志文件内容
+        $dirs = [
+            '@base' => [
+                'suffix' => 'log',
+                'dir' => false
+            ],
+            '@frontend/runtime/logs' => [
+                'suffix' => 'log',
+                'dir' => true
+            ],
+            '@console/runtime/logs' => [
+                'suffix' => 'log',
+                'dir' => true
+            ]
+        ];
+        $data = [];
+        $getRow = function ($path) {
+            return [
+                'name' => basename($path),
+                'dir' => ltrim(str_replace([path('@base'), '\\'], ['', '/'], dirname($path)), '/'),
+                'size' => FileHelper::formatFileSize(filesize($path)),
+                'editTime' => date('Y-m-d H:i:s', filemtime($path))
+            ];
+        };
+        foreach ($dirs as $path => $pattern) {
+            FileHelper::findFiles(path($path), [
+                'filter' => function ($path) use ($pattern, $getRow, &$data) {
+                    if (!is_dir($path) && preg_match('#.*\.' . $pattern['suffix'] . '#', $path)) {
+                        $data[] = $getRow($path);
+                    }
+                    if ($pattern['dir'] === true && is_dir($path)) {
+                        FileHelper::findFiles($path, ['filter' => function ($path) use ($pattern, $getRow, &$data) {
+                            if (!is_dir($path) && preg_match('#.*\.' . $pattern['suffix'] . '#', $path)) {
+                                $data[] = $getRow($path);
+                            }
+                        }]);
+                    }
+                },
+                'recursive' => false
+            ]);
+        }
+        $i = 1;
+        $fileHtml = self::getTable($data, [
+            ['header' => '序号', 'value' => function ($row) use (&$i) {
+                return $i++;
+            }],
+            ['header' => '文件名称', 'value' => function ($row) {
+                return Html::a($row['name'], ['fileDetail', 'file' => $row['dir'] . '/' . $row['name']], ['class' => ['view-fancybox', 'fancybox.iframe']]);
+            }],
+            'dir' => '路径',
+            'size' => '大小',
+            'editTime' => '最后修改时间',
+            ['type' => [], 'width' => '100px', 'value' => function ($row) {
+                return Hui::dangerBtn('清空', ['clearFile', 'file' => $row['dir'] . '/' . $row['name']], ['class' => 'clearFileBtn', 'data' => ['file' => $row['name']]]);
+            }]
+        ]);
 
-        return $this->render('log', compact('html'));
+        return $this->render('log', compact('html', 'fileHtml'));
+    }
+
+    /**
+     * @authname 清空日志文件
+     */
+    public function actionClearFile($file)
+    {
+        file_put_contents(path('@base/' . $file), '');
+
+        return success();
+    }
+
+    /**
+     * @authname 查看文件日志详情
+     */
+    public function actionFileDetail($file)
+    {
+        $message = explode("\n", file_get_contents(path('@base/' . $file)));
+        return $this->renderPartial('fileDetail', compact('message'));
     }
 
     /**
@@ -166,9 +250,9 @@ class SystemController extends \admin\components\Controller
         $html = $query->getTable([
             'table_name' => ['search' => true, 'width' => '75px'],
             'key' => ['search' => true, 'width' => '40px'],
-            'action' => ['search' => true, 'width' => '80px'],
-            'field' => ['search' => true],
-            'value' => ['search' => true, 'width' => '50%', 'value' => function ($row) {
+            'action' => ['search' => true, 'width' => '180px'],
+            'field' => ['search' => true, 'width' => '150px'],
+            'value' => ['search' => true, 'value' => function ($row) {
                 $fields = StringHelper::explode(',', $row->field);
                 $values = unserialize($row->value);
                 $message = [];
@@ -182,14 +266,118 @@ class SystemController extends \admin\components\Controller
                         break;
                     case AdminAction::TYPE_DELETE:
                         break;
+                    case AdminAction::TYPE_SELECT:
+                        break;
                 }
                 return implode('<br>', $message);
             }],
             'type' => ['header' => '操作类型', 'width' => '60px', 'search' => 'select'],
+            'ip' => ['search' => true, 'width' => '80px'],
             'created_by' => ['search' => true, 'width' => '60px'],
             'created_at' => ['search' => 'dateRange', 'width' => '70px'],
         ]);
 
         return $this->render('actionList', compact('html'));
+    }
+
+    /**
+     * @authname 数据库日志
+     */
+    public function actionLogSqlList()
+    {
+        $query = (new LogSqlTask)->listQuery()->orderBy('id DESC');
+
+        $html = $query->getTable([
+            'id' => ['width' => '50px'],
+            'user_id' => ['search' => true, 'width' => '60px'],
+            'method' => ['search' => true],
+            'url' => ['search' => true],
+            'request' => ['search' => ['type' => 'select', 'items' => ['' => '请求类型', 'GET' => 'GET', 'POST' => 'POST']], 'width' => '90px'],
+            'ip' => ['search' => true, 'width' => '80px'],
+            'created_at' => ['width' => '120px'],
+        ], [
+            'searchColumns' => [
+                'time' => 'timeRange',
+                'search_duration' => ['header' => '最少执行时间（ms）', 'type' => 'text'],
+                'search_sql' => ['header' => 'SQL语句', 'type' => 'text']
+            ],
+            'rowOptions' => function ($v, $k) {
+                return [
+                    'class' => 'task-row',
+                    'data-extra' => json_encode($v->list)
+                ];
+            },
+        ]);
+
+        return $this->render('logSqlList', compact('html'));
+    }
+
+    /**
+     * @authname 用户行为
+     */
+    public function actionUserTrace()
+    {
+        // 实时访问
+        $realtimeVisitQuery = (new Trace)->realtimeVisitQuery();
+        $rank = 1;
+        $realtimeVisitHtml = $realtimeVisitQuery->getTable([
+            ['header' => '序号', 'value' => function () use (&$rank) {
+                return (get('p', 1) - 1) * PAGE_SIZE + $rank++;
+            }],
+            'created_at' => '访问时间',
+            'page_name' => ['width' => '200px'],
+            'ip',
+            ['header' => '访客位置', 'value' => function ($row) {
+                if ($row->ip) {
+                    return Third::getIpInfo($row->ip);
+                } else {
+                    return '-';
+                }
+            }],
+            'referrer' => ['width' => '500px'],
+            'user_id' => ['header' => '访客信息', 'width' => '200px', 'value' => function ($row) {
+                if ($row->user_id == 0) {
+                    return '游客';
+                } else {
+                    return $row->user->username;
+                }
+            }]
+        ], [
+            'searchColumns' => [
+                'ip',
+                'page_name',
+                'referrer',
+                'date' => 'dateRange'
+            ],
+        ]);
+        // 访问人数
+        $visitUsers = (new Trace)->visitUsers();
+        // 浏览量
+        $visitNumbers = (new Trace)->visitNumbers();
+        // 平均停留时间
+        $avgDuration = (new Trace)->avgDuration();
+        // 人均浏览量
+        $avgVisitNumbers = $visitUsers > 0 ? round($visitNumbers / $visitUsers, 2) : 0;
+        // 跳失率
+        $missRate = (new Trace)->missRate($visitUsers);
+        // 每日访问人数
+        $visitData = (new Trace)->visitData();
+        // 页面访问排行
+        $pageRankQuery = (new Trace)->pageRankQuery();
+        $rank = 1;
+        $pageRankHtml = $pageRankQuery->getTable([
+            ['header' => '排名', 'value' => function () use (&$rank) {
+                return (get('p', 1) - 1) * PAGE_SIZE + $rank++;
+            }],
+            'page_title',
+            'page_name',
+            'count' => '浏览量',
+            'duration' => '平均停留时间'
+        ], [
+            'showCount' => false,
+            'paging' => false
+        ]);
+
+        return $this->render('userTrace', compact('visitUsers', 'visitNumbers', 'avgDuration', 'avgVisitNumbers', 'missRate', 'visitData', 'pageRankHtml', 'realtimeVisitHtml'));
     }
 }

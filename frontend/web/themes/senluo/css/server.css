@@ -1,0 +1,195 @@
+body {
+    visibility: hidden;
+    background: #fff;
+}
+.content .server-img {
+    width: 100%;
+}
+.sub-title , .question-title{
+    margin: 0.5rem auto;
+    text-align: center;
+}
+.sub-title img {
+    width: 3.14rem;
+    height: 1.12rem;
+}
+.question-title img {
+    width: 4rem;
+    height: 1.12rem;
+}
+.team {
+    text-align: center;
+}
+.team .team-img {
+    width: 11.65rem;
+    margin: 0 auto;
+}
+.question {
+    text-align: center;
+}
+.question .question-img {
+    width: 12rem;
+    height: 5.2rem;
+    margin: 0 auto;
+}
+.question-content {
+    width: 16.9rem;
+    margin: 0 auto;
+    display: block;
+    margin-top: 0.5rem;
+}
+/*.question-content img {
+    width: 8.25rem;
+    height: 3.7rem;
+    box-shadow: 0px 0px 20px 10px rgba(226, 225, 227, 0.36);
+    margin: 0.1rem;
+}*/
+.question-content {
+    width: 12rem;
+    text-align: left;
+}
+.question-item {
+    /*height: 0.9rem;*/
+    /*overflow: hidden;*/
+    padding: 0 0.6rem;
+    box-shadow: 0px 0px 20px 10px rgba(226, 225, 227, 0.36);
+    margin-bottom: 0.2rem;
+    /*transition: 0.5s;*/
+    cursor: pointer;
+}
+.question-title img {
+    text-align: center;
+}
+.question-item .item-title {
+    height: 0.90rem;
+    line-height: 0.90rem;
+    font-size: 0.24rem;
+}
+.question-content .active {
+    color: #be2223;
+}
+.question-content .active .add-icon {
+    background: url(../images/minus-icon.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.question-content .active .item-content {
+    color: #282828;
+}
+.item-title .add-icon {
+    display: inline-block;
+    width: 0.35rem;
+    height: 0.35rem;
+    margin-top: 0.2rem;
+    background: url(../images/add-icon.png) center center no-repeat;
+    background-size: 100% 100%;
+    vertical-align: text-bottom;
+}
+.item-content {
+    height: auto;
+    font-size: 0.18rem;
+    line-height: 0.45rem;
+    padding: 0.3rem;
+    display: none;
+    border-top: 0.01rem solid #818181;
+}
+.consult-content {
+    width: 12rem;
+    margin: 0 auto;
+    margin-bottom: 1rem;
+}
+.wx-server .server-left {
+    width: 8.7rem;
+}
+.wx-code {
+    width: 2.5rem;
+    height: 2.45rem;
+}
+.wx-code {
+    background: #c33233;
+    text-align: center;
+    line-height: 2.45rem;
+    margin-top: 0.7rem;
+}
+.wx-code img {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+.consult-icon {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.1rem;
+}
+.wx-server {
+    margin-bottom: 0.75rem;
+}
+.consult-title {
+    font-size: 0.24rem;
+    font-weight: bold;
+    color: #1a2434;
+    height: 0.7rem;
+    line-height: 0.7rem;
+    border-bottom: 0.01rem solid #818181;
+    margin-bottom: 0.2rem;
+}
+.consult-list li {
+    /*height: 0.5rem;*/
+    line-height: 0.5rem;
+    font-size: 0.2rem;
+    list-style-type: disc;
+    margin-left: 0.2rem;
+}
+.consult-list a {
+    display: inline-block;
+    margin-left: 0.2rem;
+    color: #c33334;
+}
+.contact-btn {
+    display: inline-block;
+    width: 2.8rem;
+    height: 0.6rem;
+    line-height: 0.6rem;
+    color: #be2223;
+    font-size: 0.24rem;
+    margin: 0.34rem auto;
+    border-radius: 0.45rem;
+    box-shadow: 0px 0px 20px 10px rgba(226, 225, 227, 0.36);
+}
+/*手机ipad样式统一处理*/
+@media screen and (max-width: 1200px) {
+    .question .question-img {
+        width: 100%;
+        height: 3.2rem;
+    }
+    .question-content {
+        width: 100%;
+    }
+    .consult-content {
+        width: 100%;
+        margin-bottom: 0.3rem;
+    }
+    .wx-server {
+        margin-bottom: 0;
+    }
+}
+/*适配手机样式*/
+@media screen and (max-width: 640px) {
+    .wx-server .server-left {
+        width: 90%;
+        margin: 0 3%;
+    }
+    .wx-code {
+        float: left;
+        margin: 0.2rem 32%;
+    }
+}
+/*适配ipad*/
+@media screen and (max-width: 1200px) and (min-width: 640px) {
+    .wx-server .server-left {
+        width: 60%;
+        margin: 0 3%;
+    }
+    .wx-code {
+        margin-right: 3%;
+    }
+}

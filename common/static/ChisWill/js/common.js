@@ -1,4 +1,4 @@
-$(function () {
+;!(function () {
     // 缩写console.log
     window.tes = function () {
         for (var key in arguments) {
@@ -18,8 +18,8 @@ $(function () {
         /**
          * 获取js插件的配置文件
          *
-         * @param  json $optionName 默认配置
-         * @param  json $options    自定义配置，将会覆盖默认配置
+         * @param  json optionName 默认配置
+         * @param  json options    自定义配置，将会覆盖默认配置
          * @return json             返回最终的配置
          */
         config: function (optionName, options) {
@@ -102,8 +102,8 @@ $(function () {
         /**
          * 初始化插件参数，并执行监听事件
          * 
-         * @param string $methodName  js扩展的执行名称
-         * @param string $prefixClass 指定需要绑定的class前缀名称,如果不指定，则默认使用$methodName
+         * @param string methodName  js扩展的执行名称
+         * @param string prefixClass 指定需要绑定的class前缀名称,如果不指定，则默认使用$methodName
          */
         listen: function (methodName, prefixClass) {
             prefixClass = prefixClass || methodName;
@@ -134,12 +134,18 @@ $(function () {
 
         /**
          * Socket.IO 的客户端，须要先引入php端的 SocketIOAsset
-         * 
+         *
+         * @param  string url     监听端口
          * @param  array  options 初始化参数
          * @return object         Socket.IO 对象
          */
-        io: function (options) {
-            return io(_config["socketioUrl"], options);
+        io: function (url, options) {
+            if (typeof url == 'object') {
+                options = url;
+                url = '';
+            }
+            url = url || _config["socketioUrl"];
+            return io(url, options);
         },
 
         /**
@@ -170,8 +176,8 @@ $(function () {
         /**
          * 增加支持json对象的alert，如果引入了php端的 LayerAsset ，则会以插件的方式弹窗
          * 
-         * @param string|json $info     消息
-         * @param function    $callback 弹窗关闭后的回调函数
+         * @param string|json info     消息
+         * @param function    callback 弹窗关闭后的回调函数
          */
         alert: function (info, callback) {
             if (typeof layer !== 'undefined') {
@@ -269,16 +275,6 @@ $(function () {
         },
 
         /**
-         * 获取父窗口的元素
-         * 
-         * @param  string selector Jquery选择器
-         * @return object          返回Jquery对象
-         */
-        parent: function (selector) {
-            return $(parent.window.document).find(selector);
-        },
-
-        /**
          * 获取 url 中的参数部分
          * 
          * @param  string url url地址
@@ -295,6 +291,24 @@ $(function () {
                 result[decodeURIComponent(qs[i][0])] = decodeURIComponent(qs[i][1]);
             }
             return result;
+        },
+
+        /**
+         * 获取 url 中的路径部分
+         * @param  string url url地址
+         * @return string     路径
+         */
+        getUrlPath: function (url) {
+            try {
+                var pieces = url.split("//");
+                var path = pieces[1].substring(pieces[1].indexOf("/"));
+                if (path.indexOf("?") != -1) {
+                    path = path.split("?")[0];
+                }
+                return path;
+            } catch (e) {
+                return '';
+            }
         },
 
         /**
@@ -401,6 +415,140 @@ $(function () {
     // 扩展全局jQuery实例方法
     $.fn.extend({
         /**
+         * 允许配置进度条的表单/文件的AJAX提交方法，主要使用场景如下：
+         * 1. 选择表单绑定，绑定的是提交事件
+         * 2. 直接选择`input[file]`，绑定的是change事件
+         *
+         * @param string    url      提交的地址，不填则提交当前页面
+         * @param json      data     额外提交的数据
+         * @param function  success  成功的回调方法
+         * @param json      params   额外的参数配置，包含以下选项
+         * - before: function(this),自定义`AJAX`提交前的额外操作
+         * - preview: function(src, self), 预览的回调方法，如果绑定的是`input[file]`，`return false`可以阻止提交
+         * - progress: function(percent), 显示当前进度的回调方法，返回当前提交进度的百分比数字
+         */
+        uploadFile: function (url, data, success, params) {
+            if ($.isJson(url)) {
+                params = success;
+                success = data;
+                data = url;
+                url = '';
+            } else if ($.isFunction(url)) {
+                params = data;
+                success = url;
+                data = {};
+                url = '';
+            }
+            if ($.isFunction(data)) {
+                params = success;
+                success = data;
+                data = {};
+            }
+            data = data || {};
+            params = params || {};
+            var $this = $(this),
+                getFileInfo = function (file, callback) {
+                    if (typeof FileReader == 'undefined') {
+                        return false;
+                    }
+                    var fileReader = new FileReader();
+                    fileReader.readAsDataURL(file.files[0]);
+                    fileReader.onloadend = function () {
+                        var type = this.result.substring(this.result.indexOf(':') + 1, this.result.indexOf('/'));
+                        if (type === 'image') {
+                            callback(this.result, file);
+                        }
+                    };
+                },
+                ajaxSubmit = function (url, data, success, params) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        cache: false,
+                        contentType: "multipart/form-data",
+                        data: data,
+                        processData: false,
+                        contentType: false,
+                        xhr: function () {
+                            xhr = $.ajaxSettings.xhr();
+                            if (!$.isFunction(params.progress)) {
+                                return xhr;
+                            }
+                            if (xhr.upload && 'onprogress' in xhr.upload) {
+                                xhr.upload.addEventListener('progress', function (e) {
+                                    var loaded = e.loaded,
+                                        total = e.total,
+                                        percent = Math.floor(100 * loaded / total);
+                                    params.progress(percent, params.self);
+                                }, false);
+                            }
+                            return xhr;
+                        },
+                        success: function (msg) {
+                            success(msg, params.self);
+                        }
+                    });
+                };
+
+            switch ($this.prop('tagName')) {
+                case 'FORM':
+                    $this.each(function () {
+                        var $file = $(this).find('input[type="file"]'),
+                            name = $file.attr('name');
+                        if ($file.length > 0) {
+                            if (name.search('[A-Z].*\\[.+\\]') === -1) {
+                                if (name.indexOf('[') !== -1) {
+                                    $file.attr('name', 'Upload[' + name.substr(0, name.indexOf('[')) + '][]');
+                                } else {
+                                    $file.attr('name', 'Upload[' + name + ']');
+                                }
+                            }
+                            if ($.isFunction(params.preview)) {
+                                $file.change(function () {
+                                    getFileInfo(this, params.preview);
+                                });
+                            }
+                        }
+                    });
+                    $this.submit(function () {
+                        if ($.isFunction(params.before) && !params.before(this)) {
+                            return false;
+                        }
+                        url = url || $(this).attr('action');
+                        var formData = new FormData(this);
+                        for (var k in data) {
+                            formData.append(k, data[k]);
+                        }
+                        params.self = this;
+                        ajaxSubmit(url, formData, success, params);
+                        return false;
+                    });
+                    break;
+                case 'INPUT':
+                    var name = $this.attr('name');
+                    if (name.search('[A-Z].*\\[.+\\]') === -1) {
+                        $this.attr('name', 'Upload[' + name + ']');
+                    }
+                    $this.change(function () {
+                        var $self = $(this),
+                            formData = new FormData;
+                        if ($.isFunction(params.before) && !params.before(this)) {
+                            return false;
+                        }
+                        formData.append($self.attr('name'), this.files[0]);
+                        for (var k in data) {
+                            formData.append(k, data[k]);
+                        }
+                        if ($.isFunction(params.preview)) {
+                            getFileInfo(this, params.preview);
+                        }
+                        params.self = this;
+                        ajaxSubmit(url, formData, success, params);
+                    });
+                    break;
+            }
+        },
+        /**
          * 验证码按钮的通用方法，通过按钮的[data]属性来传入参数
          */
         verifyCode: function () {
@@ -468,32 +616,6 @@ $(function () {
                 }, options);
                 info = $.parseInfo(info, '<br>');
                 layer.tips(info, this, options);
-            }
-        },
-
-        /**
-         * 通用表单验证方法，为每个表单元素添加失去焦点时的校验事件
-         * 
-         * @param  json rules   验证规则
-         * @param  json options 参数选项
-         */
-        check: function (rules, options) {
-            var options = options || {},
-                event = options.event || 'blur',
-                handle = options.handle || function (msg, $ele) {
-                    if ($ele.next('div.help-block').length === 0) {
-                        $ele.after($("<div>").addClass('.help-block'));
-                    }
-                    $ele.next('div.help-block').html(msg);
-                };
-            var selector, rule, $ele, msg;
-            for (selector in rules) {
-                rule = rules[selector];
-                $ele = $(this).find(selector);
-                $(this).on(event, selector, function () {
-                    msg = rule($ele.val() || $ele.html()) || '';
-                    handle(msg, $ele);
-                });
             }
         },
 
@@ -857,6 +979,33 @@ $(function () {
     });
 
     /**
+     * 获取当前时间
+     */
+    Date.prototype.format = function(format) {
+        var options = {
+            "M+": this.getMonth() + 1, //month 
+            "d+": this.getDate(), //day 
+            "h+": this.getHours(), //hour 
+            "m+": this.getMinutes(), //minute 
+            "s+": this.getSeconds(), //second 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter 
+            "S": this.getMilliseconds() //millisecond 
+        }
+
+        if (/(y+)/.test(format)) {
+            format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        }
+
+        for (var k in options) {
+            if (new RegExp("(" + k + ")").test(format)) {
+                format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? options[k] : ("00" + options[k]).substr(("" + options[k]).length));
+            }
+        }
+
+        return format;
+    }
+
+    /**
      * 为已有插件设置参数，目的在于可以沿用默认参数
      *
      * @param json $options 配置参数
@@ -885,7 +1034,7 @@ $(function () {
     /**
      * 将字符串采用 marked插件 进行解析，须要先引入php端的 MarkedAsset
      *
-     * @param  json   $options 配置参数
+     * @param  json    options 配置参数
      * @return string          解析后的结果
      */
     String.prototype.parseHtml = function (options) {
@@ -1009,4 +1158,4 @@ $(function () {
     })(jQuery);
 
     yii.initModule(yii);
-});
+})();

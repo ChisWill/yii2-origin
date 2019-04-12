@@ -5,7 +5,7 @@ namespace common\models;
 use Yii;
 
 /**
- * 这是表 `hsh_option` 的模型
+ * 这是表 `option` 的模型
  */
 class Option extends \common\components\ARModel
 {

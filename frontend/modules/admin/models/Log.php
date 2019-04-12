@@ -37,13 +37,10 @@ class Log extends \common\models\Log
 
     public function logListQuery()
     {
-        $query = $this->search();
-        if ($this->start_time) {
-            $query->andWhere(['>=', 'log_time', strtotime($this->start_time)]);
-        }
-        if ($this->end_time) {
-            $query->andWhere(['<=', 'log_time' , strtotime($this->end_time) + 86400]);
-        }
-        return $query->orderBy('id DESC');
+        return $this
+                ->search()
+                ->andFilterWhere(['>=', 'log_time', $this->start_time ? strtotime($this->start_time) : null])
+                ->andFilterWhere(['<=', 'log_time', $this->end_time ? strtotime($this->end_time) + 3600 * 24 : null])
+                ;
     }
 }

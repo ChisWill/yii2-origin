@@ -43,4 +43,47 @@ class System
     {
         return YII_ENV_DEV && !(extension_loaded('gd') && !empty(gd_info()['FreeType Support']));
     }
+
+    /**
+     * 获取服务器物理网卡地址
+     */
+    public static function getMacAddress()
+    {
+        $forWindows = function () {
+            @exec('ipconfig /all', $result);
+            if ($result) {
+                return $result;
+            } else {
+                $ipconfig = $_SERVER["WINDIR"] . "\system32\ipconfig.exe";
+                if (is_file($ipconfig)) {
+                    @exec($ipconfig . " /all", $result);
+                } else {
+                    @exec($_SERVER["WINDIR"] . "\system\ipconfig.exe /all", $result);
+                    return $result;
+                }
+            }
+        };
+        $forLinux = function () {
+            @exec('whereis ifconfig', $ret);
+            $command = explode(' ', $ret[0])[1];
+            @exec($command . " -a", $result);
+            return $result;
+        };
+        try {
+            if (self::isWindowsOs()) {
+                $result = $forWindows();
+            } else {
+                $result = $forLinux();
+            }
+            foreach ($result as $value) {
+                if (preg_match("/[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f]/i", $value, $match)) {
+                    return $match[0];
+                }
+            }
+            return false;    
+        } catch (\Exception $e) {
+            l($e, 'getMacAddress');
+            return false;
+        }
+    }
 }

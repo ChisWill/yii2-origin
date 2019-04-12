@@ -1,0 +1,196 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+a:hover {
+    -webkit-tap-highlight-color: transparent;
+}
+html, body {
+    width: 100%;
+    height: 100%;
+}
+body {
+    display: block;
+    background: url(/themes/basic/images/regist-bg.jpg) center center no-repeat;
+    background-size: cover;
+    visibility: hidden;
+    overflow: hidden;
+}
+.register-box {
+    width: 755px;
+    height: 781px;
+    background: url(/themes/basic/images/regist-box.png) center center no-repeat;
+    background-size: 100% 100%;
+    margin: 0 auto;
+    position: relative;
+    top: 3%;
+    left: -86px;
+}
+.register-box form {
+    position: absolute;
+    width: 425px;
+    margin-top: 210px;
+    margin-left: 250px;
+}
+.register-box .form-group {
+    height: 50px;
+    margin-bottom: 30px;
+    position: relative;
+}
+.form-group .form-group {
+    width: 100%;
+}
+.register-box .form-group input {
+    width: 250px;
+    height: 35px;
+    line-height: 35px;
+    padding: 0 15px;
+    margin-left: 130px;
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    color: #999797;
+}
+.register-box .form-group:nth-of-type(1) {
+    background: url(/themes/basic/images/regist-icon1.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.register-box .form-group:nth-of-type(2) {
+    background: url(/themes/basic/images/regist-icon2.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.register-box .form-group:nth-of-type(3) {
+    background: url(/themes/basic/images/regist-icon3.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.register-box .form-group:nth-of-type(4) {
+    background: url(/themes/basic/images/regist-icon4.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.register-box .form-group:nth-of-type(5) {
+    background: url(/themes/basic/images/regist-icon5.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.register-box .form-group:nth-of-type(6) {
+    background: url(/themes/basic/images/regist-icon6.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+#user-captcha-image {
+    width: 70px;
+    height: 30px;
+    position: absolute;
+    right: 20px;
+    top: 6px;
+}
+.verifyCodeBtn {
+    width: 135px !important;
+    height: 50px !important;
+    position: absolute;
+    right: -8px;
+    top: -2px;
+    font-size: 16px;
+    color: #e01212 !important;
+    font-weight: bold;
+}
+.register-box .register-btn {
+    display: block;
+    width: 150px;
+    height: 50px;
+    background: url(/themes/basic/images/register-btn2.png) center center no-repeat;
+    background-size: 100% 100%;
+    cursor: pointer;
+    box-shadow: none;
+    color: transparent;
+    border: none;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+.login-btn {
+    display: inline-block;
+    color: #717171;
+    font-size: 16px;
+    position: absolute;
+    right: 10%;
+    bottom: 73px;
+}
+.login-btn:hover {
+    text-decoration: none;
+}
+.register-box div:last-of-type {
+    margin-top: 45px;
+}
+.login-btn span {
+    color: #e01212;
+}
+@media screen and (max-width: 767px) {
+    body {
+        background: url(/themes/basic/images/mobile-regist.jpg) center center no-repeat;
+        background-size: 100% 100%;
+    }
+    .register-box {
+        width: 86%;
+        height: 10rem;
+        background: url(/themes/basic/images/regist-box-mobile.png) center center no-repeat;
+        background-size: 100% 100%;
+        margin: 0 auto;
+        position: relative;
+        top: 0.3rem;
+        left: 0;
+    }
+    .register-box form {
+        position: absolute;
+        width: 80%;
+        margin-top: 3rem;
+        margin-left: 10%;
+    }
+    .register-box .form-group {
+        height: 0.6rem;
+        margin-bottom: 0.35rem;
+    }
+    .register-box .form-group:nth-of-type(3):after {
+        width: 80px;
+        height: 40px;
+        right: -1.45rem;
+        top: -0.15rem;
+    }
+    .verifyCodeBtn {
+        width: 1.3rem !important;
+        height: 0.55rem !important;
+        right: 0.05rem;
+        top: 0.1rem;
+        font-size: 0.22rem !important;
+        color: #e01212 !important;
+        font-weight: bold;
+    }
+    .register-box .form-group input {
+        margin-left: 1.4rem;
+        font-size: 14px;
+        padding: 0px;
+    }
+    #user-captcha-image {
+        width: 1rem;
+        height: 0.35rem;
+        right: 0.1rem;
+        top: 0.1rem;
+    }
+    .register-box .form-group input {
+        height: 0.3rem;
+        line-height: 0.3rem;
+        margin-top: -0.1rem;
+        font-size: 0.27rem;
+        margin-left: 1.5rem !important;
+    }
+    .register-box .register-btn {
+        width: 2rem;
+        height: 0.7rem;
+        margin: 0 auto;
+        margin-top: 0.65rem;
+    }
+    .login-btn {
+        font-size: 0.24rem;
+        bottom: 1rem;
+    }
+    .register-box div:last-of-type {
+        margin-top: 0.4rem;
+    }
+}

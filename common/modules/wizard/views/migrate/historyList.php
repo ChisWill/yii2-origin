@@ -6,7 +6,7 @@
 <?php else: ?>
 <div id="sync-all-div">
     <div>
-        <?= Html::a(Html::button('同步所有'), ['generate/code'], ['id' => 'sync-all']) ?>
+        <?= Html::a(Html::button('同步所有'), ['generate'], ['id' => 'sync-all', 'action' => 'generateMigrate']) ?>
     </div>
     <div class="search-form-div">
         <input type="text" placeholder="请输入要搜索的内容..." id="searchInput">

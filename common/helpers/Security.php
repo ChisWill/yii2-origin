@@ -112,7 +112,7 @@ iGfFWFQ916nkpLCDRAIHibTrwPAd8H0WnGYiSWbANf3kHbrt4rUWXHm5Me70kXpj
      */
     public static function encrypt($data, $secretKey = SECRET_KEY)
     {
-        return Yii::$app->getSecurity()->encryptByPassword($data, $secretKey);
+        return Yii::$app->getSecurity()->encryptByKey($data, $secretKey);
     }
 
     /**
@@ -122,7 +122,7 @@ iGfFWFQ916nkpLCDRAIHibTrwPAd8H0WnGYiSWbANf3kHbrt4rUWXHm5Me70kXpj
      */
     public static function decrypt($encryptedData, $secretKey = SECRET_KEY)
     {
-        return Yii::$app->getSecurity()->decryptByPassword($encryptedData, $secretKey);
+        return Yii::$app->getSecurity()->decryptByKey($encryptedData, $secretKey);
     }
 
     /**

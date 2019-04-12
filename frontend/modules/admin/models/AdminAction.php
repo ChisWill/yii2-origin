@@ -16,6 +16,7 @@ class AdminAction extends \common\components\ARModel
     const TYPE_INSERT = 1;
     const TYPE_UPDATE = 2;
     const TYPE_DELETE = 3;
+    const TYPE_SELECT = 4;
 
     public function rules()
     {
@@ -24,7 +25,7 @@ class AdminAction extends \common\components\ARModel
             [['key', 'type', 'created_by'], 'integer'],
             [['value'], 'default', 'value' => ''],
             [['created_at'], 'safe'],
-            [['table_name', 'action'], 'string', 'max' => 100],
+            [['table_name', 'action', 'ip'], 'string', 'max' => 100],
             [['field'], 'string', 'max' => 500]
         ];
     }
@@ -39,6 +40,7 @@ class AdminAction extends \common\components\ARModel
             'field' => '被修改的字段',
             'value' => '被修改的值',
             'type' => '操作类型：1更新，2插入，3删除',
+            'ip' => 'IP',
             'created_at' => '操作时间',
             'created_by' => '操作者ID',
         ];
@@ -68,6 +70,7 @@ class AdminAction extends \common\components\ARModel
             ->andFilterWhere(['like', 'adminAction.action', $this->action])
             ->andFilterWhere(['like', 'adminAction.field', $this->field])
             ->andFilterWhere(['like', 'adminAction.value', $this->value])
+            ->andFilterWhere(['like', 'adminAction.ip', $this->ip])
             ->andFilterWhere(['like', 'adminAction.created_at', $this->created_at])
             ->andTableSearch()
         ;
@@ -77,7 +80,7 @@ class AdminAction extends \common\components\ARModel
     {
         return $this->search()
                     ->andFilterWhere(['>=', 'created_at', $this->start_created_at])
-                    ->andFilterWhere(['<=', 'created_at', $this->end_created_at]);
+                    ->andFilterWhere(['<=', 'created_at', $this->end_created_at ? date('Y-m-d', strtotime($this->end_created_at) + 3600 * 24) : null]);
     }
 
     /****************************** 以下为公共操作的方法 ******************************/
@@ -90,6 +93,12 @@ class AdminAction extends \common\components\ARModel
         } else {
             $value = '';
         }
+        // 主要区分登录操作
+        if (user()->isGuest) {
+            $uid = $key;
+        } else {
+            $uid = u()->id;
+        }
         if (Yii::$app->controller) {
             self::dbInsert('admin_action', [
                 'table_name' => $tableName,
@@ -98,8 +107,9 @@ class AdminAction extends \common\components\ARModel
                 'field' => $field,
                 'value' => $value,
                 'type' => $type,
+                'ip' => req()->getUserIP(),
                 'created_at' => self::$time,
-                'created_by' => u()->id
+                'created_by' => $uid
             ]);
         }
     }
@@ -112,7 +122,8 @@ class AdminAction extends \common\components\ARModel
         $map = [
             self::TYPE_INSERT => 'INSERT',
             self::TYPE_UPDATE => 'UPDATE',
-            self::TYPE_DELETE => 'DELETE'
+            self::TYPE_DELETE => 'DELETE',
+            self::TYPE_SELECT => 'SELECT'
         ];
 
         return self::resetMap($map, $prepend);
@@ -129,6 +140,8 @@ class AdminAction extends \common\components\ARModel
                 return Html::warningSpan($html);
             case self::TYPE_DELETE:
                 return Html::errorSpan($html);
+            case self::TYPE_SELECT:
+                return Html::likeSpan($html);
         }
     }
 }

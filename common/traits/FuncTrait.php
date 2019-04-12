@@ -4,7 +4,9 @@ namespace common\traits;
 
 use Yii;
 use common\helpers\Url;
+use common\helpers\Debug;
 use common\helpers\Inflector;
+use common\helpers\FileHelper;
 use common\helpers\ArrayHelper;
 
 /**
@@ -22,6 +24,22 @@ trait FuncTrait
      * @var integer paginate() 搜索到的总数
      */
     public static $_totalCount = 0;
+
+    /**
+     * 获取本地图片的网络路径
+     * 
+     * @param  string $path 图片相对路径
+     * @return string
+     */
+    public static function imageUrl($path)
+    {
+        $url = (THEME_NAME === null ? Yii::getAlias('@web/images/') : Yii::getAlias('@web/themes/' . THEME_NAME . '/images/')) . $path;
+        if (config('staticDomain')) {
+            return config('staticDomain') . $url;
+        } else {
+            return $url;
+        }
+    }
 
     /**
      * 快速抛出http异常对象
@@ -198,6 +216,47 @@ trait FuncTrait
         }
     }
 
+    /*
+     * 记录sql日志到数据库
+     */
+    public static function logSql($flag = '')
+    {
+        if (!config('log_sql_switch')) {
+            return;
+        }
+        $uid = user()->isGuest ? 0 : u()->id;
+        $uids = implode(',', explode(PHP_EOL, config('log_sql_uids')));
+        if ($uids && strpos(',' . $uids . ',', ',' . $uid . ',') === false) {
+            return;
+        }
+
+        $list = Debug::sqlList();
+
+        $backtrace = debug_backtrace()[1];
+        if (isset($backtrace['class'])) {
+            $method = $backtrace['class'] . '::' . $backtrace['function'];
+        } else {
+            $method = $backtrace['function'];
+        }
+
+        $task = new \common\models\LogSqlTask;
+        $task->method = ($flag ? $flag . '->' : '') . $method;
+        $request = Yii::$app->getRequest();
+        $task->url = $request->getHostInfo() . $request->getUrl();
+        $task->request = $request->getMethod() ?: '-';
+        $task->ip = $request->getUserIP() ?: '-';
+        $task->user_id = $uid;
+        
+        if ($task->insert()) {
+            foreach ($list as &$row) {
+                array_unshift($row, $task->id);
+            }
+            self::dbInsert('log_sql_list', ['task_id', 'sql', 'category', 'duration', 'diff', 'time', 'trace'], $list);
+        } else {
+            l($task->errors, 'logSqlList');
+        }
+    }
+
     /**
      * yii\widgets\ActiveForm的简写，并固化了默认参数
      *
@@ -233,14 +292,16 @@ trait FuncTrait
 
     /**
      * 基于Yii2的分页栏输出
-     * 
+     *
+     * @param  array  需要定制的 yii\widgets\LinkPager 的属性
      * @return string 分页栏的HTML代码
      */
-    public static function linkPager($pagination = null)
+    public static function linkPager($params = [])
     {
-        return \yii\widgets\LinkPager::widget([
-            'pagination' => $pagination ?: array_shift(FuncTrait::$_pager),
-        ]);
+        if (!isset($params['pagination'])) {
+            $params['pagination'] = array_shift(FuncTrait::$_pager);
+        }
+        return \yii\widgets\LinkPager::widget($params);
     }
 
     /**
@@ -317,19 +378,18 @@ trait FuncTrait
             $pager = self::savePager(Yii::createObject(['class' => 'yii\data\Pagination', 'totalCount' => self::$_totalCount]));
             $pager->defaultPageSize = $pageSize;
             
-            if ($query->sql === null) {
-                return $query
-                    ->offset($pager->offset)
-                    ->limit($pageSize)
-                    ->all();
-            } else {
+            if ($query instanceof \yii\db\ActiveQuery && $query->sql !== null) {
                 $query->sql .= ' LIMIT :offset, :limit';
                 $query->params = [
                     ':offset' => $pager->offset,
                     ':limit' => $pageSize
                 ];
-
                 return $query->all();
+            } else {
+                return $query
+                    ->offset($pager->offset)
+                    ->limit($pageSize)
+                    ->all();
             }
         } elseif (is_string($query)) {
             $countSql = "SELECT COUNT(1) FROM ({$query}) AS sub";
@@ -417,8 +477,8 @@ trait FuncTrait
      */
     public static function createDiff($a, $b, $options = [])
     {
-        require Yii::getAlias('@vendor/phpspec/php-diff/lib/Diff.php');
-        require Yii::getAlias('@vendor/phpspec/php-diff/lib/Diff/Renderer/Html/Inline.php');
+        require_once Yii::getAlias('@vendor/phpspec/php-diff/lib/Diff.php');
+        require_once Yii::getAlias('@vendor/phpspec/php-diff/lib/Diff/Renderer/Html/Inline.php');
 
         $diff = new \Diff($a, $b, $options);
         $renderer = new \Diff_Renderer_Html_Inline;
@@ -433,7 +493,7 @@ trait FuncTrait
      */
     public static function createExcel()
     {
-        require Yii::getAlias('@vendor/PHPExcel/Classes/PHPExcel.php');
+        require_once Yii::getAlias('@vendor/PHPExcel/Classes/PHPExcel.php');
 
         return new \PHPExcel();
     }

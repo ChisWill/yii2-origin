@@ -1,7 +1,7 @@
 <?php use common\helpers\Html; ?>
 <input type="hidden" id="updateSettingUrl" value="<?= url(['updateSetting']) ?>">
 <?php $form = self::beginForm(['id' => 'settingForm', 'enctype' => 'multipart/form-data', 'action' => self::createUrl(['saveSetting'])])?>
-<table class="setting-table table table-border table-bg table-hover">
+<table class="setting-table table table-border table-bg table-hover table-show">
     <tr class="showMode">
         <th colspan="3">
             <span class="add-parent-span">添加二级菜单</span>
@@ -80,16 +80,16 @@
                     }
                     echo '
     <tr data-id="' . $child['id'] . '">
-        <td width="12%">
+        <td width="15%" style="min-width: 115px;">
             <span class="showMode updateSetting" data-field="var">' . $child['var'] . '</span>
             <h5><span class="config-name updateSetting" data-field="name">' . $child['name'] . '</span><span class="config-name">：</span></h5>
         </td>
-        <td>
+        <td style="min-width:535px">
             ' . $input . '&nbsp;&nbsp;
             <span class="deleteItemLink Hui-iconfont icon delete-icon delete-link-img showMode" data-id="' . $child['id'] . '" data-name="' . $child['name'] . '" href="' . self::createUrl(['deleteSetting']) . '">&#xe6a6;</span>
             ' . $previewHtml . '
         </td>
-        <td width="35%" class="updateSetting" data-field="comment">' . (empty($child['comment']) ? '' : $child['comment']) . '</td>
+        <td width="35%" style="min-width: 115px;" class="updateSetting" data-field="comment">' . (empty($child['comment']) ? '' : $child['comment']) . '</td>
     </tr>
                     ';
                 }

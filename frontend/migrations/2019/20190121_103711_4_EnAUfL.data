@@ -1,0 +1,16 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:904:"CREATE TABLE `user_account` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `bank_name` varchar(50) NOT NULL COMMENT '银行名称',
+  `bank_card` varchar(50) NOT NULL COMMENT '银行卡号',
+  `bank_user` varchar(50) NOT NULL COMMENT '持卡人姓名',
+  `id_number` varchar(50) NOT NULL COMMENT '身份证号',
+  `bank_mobile` char(11) NOT NULL COMMENT '银行预留手机号',
+  `bank_address` varchar(100) NOT NULL COMMENT '开户行地址',
+  `account_type` tinyint(4) DEFAULT '1' COMMENT '账户类型：1提现账户，2充值账户',
+  `owner_type` tinyint(4) DEFAULT '1' COMMENT '所属用户类型：1普通用户，2管理员',
+  `state` tinyint(4) DEFAULT '1' COMMENT '有效状态',
+  `created_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户账户表';";s:4:"desc";s:12:"user_account";s:7:"warning";a:0:{}}

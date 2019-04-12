@@ -9,6 +9,22 @@ namespace common\components;
  */
 class Redis extends \yii\redis\Connection
 {
+    public $isOpen;
+
+    public function init()
+    {
+        parent::init();
+
+        $this->isOpen = cache('REDIS_IS_OPEN', function () {
+            try {
+                $this->open();
+                return true;
+            } catch (\Exception $e) {
+                return;
+            }
+        }) ?: false;
+    }
+
     public function __call($name, $params)
     {
         if (!in_array($name, $this->redisCommands)) {

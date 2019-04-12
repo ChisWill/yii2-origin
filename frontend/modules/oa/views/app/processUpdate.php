@@ -1,4 +1,4 @@
-<?= $this->render('processView', compact('app', 'processes')) ?>
+<?= $this->render('processView', compact('title', 'processes')) ?>
 
 <?php $form = self::beginForm(['class' => 'mt-40']) ?>
 <?= $form->field($process, 'desc')->textArea(['style' => ['height' => '100px']]) ?>

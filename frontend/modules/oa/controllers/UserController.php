@@ -41,6 +41,7 @@ class UserController extends \oa\components\Controller
             // }],
             'adminUser.realname' => ['width' => '50px', 'header' => '业务员'],
             'source' => ['type' => 'select'],
+            'created_at' => ['width' => '130px'],
             ['type' => ['edit' => 'saveUser'], 'width' => '70px', 'value' => function ($row) {
                 // return Hui::successBtn('录入联系记录', ['record', 'id' => $row->id], ['class' => 'info-fancybox fancybox.iframe']);
             }]
@@ -77,7 +78,8 @@ class UserController extends \oa\components\Controller
             'desc' => ['type' => 'text'],
             'version' => ['type' => 'text']
         ], [
-            'addBtn' => ['addProduct' => '添加新产品']
+            'addBtn' => ['addProduct' => '添加新产品'],
+            'paging' => false
         ]);
 
         return $this->render('productList', compact('html'));

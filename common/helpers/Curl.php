@@ -36,6 +36,8 @@ class Curl
 
         curl_setopt(self::$curl, CURLOPT_HEADER, false);
         curl_setopt(self::$curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt(self::$curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt(self::$curl, CURLOPT_SSL_VERIFYHOST, false);
 
         curl_setopt_array(self::$curl, $options);
     }
@@ -51,8 +53,6 @@ class Curl
 
         curl_setopt(self::$curl, CURLOPT_URL, $url);
         curl_setopt(self::$curl, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt(self::$curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt(self::$curl, CURLOPT_SSL_VERIFYHOST, false);
 
         $result = curl_exec(self::$curl);
 

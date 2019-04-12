@@ -2,7 +2,7 @@
 <?php \common\modules\manual\assets\ManualEditAsset::register($this) ?>
 
 <?php $form = self::beginForm(['id' => 'uploadForm', 'action' => self::createUrl(['site/uploadImage']), 'enctype' => 'multipart/form-data']) ?>
-<input type="file" name="Upload[image]" id="uploadImage" style="display: none;">
+<input type="file" name="Upload[image]" id="uploadImage" style="display: none;" accept="image/png, image/jpeg">
 <?php self::endForm() ?>
 
 <div class="main-contanier">

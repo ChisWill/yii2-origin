@@ -27,4 +27,36 @@ class Article extends \common\models\Article
             // 'field2' => 'description2',
         ]);
     }
+
+    public static function getAllArticleQuery($url)
+    {
+        return self::find()
+            ->joinWith(['menu.parent'])
+            ->where(['parent.url' => $url])
+            ->orderBy('article.id desc')
+            ->active();
+    }
+
+    public static function getAllArticles($url)
+    {
+        return self::getAllArticleQuery($url)
+            ->asArray()
+            ->all();
+    }
+
+    public static function getArticleQuery($url)
+    {
+        return self::find()
+            ->joinWith(['menu'])
+            ->where(['menu.url' => $url])
+            ->orderBy('article.id desc')
+            ->active();
+    }
+
+    public static function getArticles($url)
+    {
+        return self::getArticleQuery($url)
+            ->asArray()
+            ->all();
+    }
 }

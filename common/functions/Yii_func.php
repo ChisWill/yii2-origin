@@ -1,6 +1,16 @@
 <?php
 
 /**
+ * 快捷调用`Yii::getAlias()`方法
+ * 
+ * @see BaseYii::getAlias()
+ */
+function path($alias)
+{
+    return Yii::getAlias($alias);
+}
+
+/**
  * 快捷获取登录用户信息
  * 
  * @param  string $key     用户表的字段
@@ -159,6 +169,10 @@ function res()
  * cache('key', 'value', 3600)  <=>  Yii::$app->cache->set('key', 'value', 3600);
  * cache('key', 'value', 3600, $dependency)  <=>  Yii::$app->cache->set('key', 'value', 3600, $dependency);
  * cache('key', null)  <=>  Yii::$app->cache->delete('key');
+ * 重点使用方式：获取缓存，如果没有则新建
+ * $data = cache('key', function () {
+ *     return Curl::get($url);
+ * })
  */
 function cache()
 {
@@ -173,8 +187,18 @@ function cache()
             }
         case 3:
         case 4:
-            call_user_func_array([Yii::$app->cache, 'set'], func_get_args());
-            break;
+            if (is_callable(func_get_arg(1))) {
+                $data = Yii::$app->cache->get(func_get_arg(0));
+                if ($data === false) {
+                    $data = call_user_func(func_get_arg(1));
+                    $args = func_get_args();
+                    $args[1] = $data;
+                    call_user_func_array([Yii::$app->cache, 'set'], $args);
+                }
+                return $data;
+            } else {
+                return call_user_func_array([Yii::$app->cache, 'set'], func_get_args());
+            }
     }
 }
 
@@ -228,7 +252,7 @@ function option($key = '', $value = null)
                 $option->type = common\models\Option::TYPE_SYSTEM;
             }
             $option->option_value = serialize($value);
-            $option->save(false);
+            return $option->save(false);
     }
 }
 
@@ -285,6 +309,11 @@ function url()
     } else {
         return call_user_func_array(['common\traits\FuncTrait', 'createUrl'], func_get_args());
     }
+}
+
+function img()
+{
+    return call_user_func_array(['common\traits\FuncTrait', 'imageUrl'], func_get_args());
 }
 
 /**

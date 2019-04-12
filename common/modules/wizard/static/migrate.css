@@ -18,6 +18,10 @@ body {
     padding: 0px;
     margin: 5px;
 }
+form {
+    line-height: 30px;
+    margin-top: 5px;
+}
 ul {
     border: 5px;
     overflow: hidden;
@@ -59,6 +63,9 @@ table th,table td {
 }
 table th img {
     vertical-align: middle;
+}
+.ajax-area {
+    margin-top: 5px;
 }
 #sync-all-div div {
     display: inline-block;
@@ -124,9 +131,6 @@ ul.pagination li.active a {
 input.page-go {
     width: 30px;
 }
-#migrateForm {
-    line-height: 30px;
-}
 .form-group input {
     padding: 3px 10px;
 }
@@ -143,7 +147,4 @@ input.migrateSubmit {
 }
 input.migrateSubmit:hover {
     background: #3388cc;
-}
-.migrate-submit-div {
-    margin-top: 15px;
 }

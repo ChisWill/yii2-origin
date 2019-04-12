@@ -11,9 +11,9 @@
 			<ul class="history-list">
 				<?php foreach ($history as $key => $model) : ?>
 				<li class="history-list-li" data-id="<?= $model['id'] ?>" data-menu-id="<?= $model['menu_id'] ?>" data-title="<?= $model->article['name'] ?>">
-					<div class="history-avatar"><img src="<?= $model::getFaceSrc() ?>"></div>
+					<div class="history-avatar"><img src="<?= $model->user['face'] ?>"></div>
 					<div class="history-message"><?= $model->getActionValue() ?>（<?= date('Y-m-d', strtotime($model['created_at'])) ?>）</div>
-					<div class="history-meta"><?= Date::age($model['created_at'])?>  by <?= $model->user['realname'] ?></div>
+					<div class="history-meta"><?= Date::age($model['created_at'])?>  by <?= $model->user['username'] ?></div>
 				</li>
 				<?php endforeach ?>
 			</ul>

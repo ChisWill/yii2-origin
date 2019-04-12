@@ -27,17 +27,20 @@ class Module extends \common\components\Module
         // 为视图层绑定行为
         Yii::$app->view->attachBehavior('viewBehavior', \admin\behaviors\ViewBehavior::className());
         // 改变错误页路由
-        Yii::$app->errorHandler->errorAction = 'admin/site/error';
+        Yii::$app->errorHandler->errorAction = ROUTE_BACKEND . '/site/error';
         // 修改错误日志路径
         Yii::$app->log->targets['system']->logFile = Yii::getAlias('@runtime/logs/admin.log');
         // 修改用户组件配置
         Yii::$app->user->idParam = '__admin';
         Yii::$app->user->identityCookie = ['name' => '_identityAdmin', 'httpOnly' => true];
-        Yii::$app->user->loginUrl = ['admin/site/login'];
+        Yii::$app->user->enableAutoLogin = true;
+        Yii::$app->user->enableSession = true;
+        Yii::$app->user->loginUrl = [ROUTE_BACKEND . '/site/login'];
         Yii::$app->user->identityClass = 'admin\components\AdminWebUser';
         // 定制表格样式
         Yii::$container->set('common\widgets\Table', [
             'deleteAllBtn' => true,
+            'ajaxLayout' => "{summary}\n<div class=\"table-container\">{items}</div>\n{paging}",
             'summaryOptions' => ['class' => 'summary cl pd-5 mt-10'],
             'tableOptions' => ['class' => 'table table-border table-bordered table-bg table-hover'],
             'beforeSearchRow' => function ($option, $index) {

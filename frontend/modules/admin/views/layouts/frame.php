@@ -34,8 +34,8 @@
 $(function () {
     // 面包屑自动处理
     ;!function () {
-        var index = $.parent("#min_title_list li.active").index(),
-            $iframe = $.parent("iframe:eq(" + index + ")");
+        var index = parent.$("#min_title_list li.active").index(),
+            $iframe = parent.$("iframe:eq(" + index + ")");
         if ($iframe.data("subtitle")) {
             if ($iframe.data("maintitle") !== 'undefined') {
                 $("#breadcrumbMain").html($iframe.data("maintitle"));

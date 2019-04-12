@@ -1,0 +1,308 @@
+body {
+    background: #fff;
+    visibility: hidden;
+}
+.content .caseCenter-img {
+    width: 100%;
+}
+.case-content {
+    width: 13rem;
+    margin: 0.85rem auto;
+    box-shadow: 0px 0px 20px 10px rgba(226, 225, 227, 0.36);
+}
+.case-content img {
+    width: 100%;
+}
+.show-content {
+    width: 12rem;
+    margin: 0 auto;
+}
+.tab-container .show-item {
+    float: left;
+    width: 30%;
+    height: 4.2rem;
+    margin-left: 2.5%;
+    margin-bottom: 0.3rem;
+    transition: all .5s;
+    cursor: pointer;
+    box-shadow: 0px 0px 20px 10px rgba(226, 225, 227, 0.36);
+}
+.tab-container .show-item:hover {
+    background: #eee;
+}
+.show-tab h1 {
+    display: inline-block;
+    width: 1.04rem;
+    height: 0.36rem;
+    line-height: 0.36rem;
+    font-size: 0.24rem;
+    border: 1px solid #cccccc;
+    margin: 0.3rem 0.1rem 0.7rem;
+    cursor: pointer;
+    text-align: center;
+    font-weight: normal;
+}
+.show-tab .active, .show-tab h1:hover {
+    background: #000000;
+    color: white;
+}
+.tab-container .show-item .case-cover {
+    width: 94%;
+    margin-left: 3%;
+    height: 2.3rem;
+    margin-top: 0.15rem;
+}
+.tab-container .product-title {
+    font-size: 0.24rem;
+    color: #3a3a3a;
+    margin-left: 0.15rem;
+    margin-top: 0.2rem;
+}
+.tab-container .show-item .case-line {
+    width: 1.04rem;
+    height: 0.06rem;
+    margin-left: 0.15rem;
+}
+.show-tab {
+    margin: 0 auto;
+    text-align: center;
+}
+.case-show .title {
+    width: 100%;
+    margin-top: 0.85rem;
+}
+.product-abstract {
+    height: 0.815rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    text-overflow: hidden;
+    overflow: hidden;
+    width: 90%;
+    margin-left: 5%;
+    font-size: 0.16rem;
+    margin-top: 0.1rem;
+}
+.teamwork {
+    width: 12rem;
+    margin: 0 auto;
+    overflow: hidden;
+}
+.teamwork-title {
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+.teamwork-content .teamwork-item {
+    /*border: 0.01rem solid #898989;*/
+    width: 2.4rem;
+    height: 2rem;
+    text-align: center;
+    margin-left: 0.07rem;
+    margin-bottom: 0.12rem;
+    background-color: #fff;
+    box-shadow: 0px 3px 43px 0px rgba(0, 0, 0, 0.13);
+}
+.teamwork-content .teamwork-item img {
+    /*width: 1.5rem;*/
+    /*height: 0.7rem;*/
+    max-height: 2rem;
+    /*max-width: 2.4rem;*/
+    vertical-align: middle;
+    line-height: 2.4rem;
+}
+.teamwork-content .teamwork-item .help_img{
+    width: 1px;
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
+.solution-title {
+    width: 100%;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.solution-tab {
+    text-align: center;
+}
+.solution-tab div {
+    display: inline-block;
+    width: 2.25rem;
+    height: 0.45rem;
+    border: 0.01rem solid #cfcfcf;
+    text-align: center;
+    line-height: 0.45rem;
+    margin: 0.5rem  0.2rem  1rem;
+    font-size: 0.24rem;
+    cursor: pointer;
+}
+.solution-tab .active {
+    background: #0f0f0f;
+    color: white;
+}
+.solution-container {
+    width: 12rem;
+    margin: 0 auto;
+    margin-bottom: 1.2rem;
+}
+.solution-container .solution-item {
+    width: 100%;
+    height: 5rem;
+    margin-bottom: 0.57rem;
+}
+.solution-container .solution-item:nth-child(even) {
+    background: url(../images/solution-even.jpg) center center no-repeat;
+    background-size: 100% 100%;
+}
+.solution-container .solution-item:nth-child(odd) {
+    background: url(../images/solution-odd.jpg) center center no-repeat;
+    background-size: 100% 100%;
+}
+.solution-container .solution-item img:first-of-type {
+    width: 4rem;
+    height: 3rem;
+    margin-left: 1rem;
+    margin-top: 1rem;
+}
+.solution-container .solution-item .solution-info {
+    width: 5rem;
+    height: 3rem;
+    margin-top: 1rem;
+    margin-right: 1rem;
+    position: relative;
+}
+.solution-item .solution-info div:nth-of-type(1) {
+    font-size: 0.29rem;
+    margin-bottom: 0.15rem;
+}
+.solution-item .solution-info div:nth-of-type(2) {
+    font-size: 0.24rem;
+    margin: 0.15rem auto;
+}
+.solution-item:nth-child(odd) .solution-info div:nth-of-type(2) {
+    color: #be2223;
+}
+.solution-item:nth-child(odd) .solution-info a {
+    color: #be2223;
+}
+.solution-item:nth-child(odd) .solution-info a .know-icon {
+    background: url(../images/arrow-red.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.solution-item:nth-child(even) .solution-info div:nth-of-type(2) {
+    color: #217824;
+}
+.solution-item:nth-child(even) .solution-info a {
+    color: #217824;
+}
+.solution-item:nth-child(even) .solution-info a .know-icon {
+    background: url(../images/arrow-green.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.solution-item .solution-info div:nth-of-type(3) {
+    font-size: 0.18rem;
+    margin: 0.15rem auto;
+}
+.solution-item .solution-info div:nth-of-type(3)>p{
+    /*height: 0.72rem;*/
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+.solution-info a {
+    display: inline-block;
+    width: 1.3rem;
+    font-size: 0.18rem;
+    font-weight: bold;
+    color: #ffd800;
+    margin-top: 0.2rem;
+    float: right;
+    position: absolute;
+    right: 0px;
+    bottom: 0.2rem;
+}
+.know-icon {
+    display: inline-block;
+    width: 0.3rem;
+    height: 0.2rem;
+    vertical-align: middle;
+    margin-left: 0.05rem;
+    margin-top: -0.025rem;
+}
+.solution-item .know-icon{
+    background: url(../images/know-icon-y.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.teamwork-content {
+    overflow: hidden;
+    height: 2rem;
+    padding-bottom: 0.07rem;
+    background-color: #fff;
+    padding-top: 0.07rem;
+}
+/*手机ipad样式统一处理*/
+@media screen and (max-width: 1200px) {
+    .caseCenter-content .show-content {
+        width: 100%;
+    }
+    .content {
+        overflow: hidden;
+    }
+    .tab-container .show-item {
+        width: 48%;
+        margin-left: 1.35%;
+    }
+    .case-show .title, .teamwork-title, .solution-title {
+        width: 200%;
+        margin-left: -50%;
+    }
+    .teamwork {
+        width: 100%;
+    }
+    .teamwork-content .teamwork-item {
+        width: 1.8rem;
+        height: 1rem;
+    }
+    .teamwork-content .teamwork-item img {
+        width: 1.5rem;
+        height: 0.8rem;
+        margin-left: 0.15rem;
+        margin-top: 0.1rem;
+    }
+    .teamwork-content {
+        height: 1.1rem;
+    }
+    .solution-container {
+        width: 100%;
+    }
+    .solution-container .solution-item {
+        height: 3.5rem;
+    }
+    .solution-container .solution-item img:first-of-type {
+        width: 35%;
+        height: 2rem;
+        margin-left: 5%;
+        margin-top: 0.75rem;
+    }
+    .solution-container .solution-item .solution-info {
+        width: 50%;
+        height: 2rem;
+        margin-right: 0.5rem;
+        margin-top: 0.75rem;
+    }
+    .solution-info a {
+        width: 1.5rem;
+        bottom: 0px;
+    }
+    .teamwork {
+        width: 80%;
+    }
+}
+/*适配手机样式*/
+@media screen and (max-width: 640px) {
+}
+/*适配ipad*/
+@media screen and (max-width: 1200px) and (min-width: 640px) {
+}

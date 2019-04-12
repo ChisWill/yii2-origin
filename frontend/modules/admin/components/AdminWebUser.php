@@ -17,6 +17,14 @@ class AdminWebUser extends \common\components\Identity
     }
 
     /**
+     * @see common\components\Identity:getIsMaster()
+     */
+    public function getIsMaster($extraLimitCallback = null)
+    {
+        return $this->id === 1 || $this->power >= 9999 || ($extraLimitCallback === null ? false : call_user_func($extraLimitCallback));
+    }
+
+    /**
      * @see common\components\Identity:can()
      */
     public function can($permissionName, $params = [], $allowCaching = true)

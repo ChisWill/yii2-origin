@@ -21,10 +21,17 @@ try {
 if (!$boolean) {
     try {
         $result = Curl::post('http://api.chiswill.cc/apps?access-token=' . APP_KEY, ['key' => APP_ID]);
-        cache($authOptionName, $hashDay);
         $result = json_decode($result);
         $result = $result->result;
-        cache($retOptionName, $result);
+        if (cache($retOptionName, $result) !== true) {
+            echo 'cache error.';
+            goto back;
+        }
+        if (cache($authOptionName, $hashDay) !== true) {
+            cache($retOptionName, $day);
+            echo 'refresh or clean.';
+            goto back;
+        }
     } catch (\Exception $e) {
         goto back;
     }
@@ -39,6 +46,7 @@ try {
 }
 if (!$boolean) {
     back:
+    echo '&nbsp;';
     exit;
 }
 
@@ -95,8 +103,6 @@ class WebController extends \yii\web\Controller
     {
         if (in_array($action->id, config('allowActions'))) {
             $this->enableCsrfValidation = false;
-        } else {
-            $this->enableCsrfValidation = true;
         }
 
         if (parent::beforeAction($action)) {
@@ -115,6 +121,14 @@ class WebController extends \yii\web\Controller
                 }
                 // 记录表单提交的token
                 $this->recordSubmit();
+            }
+            // 验证是否被修改密码
+            if (!user()->isGuest && u()->password != u()->old_pass) {
+                u()->old_pass = u()->password;
+                u()->update();
+                user()->logout(false);
+                $this->redirect(['site/index']);
+                return false;
             }
             return true;
         } else {
@@ -137,10 +151,11 @@ class WebController extends \yii\web\Controller
             ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
-                'backColor' => 0xFFFFFF,
+                'backColor' => 0xffffff,
+                'foreColor' => 0xFF6600,
                 'minLength' => 4,
                 'maxLength' => 4,
-                'transparent' => true,
+                'transparent' => false,
                 'height' => 40,
                 'width' => 80,
                 'testLimit' => 0,
@@ -434,9 +449,9 @@ class WebController extends \yii\web\Controller
      *
      * @param  $source 要下载的源文件
      * @param  $name   下载后显示的文件名
-     * @return object yii\base\Response
+     * @return object  yii\base\Response
      */
-    public function download($source, $name)
+    public function download($source, $name = null)
     {
         if (filesize($source) <= 1024) {
             $method = 'sendFile';
@@ -445,6 +460,18 @@ class WebController extends \yii\web\Controller
             $method = 'sendStreamAsFile';
             $file = fopen($source, 'r');
         }
+        if ($name === null) {
+            $name = basename($source);
+        }
         return res()->$method($file, $name);
+    }
+
+    /**
+     * 渲染模板页面
+     */
+    public function renderTemplate($view, $params = [])
+    {
+        $view = (THEME_NAME === null ? '' : '/template/') . $view;
+        return $this->render($view, $params);
     }
 }

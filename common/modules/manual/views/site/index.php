@@ -1,12 +1,24 @@
 <?php use common\modules\manual\models\Menu; ?>
 <?php \common\modules\manual\assets\ManualViewAsset::register($this) ?>
 
+<?php $form = self::beginForm(['id' => 'changeFaceForm', 'action' => self::createUrl(['site/changeFace']), 'enctype' => 'multipart/form-data']) ?>
+<input type="file" name="Upload[face]" id="changeFaceInput" style="display: none;" accept="image/png, image/jpeg">
+<?php self::endForm() ?>
+
 <div class="main-contanier">
     <div class="relative-container">
         <div class="manual-head">
+            <?php if (u()->canWrite()): ?>
             <div class="left">
-                <a data-hint="进入编辑模式" href="<?= self::createUrl(['site/edit']) ?>" class="back hint--bottom"> <i></i>
+                <a data-hint="进入编辑模式" href="<?= self::createUrl(['site/edit']) ?>" class="back hint--bottom"><i></i></a>
+            </div>
+            <?php endif ?>
+            <div class="right">
+                <a id="changeFaceBtn" href="javascript:;">
+                    <img class="user-face" src="<?= u()->face ?>">
                 </a>
+                <a class="username" href=""><?= u()->nickname ?></a>
+                <a class="logout-btn" href="<?= url(['site/logout']) ?>">退出登录</a>
             </div>
         </div>
         <div class="main">

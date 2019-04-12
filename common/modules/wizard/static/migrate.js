@@ -39,7 +39,7 @@ $(function() {
     });
 
     // 创建迁移提交按钮事件
-    $("body").on('click', '.migrateSubmit', function () {
+    $("body").on('click', '#migrateSubmit', function () {
         $("#migrateForm").ajaxSubmit($.config('ajaxSubmit', {
             success: function (msg) {
                 if (msg.state) {
@@ -57,11 +57,40 @@ $(function() {
         }));
     });
 
+    // 创建数据同步提交按钮事件
+    $("body").on('click', '#dataSubmit', function () {
+        $("#dataForm").ajaxSubmit($.config('ajaxSubmit', {
+            success: function (msg) {
+                if (msg.state) {
+                    $.alert(msg.info, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    $.alert(msg.info);
+                }
+            }
+        }));
+    });
+
     // 同步所有迁移记录事件
     $("#sync-all").click(function () {
         var $a = $(this);
         $.confirm('确认同步所有版本么？', function () {
             $.post($a.attr('href'), {action: 'generateMigrate'}, function (msg) {
+                $.alert(msg.info, function () {
+                    if (msg.state) {
+                        location.reload();
+                    }
+                });
+            }, 'json');
+        });
+        return false;
+    });
+
+    $("#sync-all-data").click(function () {
+        var $a = $(this);
+        $.confirm('确认同步所有数据么？', function () {
+            $.post($a.attr('href'), {action: 'migrateData'}, function (msg) {
                 $.alert(msg.info, function () {
                     if (msg.state) {
                         location.reload();

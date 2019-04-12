@@ -1,5 +1,5 @@
 <?php use common\helpers\Html; ?>
-<h2 class="text-c pd-10"><?= $app->code ?> - <?= $app->label('process_info') ?></h2>
+<h2 class="text-c pd-10 mb-10"><?= $title ?></h2>
 <?php
 if ($processes) {
     foreach ($processes as $row) {

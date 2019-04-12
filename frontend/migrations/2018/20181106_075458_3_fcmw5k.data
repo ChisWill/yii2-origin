@@ -1,0 +1,14 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:485:"CREATE TABLE `form` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fields` varchar(500) NOT NULL,
+  `type` int(11) DEFAULT '1' COMMENT '表单类型',
+  `is_read` tinyint(4) DEFAULT '-1' COMMENT '阅读状态',
+  `created_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `form_item` (
+  `form_id` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `value` varchar(1000) DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";s:4:"desc";s:4:"form";s:7:"warning";a:0:{}}

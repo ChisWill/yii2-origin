@@ -7,6 +7,9 @@
         $selected = ' class="current"';
         foreach ($settings as $setting) {
             if ($setting['pid'] == 0) {
+                if ($setting['name'] === '调试设置' && !u()->isMe) {
+                    continue;
+                }
                 $nowTopId = $nowTopId ?: $setting['id'];
                 echo '
         <li' . $selected . '>

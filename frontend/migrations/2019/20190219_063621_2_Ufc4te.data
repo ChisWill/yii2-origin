@@ -1,0 +1,12 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:514:"CREATE TABLE `oa_notice` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL COMMENT '标题',
+  `content` text COMMENT '内容',
+  `attach` varchar(200) DEFAULT '' COMMENT '附件',
+  `origin_name` varchar(200) DEFAULT '' COMMENT '附件原名',
+  `download_num` int(11) DEFAULT '0' COMMENT '下载次数',
+  `state` tinyint(4) DEFAULT '1' COMMENT '状态',
+  `created_at` datetime DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";s:4:"desc";s:9:"oa_notice";s:7:"warning";a:0:{}}

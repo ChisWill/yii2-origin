@@ -35,7 +35,8 @@ $(function () {
                 $(this).addClass(className);
                 var index = $tabMenu.index(this);
                 $(tabCon).hide();
-                $(tabCon).eq(index).show();
+                // $(tabCon).eq(index).hide();
+                $(tabCon).eq(index).fadeIn("slow");
             });
         },
 

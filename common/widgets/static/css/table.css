@@ -19,6 +19,19 @@
     display: inline-block;
     margin: 0 10px 10px 0;
 }
+.list-container .search-form .search-label {
+    margin: 0 10px;
+}
+.list-container .search-form ul li div {
+    display: inline-block;
+}
+.list-container .search-form ul li .search-label {
+    margin-top: 5px;
+}
+.list-container .search-form .search-map label {
+    vertical-align: middle;
+    margin-right: 5px;
+}
 /*排序样式*/
 .list-container table th [data-sort]:after {
     right: 0;
@@ -92,4 +105,34 @@ ul.pagination .next * {
     border-radius: 0 3px 3px 0;
     border-right: 1px solid #aaa;
     font-family: Times, "Times New Roman", Georgia, Palatino;
+}
+/*可编辑输入框定制样式*/
+.table-container table td {
+    position: relative;
+}
+.table-container table td>div {
+    line-height: 28px;
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+.table-container table td input, .table-container table td select {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border: 1px solid #5fb878;
+    background-color: transparent;
+    box-sizing: border-box;
+    padding: 0px 8px;
+    box-shadow: 1px 1px 20px rgba(0, 0, 0, .15);
+    outline: 0;
+}
+.table-container table td .input-text {
+    position: inherit;
+    padding: 4px;
+    border-color: #ddd;
+    box-shadow: none;
+    background: #fff;
 }

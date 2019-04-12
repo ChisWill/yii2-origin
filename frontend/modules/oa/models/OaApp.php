@@ -140,16 +140,11 @@ class OaApp extends \oa\components\Model
             $this->tips($uids, $field);
         }
 
-        $pushApiUrl = config('webDomain') . ':' . config('httpPushPort');
-
-        $data = [
-            'info' => $field ? u()->realname . '更新了' . $this->code . '的' . $this->label($field) : u()->realname . '创建了 ' . $this->code . ' 项目',
-            'uids' => implode(',', $uids),
-            'url' => url(['app/list', 'search[code]' => $this->code], true),
-            'event' => 'notify'
-        ];
-
-        Curl::get(Url::create($pushApiUrl, $data));
+        OaNotice::notify(
+            $uids,
+            $field ? u()->realname . '更新了' . $this->code . '的' . $this->label($field) : u()->realname . '创建了 ' . $this->code . ' 项目',
+            url(['app/list', 'search[code]' => $this->code], true)
+        );
     }
 
     /****************************** 以下为字段的映射方法和格式化方法 ******************************/

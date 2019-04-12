@@ -46,12 +46,30 @@
 <script>
 $(function () {
     $("#encryptBtn").click(function () {
+        var $this = $(this);
+        if ($this.hasClass('actived')) {
+            return false;
+        }
+        $this.addClass('actived');
         $("#submitForm").ajaxSubmit($.config('ajaxSubmit', {
             success: function (msg) {
                 if (msg.state) {
-                    $("#autoForm").submit();
+                    $("#autoForm").ajaxSubmit($.config('ajaxSubmit', {
+                        success: function (msg) {
+                            if (msg.state) {
+                                $a = $("<a href='<?= url(['encrypt/download']) ?>'></a>");
+                                $("body").append($a);
+                                $a[0].click();
+                                $a.remove();
+                            } else {
+                                $.alert(msg.info);
+                            }
+                            $this.removeClass('actived');
+                        }
+                    }));
                 } else {
                     $.alert(msg.info);
+                    $this.removeClass('actived');
                 }
             }
         }));

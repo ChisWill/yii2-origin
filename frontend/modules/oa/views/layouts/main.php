@@ -19,46 +19,29 @@
 
 <header class="navbar-wrapper">
     <div class="navbar navbar-fixed-top">
-        <div class="container-fluid cl">
-            <a class="logo navbar-logo f-l mr-10 hidden-xs" href="">OA系统</a>
-            <a class="logo navbar-logo-m f-l mr-10 visible-xs" href="/">OA</a>
-            <span class="logo navbar-slogan f-l mr-10 hidden-xs"></span>
-            <a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
-            <!-- <nav class="nav navbar-nav">
-                <ul class="cl">
-                    <li class="dropDown dropDown_hover"><a href="javascript:;" class="dropDown_A"><i class="Hui-iconfont">&#xe600;</i> 新增 <i class="Hui-iconfont">&#xe6d5;</i></a>
-                        <ul class="dropDown-menu menu radius box-shadow">
-                            <li><a href="javascript:;" onclick="article_add('添加资讯','article-add.html')"><i class="Hui-iconfont">&#xe616;</i> 资讯</a></li>
-                            <li><a href="javascript:;" onclick="picture_add('添加资讯','picture-add.html')"><i class="Hui-iconfont">&#xe613;</i> 图片</a></li>
-                            <li><a href="javascript:;" onclick="product_add('添加资讯','product-add.html')"><i class="Hui-iconfont">&#xe620;</i> 产品</a></li>
-                            <li><a href="javascript:;" onclick="member_add('添加用户','member-add.html','','510')"><i class="Hui-iconfont">&#xe60d;</i> 用户</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </nav> -->
-            <nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
-                <ul class="cl">
-                    <li><?= current(oa\models\AdminUser::roles(u('id'))) ?></li>
-                    <li class="dropDown dropDown_hover">
-                        <a href="javascript:;" class="dropDown_A"><?= u()->realname ?> <i class="Hui-iconfont">&#xe6d5;</i></a>
-                        <ul class="dropDown-menu menu radius box-shadow">
-                            <li><a href="javascript:;" data-title="个人信息" onclick="Hui_admin_tab(this)" _href="<?= url(['site/profile']) ?>">个人信息</a></li>
-                            <li><a href="<?= url(['site/login']) ?>">切换账户</a></li>
-                            <li><a href="<?= url(['site/logout']) ?>">退出</a></li>
-                        </ul>
-                    </li>
-                    <!-- <li id="Hui-msg">
-                        <a href="#" title="消息">
-                            <span class="badge badge-danger">1</span>
-                            <i class="Hui-iconfont" style="font-size:18px">&#xe68a;</i>
-                        </a> 
-                    </li> -->
-                </ul>
-            </nav>
+        <div class="container-fluid cl hidden-xs">
+            <a class="logo navbar-logo f-l mr-10" href=""><?= config('web_name') ?>后台管理系统</a>
+            <ul class="shortcut-menu mr-10 fr mr-10 hidden-xs">
+                <li><a href="<?= url(['/']) ?>" data-title="网站首页" target="_blank"><i class="Hui-iconfont">&#xe67f;</i></a></li>
+                <li><a href="javascript:;" onclick="Hui_admin_tab(this)" _href="<?= url(['system/setting']) ?>" data-title="系统设置"><i class="Hui-iconfont">&#xe61d;</i></a></li>
+                <li><a href="<?= url(['site/logout']) ?>"><img src="/images/logout.png">退出登录</a></li>
+            </ul>
+        </div>
+        <div class="container-fluid cl visible-xs">
+            <a aria-hidden="false" class="nav-toggle Hui-iconfont f-l" href="javascript:;"></a>
+            <a class="web-name-m fl" href="javascript:;"><?= config('web_name') ?></a>
+            <a class="f-l logout-icon" href="<?= url(['site/logout']) ?>"></a>
         </div>
     </div>
 </header>
-<aside class="Hui-aside">
+<aside class="Hui-aside menu-aside">
+    <div class="admin-logo clearfix">
+        <a class="logo-set" href="javascript:;" onclick="Hui_admin_tab(this)" data-title="系统设置"><img class="fl logo-extra" src="<?= config('back_logo') ? :  '/images/default-logo.png' ?>"></a>
+        <div class="fl logo-right">
+            <div><?= u()->username ?></div>
+            <a href="javascript:;" data-title="个人信息" onclick="Hui_admin_tab(this)" _href="<?= url(['site/profile']) ?>">编辑资料</a>
+        </div>
+    </div>
     <input runat="server" id="divScrollValue" type="hidden" value="" />
     <div class="menu_dropdown bk_2 menuList">
     <?php $menuData = oa\models\OaMenu::showMenu() ?>
@@ -92,7 +75,7 @@
     <div id="Hui-tabNav" class="Hui-tabNav hidden-xs">
         <div class="Hui-tabNav-wp">
             <ul id="min_title_list" class="acrossTab cl">
-                <li class="active"><span title="我的桌面" data-href="<?= url(['welcome']) ?>">我的桌面</span><em></em></li>
+                <li class="active"><span title="公告栏" data-href="<?= url(['welcome']) ?>">公告栏</span><em></em></li>
             </ul>
         </div>
         <div class="Hui-tabNav-more btn-group">
@@ -114,6 +97,39 @@
 <input type="hidden" id="userId" value="<?= u()->id ?>">
 <input type="hidden" id="userPower" value="<?= u()->power ?>">
 <?php $this->endBody() ?>
+<script>
+$(function () {
+    var selectMenu = function () {
+        var title = $(this).children("span").html() || $(this).find('a').data('title') || $(this).data('title');
+        var now = $(".Hui-aside .menu_dropdown dd .active").parent("ul").children('li').children("a[data-title=" + title + "]").html();
+        if (!now) {
+            $(".Hui-aside .menu_dropdown dd .active").parent("ul").parent("dd").css("display", "none");
+            $(".Hui-aside .menu_dropdown dd .active").parent("ul").parent("dd").prev().removeClass('selected');
+            $(".Hui-aside .menu_dropdown dd li a[data-title=" + title + "]").parent("li").parent("ul").parent("dd").css("display", "block");
+            $(".Hui-aside .menu_dropdown dd li a[data-title=" + title + "]").parent("li").parent("ul").parent("dd").prev().addClass('selected');
+            $(".Hui-aside .menu_dropdown dl").removeClass("open active");
+            $(".Hui-aside .menu_dropdown dd li a[data-title=" + title + "]").parent("li").parent("ul").parent("dd").parent("dl").addClass("open active");
+        }
+        $(".Hui-aside .menu_dropdown dd ul li").removeClass('active');
+        $(".Hui-aside .menu_dropdown dd li a[data-title=" + title + "]").parent("li").addClass("active");
+        // 快捷键
+        $(".shortcut-menu li a").click(function() {
+            Hui_admin_tab(this);
+        });
+    }
+    // 左边子元素
+    $(".Hui-aside .menu_dropdown dd ul li").click(function () {
+        $(".Hui-aside .menu_dropdown dd ul li").removeClass("active");
+        $(".Hui-aside .menu_dropdown dl").removeClass("active");
+        $(this).addClass('active');
+        $(this).parent("ul").parent("dd").parent("dl").addClass('active');
+    })
+    // tab
+    $("#Hui-tabNav").on("click", "#min_title_list li", selectMenu);
+    $(".shortcut-menu").on("click", "li", selectMenu);
+    $(".admin-logo").on('click', 'a', selectMenu);
+});
+</script>
 </body>
 </html>
 <?php $this->endPage() ?>

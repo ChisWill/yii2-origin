@@ -27,7 +27,7 @@ $(function () {
         $("#editUserForm").ajaxSubmit($.config('ajaxSubmit', {
             success: function (msg) {
                 if (msg.state) {
-                    var href = $.parent(".pagination li.active a").attr('href');
+                    var href = parent.$(".pagination li.active a").attr('href');
                     if (href) {
                         parent.$.fancybox.close();
                         parent.window.location.href = href;

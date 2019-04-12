@@ -4,7 +4,7 @@ Navicat MySQL Data Transfer
 Source Server         : ChisWill
 Source Server Version : 50151
 Source Host           : localhost:3306
-Source Database       : hsh_ver2
+Source Database       : yii2-origin
 
 Target Server Type    : MYSQL
 Target Server Version : 50151
@@ -16,10 +16,10 @@ Date: 2015-11-22 23:28:27
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for hsh_manual_article
+-- Table structure for manual_article
 -- ----------------------------
-DROP TABLE IF EXISTS `hsh_manual_article`;
-CREATE TABLE `hsh_manual_article` (
+DROP TABLE IF EXISTS `manual_article`;
+CREATE TABLE `manual_article` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `menu_id` int(11) NOT NULL COMMENT '菜单ID',
   `content` mediumtext COMMENT '文章内容',
@@ -32,10 +32,10 @@ CREATE TABLE `hsh_manual_article` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='手册文章表';
 
 -- ----------------------------
--- Table structure for hsh_manual_collection
+-- Table structure for manual_collection
 -- ----------------------------
-DROP TABLE IF EXISTS `hsh_manual_collection`;
-CREATE TABLE `hsh_manual_collection` (
+DROP TABLE IF EXISTS `manual_collection`;
+CREATE TABLE `manual_collection` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '用户ID',
   `menu_id` int(11) NOT NULL COMMENT '收藏的菜单ID',
@@ -49,10 +49,10 @@ CREATE TABLE `hsh_manual_collection` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='手册收藏表';
 
 -- ----------------------------
--- Table structure for hsh_manual_menu
+-- Table structure for manual_menu
 -- ----------------------------
-DROP TABLE IF EXISTS `hsh_manual_menu`;
-CREATE TABLE `hsh_manual_menu` (
+DROP TABLE IF EXISTS `manual_menu`;
+CREATE TABLE `manual_menu` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL DEFAULT '' COMMENT '菜单名',
   `pid` int(11) DEFAULT '0' COMMENT '父ID',
@@ -72,10 +72,10 @@ CREATE TABLE `hsh_manual_menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='手册菜单表';
 
 -- ----------------------------
--- Table structure for hsh_manual_version
+-- Table structure for manual_version
 -- ----------------------------
-DROP TABLE IF EXISTS `hsh_manual_version`;
-CREATE TABLE `hsh_manual_version` (
+DROP TABLE IF EXISTS `manual_version`;
+CREATE TABLE `manual_version` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `menu_id` int(11) NOT NULL COMMENT '文章ID',
   `content` mediumtext COMMENT '内容',

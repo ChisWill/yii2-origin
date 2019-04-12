@@ -6,6 +6,11 @@ use Yii;
 
 /**
  * php 模块
+ *
+ * 模块复制说明
+ * 1. 复制整个模块代码
+ * 2. 配置路径别名和模块路由
+ * 3. 复制yakpro-po类库
  */
 class Module extends \common\components\Module
 {

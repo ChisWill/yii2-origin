@@ -16,6 +16,7 @@ class AppAsset extends \common\components\AssetBundle
     ];
     public $depends = [
         'common\assets\CommonAsset',
+        'common\assets\LayerAsset',
         'common\assets\JqueryFormAsset'
     ];
 }

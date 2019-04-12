@@ -4,7 +4,7 @@ return [
     'socketIoPort' => 30000,
     'httpPushPort' => 20000,
     'uploadPath' => '/uploadfile',
-    'accessModule' => ['admin', 'oa', 'manual', 'php', 'pay'],
+    'accessModule' => ['admin', 'oa', 'manual', 'php', 'pay', 'demo'],
     'allowActions' => ['index', 'notify', 'return']
     // 以下是业务使用配置参数
 

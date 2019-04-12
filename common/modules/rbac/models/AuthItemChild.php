@@ -5,7 +5,7 @@ namespace common\modules\rbac\models;
 use Yii;
 
 /**
- * 这是表 `hsh_auth_item_child` 的模型
+ * 这是表 `auth_item_child` 的模型
  */
 class AuthItemChild extends \common\components\ARModel
 {

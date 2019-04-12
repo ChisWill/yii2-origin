@@ -64,7 +64,7 @@ class SocketIO extends \console\components\Server
     protected function login($socket, $data)
     {
         // 找人
-        $user = self::db('SELECT * FROM {{%admin_user}} WHERE id = :id')->bindValues([':id' => $id])->queryOne();
+        $user = self::db('SELECT * FROM {{%admin_user}} WHERE id = :id')->bindValues([':id' => $data])->queryOne();
         if (!$user) {
             $socket->emit('response', '没有这个账号！');
         } elseif (!isset($this->users[$socket->id])) {

@@ -23,4 +23,14 @@ class AdminUser extends \admin\models\AdminUser
         return array_merge(parent::attributeLabels(), [
         ]);
     }
+
+    public static function getDevUserMap()
+    {
+        return AdminUser::find()->where(['position' => self::POSITION_DEV])->active()->map('id', 'realname');
+    }
+
+    public static function getSaleUserMap()
+    {
+        return AdminUser::find()->where(['position' => self::POSITION_SALE])->active()->map('id', 'realname');
+    }
 }

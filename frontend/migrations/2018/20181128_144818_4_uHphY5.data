@@ -1,0 +1,2 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:84:"ALTER TABLE `admin_user`
+MODIFY COLUMN `id`  int(11) NOT NULL AUTO_INCREMENT FIRST ;";s:4:"desc";s:10:"admin_user";s:7:"warning";a:0:{}}

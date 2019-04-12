@@ -16,7 +16,8 @@ class HuiAdminAsset extends \common\components\AssetBundle
     public $css = [
         'css/H-ui.admin.css',
         'hui-iconfont/iconfont.css',
-        'skin/default/skin.css'
+        'skin/default/skin.css',
+        'css/style.css'
     ];
     public $depends = [
         'common\assets\HuiAsset',

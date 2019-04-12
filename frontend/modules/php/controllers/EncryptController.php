@@ -3,7 +3,7 @@
 namespace php\controllers;
 
 use Yii;
-use common\models\Obfuscate;
+use php\models\Obfuscate;
 use common\helpers\FileHelper;
 
 class EncryptController extends \php\components\Controller
@@ -37,25 +37,36 @@ class EncryptController extends \php\components\Controller
         $config = session('obfuscateConfig') ?: [];
         $input = Yii::getAlias('@webroot' . $filePath);
         if (!file_exists($input)) {
-            throwex(t('Obfuscate failed.'));
+            return error(t('Obfuscate failed.'));
         }
         $obfuscate = new Obfuscate($input);
         $obfuscate->config = $config;
         $file = $obfuscate->run();
         if ($file !== false) {
-            try {
-                session('obfuscateConfig', null);
-                session('obfuscateFilePath', null);
-                session('obfuscateFileName', null);
-                $response = $this->download($file, $fileName)->send();
-                FileHelper::removeDirectory($obfuscate->outputPath);
-            } catch (\Exception $e) {
-                FileHelper::removeDirectory($obfuscate->outputPath);
-                throwex(t('Uploaded file can not be obfuscated.'));
-            }
-            return $response;
+            session('obfuscateOutputPath', $obfuscate->outputPath);
+            session('obfuscateDownloadFile', $file);
+            return success();
         } else {
-            throwex(t('Obfuscate failed.'));
+            return error(t('Obfuscate failed.'));
+        }
+    }
+
+    public function actionDownload()
+    {
+        try {
+            $file = session('obfuscateDownloadFile');
+            $fileName = session('obfuscateFileName');
+            $outputPath = session('obfuscateOutputPath');
+            session('obfuscateConfig', null);
+            session('obfuscateFileName', null);
+            session('obfuscateFilePath', null);
+            session('obfuscateDownloadFile', null);
+            session('obfuscateOutputPath', null);
+            $response = $this->download($file, $fileName)->send();
+            FileHelper::removeDirectory($outputPath);
+            return $response;
+        } catch (\Exception $e) {
+            throwex(t('Download failed.'));
         }
     }
 }

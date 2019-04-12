@@ -1,0 +1,14 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:1124:"ALTER TABLE `test`
+MODIFY COLUMN `name`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '名字' AFTER `id`,
+MODIFY COLUMN `mobile`  char(11) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '手机' AFTER `name`,
+MODIFY COLUMN `title`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '标题' AFTER `mobile`,
+MODIFY COLUMN `message`  text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '内容' AFTER `title`,
+MODIFY COLUMN `state`  tinyint(4) NULL DEFAULT 1 AFTER `reg_date`,
+ADD COLUMN `image`  varchar(200) NULL DEFAULT '' AFTER `reg_date`,
+ADD COLUMN `email`  varchar(100) NULL DEFAULT '' COMMENT '邮箱' AFTER `image`,
+ADD COLUMN `face`  varchar(200) NULL DEFAULT '' COMMENT '头像' AFTER `email`,
+ADD COLUMN `tags`  varchar(1000) NULL DEFAULT '' COMMENT '标签' AFTER `face`,
+ADD COLUMN `sex`  tinyint NULL DEFAULT 1 COMMENT '性别' AFTER `tags`,
+ADD COLUMN `reg_state`  tinyint NULL DEFAULT 1 COMMENT '注册状态' AFTER `sex`,
+ADD COLUMN `login_time`  datetime NULL COMMENT '登录时间' AFTER `reg_state`,
+AUTO_INCREMENT=1;";s:4:"desc";s:4:"test";s:7:"warning";a:0:{}}

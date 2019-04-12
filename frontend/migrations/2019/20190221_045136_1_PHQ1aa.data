@@ -1,0 +1,7 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:263:"ALTER TABLE `oa_process`
+CHANGE COLUMN `app_id` `target_id`  int(11) NOT NULL AFTER `id`,
+ADD COLUMN `type`  smallint NULL DEFAULT 1 AFTER `desc`,
+ADD INDEX (`target_id`, `type`) ;
+
+ALTER TABLE `oa_process`
+MODIFY COLUMN `type`  smallint(6) NOT NULL AFTER `desc`;";s:4:"desc";s:10:"oa_process";s:7:"warning";a:0:{}}

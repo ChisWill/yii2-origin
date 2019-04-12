@@ -1,0 +1,2 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:111:"ALTER TABLE `article_menu`
+ADD COLUMN `template`  varchar(20) NULL DEFAULT '' COMMENT '模板' AFTER `is_show`;";s:4:"desc";s:12:"article_menu";s:7:"warning";a:0:{}}

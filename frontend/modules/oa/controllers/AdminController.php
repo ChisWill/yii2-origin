@@ -467,6 +467,70 @@ class AdminController extends \oa\components\Controller
     }
 
     /**
+     * @authname 绩效分列表
+     */
+    public function actionPerformanceScore()
+    {
+        $query = AdminUser::find()->where(['position' => AdminUser::POSITION_DEV])->active();
+        $scores = OaBonus::find()
+            ->select(['user_id', 'SUM(score) AS score'])
+            ->where(['user_id' => $query->map('id', 'id'), 'type' => OaBonus::TYPE_PERFORMANCE])
+            ->groupBy('user_id')
+            ->indexBy('user_id')
+            ->asArray()
+            ->all();
+
+        $html = $query->select(['id', 'realname'])->getTable([
+            'realname',
+            'score' => ['header' => '累计绩效分', 'value' => function ($row) use ($scores) {
+                return ArrayHelper::getValue($scores, $row->id, ['score' => 0])['score'];
+            }],
+            ['type' => ['view' => 'viewPerformanceHistory']]
+        ], [
+            'addBtn' => ['addPerformanceScore' => '录入']
+        ]);
+
+        return $this->render('performanceScore', compact('html'));
+    }
+
+    /**
+     * @authname 录入绩效分
+     */
+    public function actionAddPerformanceScore()
+    {
+        $model = new OaBonus;
+
+        if ($model->load()) {
+            $model->type = OaBonus::TYPE_PERFORMANCE;
+            if ($model->save()) {
+                return success();
+            } else {
+                return error($model);
+            }
+        }
+
+        return $this->render('addPerformanceScore', compact('model'));
+    }
+
+    /**
+     * @authname 绩效分历史记录
+     */
+    public function actionViewPerformanceHistory($id)
+    {
+        $model = AdminUser::findOne($id);
+        $query = OaBonus::find()
+            ->where(['user_id' => $id, 'type' => OaBonus::TYPE_PERFORMANCE])
+            ->orderBy('id DESC');
+        $html = $query->getTable([
+            'score' => ['header' => '绩效分', 'width' => '100px'],
+            'comment',
+            'created_at' => ['header' => '时间', 'width' => '150px']
+        ]);
+
+        return $this->render('viewPerformanceScore', compact('model', 'html'));
+    }
+
+    /**
      * @authname 录入业绩
      */
     public function actionAddScore()

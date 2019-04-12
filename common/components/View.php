@@ -3,7 +3,6 @@
 namespace common\components;
 
 use Yii;
-use common\models\ArticleMenu;
 
 /**
  * 视图层的基类
@@ -42,25 +41,6 @@ class View extends \yii\web\View
         require($_file_);
 
         return ob_get_clean();
-    }
-
-    private $_menus = null;
-
-    /**
-     * 获取资讯站主菜单
-     * 
-     * @return array
-     */
-    public function getMenu()
-    {
-        if ($this->_menus === null) {
-            $this->_menus = [];
-            $data = ArticleMenu::find()->where(['pid' => 0, 'state' => ArticleMenu::STATE_VALID])->orderBy('sort')->asArray()->all();
-            foreach ($data as $row) {
-                $this->_menus[$row['url']] = $row;
-            }
-        }
-        return $this->_menus;
     }
 
     /**

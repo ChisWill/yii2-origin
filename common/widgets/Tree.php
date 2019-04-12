@@ -206,12 +206,13 @@ class Tree extends \yii\base\Object
 
         $this->prepareItems();
 
+        $items = [];
         foreach ($this->items as $item) {
-            $items[$item['_key']] = $item['_text'];
-            $item['options'][$item['_key']]['data-text'] = $item['_value'];
-            $options['options'][$item['_key']] = $item['options'][$item['_key']];
+            $items[$item['key']] = $item['text'];
+            $item['options'][$item['key']]['data-text'] = $item['value'];
+            $options['options'][$item['key']] = $item['options'][$item['key']];
             foreach ($this->optionAttrs as $attr) {
-                $options['options'][$item['_key']]['data-' . $attr] = ArrayHelper::getValue($item, $attr, '');
+                $options['options'][$item['key']]['data-' . $attr] = ArrayHelper::getValue($item, $attr, '');
             }
         }
         $options['encodeSpaces'] = true;
@@ -245,9 +246,9 @@ class Tree extends \yii\base\Object
             } else {
                 $header = '请选择...';
             }
-            array_unshift($this->items, ['_key' => '', '_value' => $header, '_text' => $header, 'options' => ['' => $this->headerOptions]]);
+            array_unshift($this->items, ['key' => '', 'value' => $header, 'text' => $header, 'options' => ['' => $this->headerOptions]]);
         } elseif (is_string($this->header)) {
-            array_unshift($this->items, ['_key' => '', '_value' => $this->header, '_text' => $this->header, 'options' => ['' => $this->headerOptions]]);
+            array_unshift($this->items, ['key' => '', 'value' => $this->header, 'text' => $this->header, 'options' => ['' => $this->headerOptions]]);
         }
     }
 
@@ -296,9 +297,9 @@ class Tree extends \yii\base\Object
                 }
                 $value = $this->getNameValue($row);
                 $item = [
-                    '_key' => $row[$this->key],
-                    '_text' => $prefix . $value,
-                    '_value' => $value,
+                    'key' => $row[$this->key],
+                    'text' => $prefix . $value,
+                    'value' => $value,
                 ];
                 foreach ($this->select as $select) {
                     $item[$select] = $row[$select];
@@ -322,9 +323,9 @@ class Tree extends \yii\base\Object
                 $withKey = $this->withKeyPrefix . $row[$this->withKey];
                 $withValue = $row[$this->withValue];
                 $this->items[$withKey] = [
-                    '_key' => $withKey,
-                    '_text' => $withPrefix . $withValue,
-                    '_value' => $withValue,
+                    'key' => $withKey,
+                    'text' => $withPrefix . $withValue,
+                    'value' => $withValue,
                     'options' => [$withKey => $this->withOptions]
                 ];
                 foreach ($this->data as $k => $item) {
@@ -332,9 +333,9 @@ class Tree extends \yii\base\Object
                         $prefix = str_repeat(' ', ($recursionLevel - 1) * 3) . ' ┕ ';
                         $value = $this->getNameValue($item);
                         $this->items[$item[$this->key]] = [
-                            '_key' => $item[$this->key],
-                            '_text' => $prefix . $value,
-                            '_value' => $value
+                            'key' => $item[$this->key],
+                            'text' => $prefix . $value,
+                            'value' => $value
                         ];
                         foreach ($this->select as $select) {
                             $this->items[$item[$this->key]][$select] = $item[$select];

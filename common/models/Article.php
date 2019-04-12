@@ -13,10 +13,11 @@ class Article extends \common\components\ARModel
     {
         return [
             [['title'], 'required'],
-            [['menu_id', 'state', 'created_by', 'updated_by'], 'integer'],
+            [['menu_id', 'count', 'state', 'created_by', 'updated_by'], 'integer'],
             [['content'], 'default', 'value' => ''],
             [['created_at', 'updated_at'], 'safe'],
-            [['title', 'cover'], 'string', 'max' => 100]
+            [['title', 'template', 'cover'], 'string', 'max' => 100],
+            [['summary'], 'string', 'max' => 200]
         ];
     }
 
@@ -26,8 +27,11 @@ class Article extends \common\components\ARModel
             'id' => 'ID',
             'title' => '标题',
             'menu_id' => 'Menu ID',
+            'summary' => '摘要',
+            'template' => '模板',
             'content' => '内容',
             'cover' => '封面图',
+            'count' => '浏览次数',
             'state' => '状态',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
@@ -53,11 +57,14 @@ class Article extends \common\components\ARModel
             ->filterWhere([
                 'article.id' => $this->id,
                 'article.menu_id' => $this->menu_id,
+                'article.count' => $this->count,
                 'article.state' => $this->state,
                 'article.created_by' => $this->created_by,
                 'article.updated_by' => $this->updated_by,
             ])
             ->andFilterWhere(['like', 'article.title', $this->title])
+            ->andFilterWhere(['like', 'article.summary', $this->summary])
+            ->andFilterWhere(['like', 'article.template', $this->template])
             ->andFilterWhere(['like', 'article.content', $this->content])
             ->andFilterWhere(['like', 'article.cover', $this->cover])
             ->andFilterWhere(['like', 'article.created_at', $this->created_at])
@@ -68,7 +75,7 @@ class Article extends \common\components\ARModel
 
     /****************************** 以下为公共操作的方法 ******************************/
 
-    
+
 
     /****************************** 以下为字段的映射方法和格式化方法 ******************************/
 

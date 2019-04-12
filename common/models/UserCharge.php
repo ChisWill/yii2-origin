@@ -11,7 +11,7 @@ class UserCharge extends \common\components\ARModel
 {
     const CHARGE_STATE_WAIT = 1;
     const CHARGE_STATE_PASS = 2;
-    const CHARGE_STATE_FAIL = 3;
+    const CHARGE_STATE_FAIL = -1;
 
     public function rules()
     {
@@ -42,10 +42,11 @@ class UserCharge extends \common\components\ARModel
 
     /****************************** 以下为设置关联模型的方法 ******************************/
 
-    // public function getRelation()
-    // {
-    //     return $this->hasOne(Class::className(), ['foreign_key' => 'primary_key']);
-    // }
+    // 关联 User 模型
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
 
     /****************************** 以下为公共显示条件的方法 ******************************/
 

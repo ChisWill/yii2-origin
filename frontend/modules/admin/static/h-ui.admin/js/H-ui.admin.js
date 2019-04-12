@@ -69,9 +69,9 @@ function Hui_admin_tab(obj){
 			min_titleList();
 		}
 		else{
-			show_navLi.removeClass("active").eq(bStopIndex).addClass("active");
-			var iframe_box=topWindow.find("#iframe_box");
-			iframe_box.find(".show_iframe").hide().eq(bStopIndex).show().find("iframe").attr("src",_href);
+			show_navLi.removeClass("active").eq(bStopIndex).trigger("click");
+			// var iframe_box=topWindow.find("#iframe_box");
+			// iframe_box.find(".show_iframe").hide().eq(bStopIndex).show().find("iframe").attr("src",_href);
 		}
 	}
 

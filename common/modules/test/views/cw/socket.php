@@ -30,6 +30,7 @@ $(function () {
         });
 
         io.on('response', function (msg) {
+            console.log(msg)
             $("#response").append(msg + '<br>');
         });
     });

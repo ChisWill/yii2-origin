@@ -27,8 +27,10 @@ class UEditor extends \kucha\ueditor\UEditor
         $toolbars = [
             [
                 'fullscreen', 'undo', 'redo', '|', 'fontsize',
+                'indent', 'justifyleft', 'justifycenter', 'justifyright', '|',
                 'bold', 'italic', 'underline', '|',
-                'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|',
+                'link', 'unlink', 'anchor', '|', 
+                'formatmatch', 'pasteplain', '|',
                 'forecolor', 'backcolor', '|',
                 'simpleupload', 'emotion', 
                 

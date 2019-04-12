@@ -1,0 +1,350 @@
+body {
+    background: #fff;
+    visibility: hidden;
+}
+.content {
+    overflow: hidden;
+}
+.contact-info {
+    width: 12rem;
+    margin: 1rem auto;
+}
+.contact-content .contact-img {
+    width: 100%;
+}
+.contact-left {
+    width: 3rem;
+    color: #2d2d2d;
+}
+.contact-left p {
+    width: 100%;
+    font-size: 0.4rem;
+    padding: 0.15rem 0;
+    margin-bottom: 0.15rem;
+    border-bottom: 0.02rem solid #1b1b1b;
+}
+.contact-left .contact-tip {
+    font-size: 0.15rem;
+    line-height: 0.3rem;
+}
+.contact-left .icon {
+    width: 0.35rem;
+    height: 0.35rem;
+}
+.contact-left .info-item {
+    width: 100%;
+    font-size: 0.24rem;
+    margin-top: 0.2rem;
+}
+.contact-left .info-item span {
+    display: inline-block;
+    width: 2.6rem;
+}
+.contact-right {
+    width: 8.3rem;
+}
+.contact-right h2 {
+    font-size: 0.36rem;
+    font-weight: normal;
+}
+.contact-right .tip {
+    font-size: 0.18rem;
+}
+.contact-right .form-wrap {
+    margin-top: 0.1rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.form-wrap .input-text {
+    height: 0.5rem;
+    margin-bottom: 0.3rem;
+}
+.form-wrap .form-group {
+    display: inline-block;
+    width: 3.2rem;
+    height: 100%;
+    margin-left: 0.1rem;
+}
+.form-wrap label {
+    font-weight: normal;
+    font-size: 0.24rem;
+    color: #8e2222;
+    height: 100%;
+}
+.form-wrap input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #f5f5f5;
+    text-indent: 0.1rem;
+    font-size: 0.18rem;
+}
+.form-wrap .input-text:nth-child(2) label, .form-wrap .input-text:nth-child(4) label {
+    display: inline-block;
+    width: 1rem;
+    text-align: right;
+}
+.input-text select {
+    width: 100%;
+    height: 100%;
+    font-size: 0.18rem;
+    border: none;
+    background: #f5f5f5;
+    text-indent: 0.1rem;
+}
+.textarea-text {
+    width: 100%;
+}
+.textarea-text textarea {
+    width: 8.65rem;
+    height: 1.7rem;
+    background: #f5f5f5;
+    text-indent: 0.1rem;
+    border: none;
+    font-size: 0.18rem;
+}
+.textarea-text .form-group {
+    float: left;
+    margin-left: 0.15rem;
+}
+.textarea-text label {
+    display: inline-block;
+    height: 1.7rem;
+}
+.submit-btn {
+    width: 4.75rem;
+    height: 0.47rem;
+    border: 0.02rem solid #8e2222;
+    line-height: 0.47rem;
+    text-align: center;
+    margin: 0.44rem auto;
+    color: #8e2222;
+    font-size: 0.18rem;
+    cursor: pointer;
+}
+.joinus-content {
+    text-align: center;
+}
+.joinus-content .join-title {
+    width: 100%;
+}
+.joinus-content .title-img {
+    width: 6.25rem;
+    text-align: center;
+}
+.position-title span {
+    display: inline-block;
+    width: 1.8rem;
+    height: 0.6rem;
+    line-height: 0.6rem;
+    border: 0.02rem solid #353434;
+    color: #353434;
+    font-size: 0.36rem;
+    margin: 0.6rem 0.48rem 1.4rem;
+    cursor: pointer;
+}
+.position-title .active {
+    border: 0.02rem solid #8e2222;
+    color: #8e2222;
+}
+.position-content {
+    margin:0 auto 1rem;
+}
+.position-content .swiper-container {
+    width: 10rem;
+    height: 7rem;
+    box-shadow: 0px 0px 20px 10px rgba(226, 225, 227, 0.36);
+    overflow: visible;
+}
+.position-content .swiper-slide {
+    width: 100% !important;
+    height: 7rem;
+    background: url(../images/joinus-bg.jpg) center center no-repeat;
+    background-size: 100% 100%;
+}
+.swiper-slide .position-title {
+    display: inline-block;
+    font-size: 0.3rem;
+    height: 0.7rem;
+    line-height: 0.7rem;
+    border: 0.02rem solid #8e2222;
+    color: #8e2222;
+    padding: 0 0.3rem;
+    margin: 0.6rem auto;
+}
+.position-text {
+    width: 6.4rem;
+    margin-left: 1rem;
+    text-align: left;
+}
+.swiper-button-next {
+    right: -1.5rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    background: url(../images/right-active.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.swiper-button-prev {
+    left: -1.5rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    background: url(../images/left-active.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.swiper-button-next.swiper-button-disabled {
+    background: url(../images/right.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.swiper-button-prev.swiper-button-disabled {
+    background: url(../images/left.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+.location-title {
+    font-size: 0.3rem;
+}
+.location {
+    text-align: center;
+}
+.location .line {
+    width: 1.5rem;
+    height: 0.06rem;
+    background: #8e2222;
+    margin: 0.2rem auto;
+}
+.map {
+    width: 100%;
+    height: 600px;
+    margin: 0.5rem auto;
+}
+.map-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #cc5522;
+}
+.map-content {
+    font-size: 13px;
+    color: #333;
+}
+.position-text img {
+    max-width: 5.4rem;
+}
+/*手机ipad样式统一处理*/
+@media screen and (max-width: 1200px) {
+    .contact-en {
+        width: 40% !important;
+        /*margin-left: 20%;*/
+    }
+    .contact-content img {
+        width: 100%;
+    }
+    .contact-info {
+        width: 100%;
+
+    }
+    .contact-left {
+        width: 80%;
+        margin-left: 10%;
+    }
+    .contact-left .info-item span {
+        float: left;
+        width: 92%;
+    }
+    .contact-right {
+        width: 80%;
+        margin-top: 0.5rem;
+        float: left;
+        margin-left: 10%;
+    }
+    .form-wrap .form-group {
+        width: 68%;
+    }
+    .form-wrap label {
+        display: inline-block;
+        width: 25%;
+    }
+    .form-wrap .input-text:nth-child(2) label, .form-wrap .input-text:nth-child(4) label {
+        width: 25%;
+        text-align: left;
+    }
+    .textarea-text textarea {
+        width: 100%;
+    }
+    .form-wrap .input-text {
+        width: 100%;
+    }
+    .joinus-content .join-title {
+        width: 200%;
+        margin-left: -50%;
+    }
+    .position-content .swiper-container {
+        width: 70%;
+        margin-left: 15%;
+        height: 4.5rem;
+    }
+    .position-content .swiper-slide {
+        height: 4.5rem;
+    }
+    .position-text {
+        width: 60%;
+        margin-left: 5%;
+    }
+
+}
+/*适配手机样式*/
+@media screen and (max-width: 640px) {
+    .contact-en {
+        width: 100% !important;
+        /*margin-left: 20%;*/
+    }
+    
+    .swiper-button-next {
+        width: 30px;
+        height: 30px;
+        right: -45px;
+    }
+    .swiper-button-prev {
+        width: 30px;
+        height: 30px;
+        left: -45px;
+    }
+    .swiper-slide .position-title {
+        height: 25px;
+        line-height: 25px;
+        font-size: 14px;
+        margin: 30px auto;
+    }
+    .position-title span {
+        width: 60px;
+        height: 30px;
+        line-height: 30px;
+        margin: 20px;
+        font-size: 16px;
+    }
+}
+/*适配ipad*/
+@media screen and (max-width: 1200px) and (min-width: 640px) {
+    .swiper-button-next {
+        width: 50px;
+        height: 50px;
+        right: -80px;
+    }
+    .swiper-button-prev {
+        width: 50px;
+        height: 50px;
+        left: -80px;
+    }
+    .swiper-slide .position-title {
+        height: 35px;
+        line-height: 35px;
+        font-size: 16px;
+        margin: 30px auto;
+    }
+    .position-title span {
+        width: 80px;
+        height: 35px;
+        line-height: 35px;
+        margin: 20px;
+        font-size: 18px;
+    }
+}

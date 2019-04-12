@@ -1,0 +1,4 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:198:"ALTER TABLE `oa_bonus`
+ADD COLUMN `type`  tinyint NULL DEFAULT 1 COMMENT '积分类型' AFTER `comment`;
+ALTER TABLE `oa_bonus`
+MODIFY COLUMN `user_id`  int(11) NOT NULL COMMENT '员工' AFTER `id`;";s:4:"desc";s:8:"oa_bonus";s:7:"warning";a:0:{}}

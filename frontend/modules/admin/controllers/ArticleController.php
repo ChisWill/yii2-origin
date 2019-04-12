@@ -5,7 +5,10 @@ namespace admin\controllers;
 use Yii;
 use admin\models\Article;
 use admin\models\ArticleMenu;
+use common\helpers\Hui;
 use common\helpers\Html;
+use common\helpers\ArrayHelper;
+use common\helpers\Security;
 
 class ArticleController extends \admin\components\Controller
 {
@@ -14,27 +17,43 @@ class ArticleController extends \admin\components\Controller
      */
     public function actionList()
     {
-        $query = (new Article)->listQuery();
+        $menuQuery = ArticleMenu::find();
 
-        $html = $query->getTable([
+        $menuHtml = $menuQuery->getLinkage([
+            'name' => ['type' => 'checkbox', 'header' => Html::a('全部分类', null, ['class' => 'categoryItem', 'data' => ['id' => '']]), 'value' => function ($row) {
+                return Html::a($row->name, null, ['class' => 'categoryItem', 'data' => ['id' => $row->id]]);
+            }],
+        ], [
+            'layout' => '{items}',
+            'enableOperate' => false,
+            'dragSort' => false
+        ]);
+
+        $articleQuery = (new Article)->listQuery();
+
+        $articleHtml = $articleQuery->getTable([
             'id',
+            'menu.name' => ['header' => '分类'],
             'cover' => function ($row) {
                 return $row->cover ? Html::img($row->cover, ['style' => ['width' => '120px']]) : '无';
             },
-            'title' => ['type' => 'text'],
-            'menu.name' => ['header' => '所属菜单'],
-            ['type' => ['edit' => 'saveArticle', 'delete']]
+            'title' => ['type' => 'text', 'width' => '220px'],
+            'summary' => ['type' => 'text', 'width' => '300px'],
+            'template' => ['type' => 'text', 'width' => '120px'],
+            ['type' => ['edit' => function ($row) {
+                return url(['saveArticle', 'id' => $row->id, 'pid' => $row->menu->id]);
+            }, 'delete']]
         ], [
             'addBtn' => ['saveArticle' => '添加文章'],
             'searchColumns' => [
                 'id',
                 'title',
                 'content',
-                'menu.pid' => ['type' => 'select', 'header' => '所属分类', 'items' => [Article::className(), 'getMenuIdMap']]
+                'menu.id' => ['type' => 'select', 'header' => '所属分类', 'items' => ArrayHelper::map(ArticleMenu::getAllMenuQuery()->getTree()->getItems('name'), 'key', 'text')]
             ]
         ]);
 
-        return $this->render('list', compact('html'));
+        return $this->render('list', compact('menuHtml', 'articleHtml'));
     }
 
     /**
@@ -43,10 +62,12 @@ class ArticleController extends \admin\components\Controller
     public function actionSaveArticle($id = null)
     {
         $model = Article::findModel($id);
-        $model->categoryType = post('categoryType');
+        $model->menu_id = get('pid') ?: null;
+        $categorySelect = ArticleMenu::getAllMenuQuery()->getTree(['header' => false, 'optionAttrs' => ['category', 'pid']])->dropDownList('name', $model->menu_id, ['class' => 'input-text', 'id' => 'categorySelect']);
+
         if ($model->load()) {
             if ($model->validate()) {
-                if ($model->categoryType == ArticleMenu::CATEGORY_NEWS && $model->file) {
+                if ($model->file) {
                     $model->file->move();
                     $model->cover = $model->file->filePath;
                 }
@@ -57,9 +78,8 @@ class ArticleController extends \admin\components\Controller
             }
         }
 
-        return $this->render('saveArticle', compact('model'));
+        return $this->render('saveArticle', compact('model', 'categorySelect'));
     }
-
 
     /**
      * @authname 栏目菜单
@@ -72,13 +92,38 @@ class ArticleController extends \admin\components\Controller
             'id',
             'name' => ['type' => 'text'],
             u()->isMe ? 'url' : '' => ['type' => 'text'],
-            'category' => ['type' => 'select', 'value' => function ($row) {
-                return $row->pid ? $row->getCategoryValue() : '';
-            }]
-        ], [
-            'maxLevel' => 2
+            u()->isMe ? 'category' : '' => ['type' => 'select', 'value' => function ($row) {
+                return $row->pid ? $row->category : '';
+            }],
+            'template' => ['type' => 'text'],
         ]);
 
         return $this->render('menu', compact('html'));
+    }
+
+    /**
+     * @authname 快捷修改
+     */
+    public function actionAjaxUpdate()
+    {
+        $params = post('params');
+
+        if ($linkageParams = Security::base64decrypt($params['model'])) {
+            $className = unserialize($linkageParams)['model'];
+        } else {
+            $className = $params['model'];
+        }
+
+        if ($className === 'admin\models\ArticleMenu') {
+            if (in_array($params['field'], ['url', 'category']))
+            $model = ArticleMenu::findModel($params['key']);
+            if ($params['field'] === 'category') {
+                if ($model->pid == 0) {
+                    return error('无需设置');
+                }
+            }
+        }
+
+        return parent::actionAjaxUpdate();
     }
 }

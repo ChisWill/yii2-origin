@@ -34,6 +34,16 @@ trait dbTrait
     }
 
     /**
+     * 获取最后插入的ID
+     * 
+     * @return int 最后插入的ID
+     */
+    public static function dbLastId()
+    {
+        return Yii::$app->db->getLastInsertID();
+    }
+
+    /**
      * 快捷插入表数据的方法
      * Note:如果 $rows 为空，则column必须是键值对的数组
      * 

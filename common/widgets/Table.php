@@ -131,6 +131,10 @@ class Table extends \yii\base\Widget
      */
     public $searchColumns = [];
     /**
+     * @var boolean 当没有权限操作时，是否隐藏按钮，后台需要用到，前台不限制权限
+     */
+    public $hideBtn = false;
+    /**
      * @var boolean 是否开启列设置功能
      */
     public $sortColumns = false;
@@ -835,10 +839,13 @@ class Table extends \yii\base\Widget
         }
         if ($this->addBtn) {
             foreach ($this->addBtn as $url => $text) {
+                if (!$this->can($url)) {
+                    continue;
+                }
                 if (is_callable($text)) {
                     $btns[] = call_user_func($text);
                 } else {
-                    $btns[] = Hui::secondaryBtn($text, [$url], ['class' => 'view-fancybox fancybox.iframe']);
+                    $btns[] = Hui::secondaryBtn($text, [$url], ['class' => 'view-fancybox fancybox.iframe', 'id' => 'addBtn']);
                 }
             }
         }
@@ -848,6 +855,9 @@ class Table extends \yii\base\Widget
         }
         if ($this->extraBtn) {
             foreach ($this->extraBtn as $url => $text) {
+                if (!$this->can($url)) {
+                    continue;
+                }
                 if (is_callable($text)) {
                     $btns[] = call_user_func($text);
                 } else {
@@ -942,32 +952,44 @@ class Table extends \yii\base\Widget
             $model = null;
             $htmlMethod = null;
             $content = '';
+            // 获取搜索框默认值
+            if (isset($option['default'])) {
+                $default = $option['default'];
+            } else {
+                $default = null;
+            }
             switch ($option['type']) {
                 case 'time':
                 case 'date':
                 case 'datetime':
                     $classOption = (array) ArrayHelper::remove($option['options'], 'class', []);
                     $classOption[] = str_replace('.', '-', $column) . '-' . $option['type'] . 'picker';
-                    $content = Html::input('text', $name, ArrayHelper::getValue($searchValue, $column), array_merge(['placeholder' => $label, 'class' => $classOption], $option['options']));
+                    $content = Html::input('text', $name, ArrayHelper::getValue($searchValue, $column, $default), array_merge(['placeholder' => $label, 'class' => $classOption], $option['options']));
                     break;
                 case 'dateRange':
                     $start = 'start_' . $field;
                     $end = 'end_' . $field;
+                    $default = $default ? (array) $default : [];
+                    $startDefault = ArrayHelper::getValue($default, 0);
+                    $endDefault = ArrayHelper::getValue($default, 1);
                     !$label && $label = '日期';
                     $input = [];
                     $classOption = (array) ArrayHelper::remove($option['options'], 'class', []);
-                    $input[] = Html::input('text', "{$namePrefix}[$start]", ArrayHelper::getValue($searchValue, $start), array_merge(['placeholder' => '开始' . $label, 'class' => $classOption + [-1 => 'startdate']], $option['options']));
-                    $input[] = Html::input('text', "{$namePrefix}[$end]", ArrayHelper::getValue($searchValue, $end), array_merge(['placeholder' => '截止' . $label, 'class' => $classOption + [-1 => 'enddate']], $option['options']));
+                    $input[] = Html::input('text', "{$namePrefix}[$start]", ArrayHelper::getValue($searchValue, $start, $startDefault), array_merge(['placeholder' => '开始' . $label, 'class' => $classOption + [-1 => 'startdate']], $option['options']));
+                    $input[] = Html::input('text', "{$namePrefix}[$end]", ArrayHelper::getValue($searchValue, $end, $endDefault), array_merge(['placeholder' => '截止' . $label, 'class' => $classOption + [-1 => 'enddate']], $option['options']));
                     $content = implode('&nbsp;-&nbsp;', $input);
                     break;
                 case 'timeRange':
                     $start = 'start_' . $field;
                     $end = 'end_' . $field;
+                    $default = $default ? (array) $default : [];
+                    $startDefault = ArrayHelper::getValue($default, 0);
+                    $endDefault = ArrayHelper::getValue($default, 1);
                     !$label && $label = '时间';
                     $input = [];
                     $classOption = (array) ArrayHelper::remove($option['options'], 'class', []);
-                    $input[] = Html::input('text', "{$namePrefix}[$start]", ArrayHelper::getValue($searchValue, $start), array_merge(['placeholder' => '开始' . $label, 'class' => $classOption + [-1 => 'starttime']], $option['options']));
-                    $input[] = Html::input('text', "{$namePrefix}[$end]", ArrayHelper::getValue($searchValue, $end), array_merge(['placeholder' => '截止' . $label, 'class' => $classOption + [-1 => 'endtime']], $option['options']));
+                    $input[] = Html::input('text', "{$namePrefix}[$start]", ArrayHelper::getValue($searchValue, $start, $startDefault), array_merge(['placeholder' => '开始' . $label, 'class' => $classOption + [-1 => 'starttime']], $option['options']));
+                    $input[] = Html::input('text', "{$namePrefix}[$end]", ArrayHelper::getValue($searchValue, $end, $endDefault), array_merge(['placeholder' => '截止' . $label, 'class' => $classOption + [-1 => 'endtime']], $option['options']));
                     $content = implode('&nbsp;-&nbsp;', $input);
                     break;
                 case 'select':
@@ -1019,7 +1041,8 @@ class Table extends \yii\base\Widget
                             }
                         }
                     }
-                    $content = Html::$htmlMethod($name, ArrayHelper::getValue($searchValue, $column), $items, array_merge(['class' => 'search-map'], $option['options']));
+                    $option['options']['encodeSpaces'] = true;
+                    $content = Html::$htmlMethod($name, ArrayHelper::getValue($searchValue, $column, $default), $items, array_merge(['class' => 'search-map'], $option['options']));
                     if ($option['type'] === 'select') {
                         $content = Html::tag('div', $content, ['class' => 'select-box']);
                     } else {
@@ -1027,10 +1050,10 @@ class Table extends \yii\base\Widget
                     }
                     break;
                 case 'text':
-                    $content = Html::input('text', $name, ArrayHelper::getValue($searchValue, $column), array_merge(['placeholder' => $label], $option['options']));
+                    $content = Html::input('text', $name, ArrayHelper::getValue($searchValue, $column, $default), array_merge(['placeholder' => $label], $option['options']));
                     break;
                 case 'custom':
-                    $content = call_user_func($option['value'], ArrayHelper::getValue($searchValue, $column));
+                    $content = call_user_func($option['value'], ArrayHelper::getValue($searchValue, $column, $default));
                     break;
             }
             $cells[] = Html::tag('li', $content);
@@ -1113,7 +1136,11 @@ class Table extends \yii\base\Widget
                         $cellOptions['data-action'] = 'selectUpdate';
                     case 'text':
                         empty($cellOptions['data-action']) && $cellOptions['data-action'] = 'textUpdate';
-
+                        // 如果没有权限操作，则直接跳过
+                        if (!$this->can($this->ajaxUpdateAction)) {
+                            unset($cellOptions['data-action']);
+                            break;
+                        }
                         $cellOptions['data-field'] = $this->getColumnName($options['field']);
                         $alias = $this->getColumnAlias($options['field']);
                         if (!$alias)  {
@@ -1141,25 +1168,28 @@ class Table extends \yii\base\Widget
                         if (is_array($type)) {
                             $actionContent = [$content];
                             // 整理配置参数
-                            $actionOptions = ArrayHelper::resetOptions($type, ['key' => 'action', 'value' => 'link']);
+                            $actionOptions = ArrayHelper::resetOptions($type, ['key' => 'action', 'value' => 'link', 'callback' => 'link']);
                             foreach ($actionOptions as $option) {
                                 $link = ArrayHelper::getValue($option, 'link');
                                 if (is_callable($link)) {
-                                    $link = call_user_func($link, $value, $key);
+                                    $href = call_user_func($link, $value, $key);
                                 } else {
                                     $link = $link ?: $option['action'];
+                                    if (!is_array($link)) {
+                                        $href = [$link, 'id' => $key];
+                                    } else {
+                                        $href = $link;
+                                    }
                                 }
-                                if (!is_array($link)) {
-                                    $href = [$link, 'id' => $key];
-                                } else {
-                                    $href = $link;
+                                if (!$this->can($href[0])) {
+                                    continue;
                                 }
                                 switch ($option['action']) {
                                     case 'edit':
-                                        $actionContent[] = Hui::warningBtn('编辑', $href, ['class' => 'edit-fancybox fancybox.iframe']);
+                                        $actionContent[] = Hui::warningBtn('编辑', $href, ['class' => 'edit-fancybox fancybox.iframe edit-btn']);
                                         break;
                                     case 'view':
-                                        $actionContent[] = Hui::primaryBtn('查看', $href, ['class' => 'view-fancybox fancybox.iframe']);
+                                        $actionContent[] = Hui::primaryBtn('查看', $href, ['class' => 'view-fancybox fancybox.iframe view-btn']);
                                         break;
                                     case 'delete':
                                         $href = (array) $href[0];
@@ -1197,7 +1227,7 @@ class Table extends \yii\base\Widget
         }
         // 设置主键值到标签属性中
         $rowOptions['data-key'] = is_array($key) ? json_encode($key) : (string) $key;
-        $rowOptions['class'] = empty($rowOptions['class']) ? [] : $rowOptions['class'];
+        $rowOptions['class'] = empty($rowOptions['class']) ? [] : (array) $rowOptions['class'];
         $rowOptions['class'][] = $rowCount % 2 === 0 ? 'odd' : 'even';
 
         return Html::tag('tr', implode('', $cells), $rowOptions);
@@ -1300,8 +1330,8 @@ class Table extends \yii\base\Widget
                 $content .= '<br>' . Html::a('列设置', $action, ['class' => 'iframe-fancybox fancybox.iframe']);
             }
         }
-        // 如果字段栏设置中包含type属性且不为数组，则进行标记
-        if (isset($options['type']) && !is_array($options['type'])) {
+        // 如果字段栏设置中包含type属性且不为数组，并且权限允许修改，则进行标记
+        if (isset($options['type']) && !is_array($options['type']) && $this->can($this->ajaxUpdateAction)) {
             $headerClass = (array) ArrayHelper::getValue($options, 'class', []);
             $headerClass[] = 'editable';
             $headerOptions['class'] = $headerClass;
@@ -1787,7 +1817,7 @@ class Table extends \yii\base\Widget
             } else if (is_callable($options['value'])) {
                 // 列内容的回调定制
                 $content = call_user_func($options['value'], $value, $key, $options['field']);
-            }else {
+            } else {
                 throw new InvalidParamException('配置项 [value] 必须设置成可被回调的类型！');
             }
         } elseif (!empty($options['field'])) {
@@ -1845,6 +1875,18 @@ class Table extends \yii\base\Widget
     protected function getValueMethod($field)
     {
         return 'get' . Inflector::camelize($field) . 'Value';
+    }
+
+    /**
+     * 是否允许访问
+     *
+     * @param  string  $action 要访问的action名称
+     * @return boolean
+     */
+    protected function can($action)
+    {
+        $auth = Yii::$app->controller->id . '/' . $action;
+        return !$this->hideBtn || u()->can($auth);
     }
 
     /**

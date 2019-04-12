@@ -124,6 +124,10 @@ class Linkage extends \yii\base\Widget
      */
     public $actionHeader = '操作';
     /**
+     * @var boolean 是否开启操作栏
+     */
+    public $enableOperate = true;
+    /**
      * @var array 禁止的操作栏按钮序列，可选值以下值的组合
      * -add
      * -addChild
@@ -306,18 +310,18 @@ class Linkage extends \yii\base\Widget
                     $labels = $this->model->attributeLabels();
                     // 获取字段名
                     $field = $columns[$index]['field'];
+                    if (isset($labels[$field])) {
+                        $columns[$index]['header'] = $labels[$field];
+                    } else {
+                        $columns[$index]['header'] = '';
+                    }
                 }
             } else {
-                $field = $columns[$index]['field'];
-            }
-            if (isset($labels[$field])) {
-                $columns[$index]['header'] = $labels[$field];
-            } else {
-                $columns[$index]['header'] = '';
+                $columns[$index]['header'] = $headerParam;
             }
         }
         $this->columns = $columns;
-        if ($this->model) {
+        if ($this->enableOperate === true && $this->model) {
             $actions = ['add', 'addChild', 'delete'];
             $actions = array_diff($actions, $this->forbiddenActions);
             $this->columns[] = ['header' => $this->actionHeader, 'type' => $actions, 'options' => []];
@@ -534,6 +538,10 @@ class Linkage extends \yii\base\Widget
                         break;
                     case 'select':
                         $colOptions['data-action'] = 'selectUpdate';
+                        $valueMethod = $this->getValueMethod($options['field']);
+                        if (is_callable([$this->model, $valueMethod])) {
+                            $content = call_user_func([$this->model, $valueMethod], $content);
+                        }
                         break;
                     case 'text':
                         $colOptions['data-action'] = 'textUpdate';
@@ -568,11 +576,11 @@ class Linkage extends \yii\base\Widget
                                 // 暂无自定义默认操作链接的需求
                                 switch ($option['action']) {
                                     case 'add':
-                                        $actionContent[] = Html::tag('a', '添加同辈', ['href' => 'javascript:;', 'class' => 'linkage-add-link', 'data-pid' => $pid, 'data-addchild' => 0]);
+                                        $actionContent[] = Html::tag('a', '添加同级', ['href' => 'javascript:;', 'class' => 'linkage-add-link', 'data-pid' => $pid, 'data-addchild' => 0]);
                                         break;
                                     case 'addChild':
                                         if ($recursionLevel < $this->maxLevel || $this->maxLevel == 0) {
-                                            $actionContent[] = Html::tag('a', '追加子类', ['href' => 'javascript:;', 'class' => 'linkage-add-link', 'data-pid' => $key, 'data-addchild' => 1]);
+                                            $actionContent[] = Html::tag('a', '追加下级', ['href' => 'javascript:;', 'class' => 'linkage-add-link', 'data-pid' => $key, 'data-addchild' => 1]);
                                         }
                                         break;
                                     case 'delete':
@@ -869,6 +877,14 @@ class Linkage extends \yii\base\Widget
                     $model->{$codeField} = (string) ($lastChild[$codeField] + 1);
                 } else {
                     $parent = $className::findOne($pid);
+                    // 如果存在 `top_id` 字段则进行设置
+                    if (in_array('top_id', $model->attributes())) {
+                        if ($parent->top_id) {
+                            $model->top_id = $parent->top_id;
+                        } else {
+                            $model->top_id = $parent->id;
+                        }
+                    }
                     $lastCodeValue = substr($lastChild[$codeField], strrpos($lastChild[$codeField], self::$delimiter) + 1);
                     $model->{$codeField} = $parent[$codeField] . self::$delimiter . ($lastCodeValue + 1);
                 }

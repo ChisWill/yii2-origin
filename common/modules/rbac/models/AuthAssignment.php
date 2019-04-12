@@ -5,7 +5,7 @@ namespace common\modules\rbac\models;
 use Yii;
 
 /**
- * 这是表 `hsh_auth_assignment` 的模型
+ * 这是表 `auth_assignment` 的模型
  */
 class AuthAssignment extends \common\components\ARModel
 {

@@ -15,8 +15,7 @@ return [
     'cssCompressor' => 'java -jar console/jar/yuicompressor.jar --type css {from} -o {to}',
     // The list of asset bundles to compress:
     'bundles' => [
-        'frontend\assets\AppAsset',
-        'frontend\assets\TestAsset'
+        'frontend\assets\AppAsset'
     ],
     // Asset bundle for compression output:
     'targets' => [
@@ -24,16 +23,8 @@ return [
             'class' => 'yii\web\AssetBundle',
             'basePath' => '@webroot/assets',
             'baseUrl' => '@web/assets',
-            'js' => 'js/all-{hash}.js',
-            'css' => 'css/all-{hash}.css',
-        ],
-        'base' => [
-            'class' => 'yii\web\AssetBundle',
-            'basePath' => '@webroot/assets',
-            'baseUrl' => '@web/assets',
-            'js' => 'js/base-{hash}.js',
-            'css' => 'css/base-{hash}.css',
-            'depends' => ['frontend\assets\TestAsset'],
+            'js' => 'all-{hash}.js',
+            'css' => 'all-{hash}.css',
         ],
     ],
     // Asset manager configuration:

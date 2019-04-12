@@ -2,16 +2,24 @@
     padding: 0;
     margin: 0;
 }
+.linkage-container {
+    overflow-x: auto;
+    min-width: 600px;
+}
 .linkage-ul {
     list-style: none;
     font-size: 14px;
 }
 .linkage-header p {
+    font-weight: bold;
     display: table-cell;
     border-bottom: 1px solid #DDD;
 }
+.linkage-summary {
+    text-align: right;
+}
 .linkage-ul > li > div:hover {
-    background: #ECFBD4;
+    background: rgba(146, 223, 220, 0.6);
 }
 .linkage-ul > li > div {
     display: table;
@@ -57,6 +65,7 @@
     float: left;
     margin-top: -2px;
     margin-right: 3px;
+    cursor: pointer;
 }
 .addItemLink, .cancelItemLink {
     cursor: pointer;
@@ -116,4 +125,29 @@
 }
 .addItemLink:hover, .cancelItemLink:hover, .linkage-add-link:hover, .linkage-delete-link:hover {
     color: #D3D;
+}
+.linkage-row p {
+    border-right: 1px solid rgb(221, 221, 221);
+    box-sizing: border-box;
+}
+.linkage-drag-handle {
+    border-left: 1px solid rgb(221, 221, 221);
+    padding-left: 5px;
+}
+.linkage-header {
+    border: 1px solid rgb(221, 221, 221);
+    border-bottom: none;
+}
+.linkage-ul {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+.linkage-header p {
+    border-left: 1px solid rgb(221, 221, 221);
+    box-sizing: border-box;
+}
+.linkage-header p:first-child {
+    padding-left: 5px;
+    border-left: none;
 }

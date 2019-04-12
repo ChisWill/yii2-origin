@@ -1,0 +1,2 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:84:"ALTER TABLE `oa_task`
+ADD COLUMN `state`  tinyint NULL DEFAULT 1 AFTER `task_state`;";s:4:"desc";s:7:"oa_task";s:7:"warning";a:0:{}}

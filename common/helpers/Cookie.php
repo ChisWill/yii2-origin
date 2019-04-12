@@ -19,7 +19,7 @@ class Cookie
         Yii::$app->response->cookies->add(new \yii\web\Cookie([
             'name' => $name,
             'value' => $value,
-            'expire' => $expire
+            'expire' => $expire ? time() + $expire : 0
         ]));
     }
 
@@ -42,7 +42,7 @@ class Cookie
      */
     public static function remove($name)
     {
-        Yii::$app->request->cookies->remove($name);
+        Yii::$app->response->cookies->remove($name);
     }
 
     /**

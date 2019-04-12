@@ -18,7 +18,8 @@ class MigrateController extends \common\components\WebController
     public $menu = [
         'list' => ['name' => '历史版本', 'url' => 'history-list'],
         'create' => ['name' => '创建迁移', 'url' => 'create-migration'],
-        'cache' => ['name' => '缓存管理', 'url' => 'cache']
+        'cache' => ['name' => '缓存管理', 'url' => 'cache'],
+        'data' => ['name' => '数据同步', 'url' => 'sync-data']
     ];
 
     public $action;
@@ -56,6 +57,56 @@ class MigrateController extends \common\components\WebController
     public function actionIndex()
     {
         return $this->redirect(['historyList']);
+    }
+
+    public function actionSyncData()
+    {
+        $model = $this->model;
+        $files = $model->getDataFiles();
+
+        if (post('action') === 'migrateData') {
+            try {
+                $model->syncData($files);
+                return success('数据同步成功');
+            } catch (\Exception $e) {
+                return error($e->getMessage());
+            }
+        }
+
+        $model->scenario = 'data';
+        $user = Cookie::get($this->userCookieName);
+        $model->commitUser = $user ?: null;
+
+        if ($model->load()) {
+            if ($model->validate()) {
+                Cookie::set($this->userCookieName, $model->commitUser);
+                try {
+                    $model->recordData();
+                    return success('数据保存成功');
+                } catch (\Exception $e) {
+                    return error($e->getMessage());
+                }
+            } else {
+                return error($model);
+            }
+        }
+
+        return $this->render('syncData', compact('files', 'model'));
+    }
+
+    public function actionDeleteData($file)
+    {
+        if (!$this->isLocalEnv()) {
+            return error('禁止删除！');
+        }
+
+        $model = $this->model;
+
+        if ($model->deleteData($file)) {
+            return success('成功删除！');
+        } else {
+            return error('删除失败！');
+        }
     }
 
     public function actionCache()
@@ -127,7 +178,7 @@ class MigrateController extends \common\components\WebController
     public function actionCreateMigration()
     {
         $model = $this->model;
-
+        $model->scenario = 'migrate';
         $user = Cookie::get($this->userCookieName);
         $model->commitUser = $user ?: null;
 
@@ -135,8 +186,8 @@ class MigrateController extends \common\components\WebController
             if (!$this->isLocalEnv()) {
                 return error('禁止创建！');
             }
-            Cookie::set($this->userCookieName, $model->commitUser);
             if ($model->validate()) {
+                Cookie::set($this->userCookieName, $model->commitUser);
                 if ($model->save()) {
                     return success('创建成功！');
                 } else {

@@ -340,7 +340,7 @@ trait QueryTrait
      * 
      * @param  array $columns 列的配置参数
      * @param  array $options 其他杂项配置参数
-     * @return string         表格的HTML内容         
+     * @return string         表格的HTML内容
      */
     public function getLinkage($columns = [], $params = [])
     {
@@ -357,7 +357,7 @@ trait QueryTrait
      * 
      * @param  array $columns 列的配置参数
      * @param  array $options 其他杂项配置参数
-     * @return string         表格的HTML内容         
+     * @return string         表格的HTML内容
      */
     public function getTable($columns = [], $params = [])
     {

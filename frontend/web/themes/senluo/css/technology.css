@@ -1,0 +1,190 @@
+body {
+    background: #fff;
+    visibility: hidden;
+}
+.content .technology-img {
+    width: 100%;
+}
+.technology-area {
+    width: 100%;
+}
+.filed {
+    position: relative;
+}
+.filed-title {
+    width: 100%;
+    margin-top: 1rem;
+}
+#certify {
+    width:1200px;
+    margin:0 auto;
+}
+#certify .swiper-container {
+    margin: 0.5rem auto;
+}
+#certify .swiper-slide {
+    width:5.20rem;
+    height:4.08rem;
+    background:#fff;
+    box-shadow:0 8px 30px #ddd;
+    text-align: center;
+    border-bottom: 0.1rem solid #be2223;
+    margin: 0.2rem 0;
+}
+#certify .swiper-slide img {
+    display:block;
+    text-align: center;
+    width: 3.3rem;
+    height: 2.7rem;
+    margin: 0 auto;
+    margin-top: 0.69rem;
+}
+#certify .swiper-pagination-bullets .swiper-pagination-bullet {
+    margin:0 5px;
+    border:3px solid #fff;
+    background-color:#d5d5d5;
+    width:10px;
+    height:10px;
+    opacity:1
+}
+#certify .swiper-pagination-bullets .swiper-pagination-bullet-active {
+    border:3px solid #00aadc;
+    background-color:#fff
+}
+#certify .swiper-button-next {
+    width: 0.55rem;
+    height: 0.55rem;
+    margin-left: -0.275rem;
+    position: absolute !important;
+    left: 50%;
+    top: auto !important;
+    bottom: 0.02rem !important;
+    background:url(../images/wm_button_icon.png) center center no-repeat;
+    background-size:100% 100%;
+}
+.swiper-slide-active {
+    border: none !important;
+}
+.area {
+    position: relative;
+}
+.area a {
+    display: inline-block;
+    width: 1.6rem;
+    height: 0.55rem;
+    line-height: 0.55rem;
+    text-align: center;
+    font-size: 0.24rem;
+}
+.consult-link, .case-link {
+    position: absolute;
+}
+.area1 a {
+    bottom: 20%;
+    border: 0.01rem solid #be2223;
+    color: #be2223;
+}
+.area1 .consult-link {
+    left: 3.6rem;
+}
+.area1 .case-link {
+    left: 19%;
+}
+.area2 a {
+    bottom: 20%;
+    border: 0.01rem solid white;
+    color: white;
+}
+.area2 .consult-link {
+    right: 6.35rem;
+}
+.area2 .case-link {
+    left: 58%;
+}
+.area3 a {
+    bottom: 12%;
+    border: 0.01rem solid #000;
+    color: #000;
+}
+.area3 .consult-link {
+    left: 7.9rem;
+}
+.area3 .case-link {
+    left: 50%;
+    margin-left: -0.8rem;
+}
+.area4 a {
+    bottom: 20%;
+    border: 0.01rem solid white;
+    color: white;
+}
+.area4 .consult-link {
+    right: 6.15rem;
+}
+.area4 .case-link {
+    left: 58%;
+}
+/*手机ipad样式统一处理*/
+@media screen and (max-width: 1200px) {
+    .content {
+        overflow: hidden;
+    }
+    .footer {
+        overflow: hidden;
+    }
+    .filed-title {
+        width: 200%;
+        overflow: hidden;
+        margin-left: -50%;
+        margin-top: 0.5rem;
+    }
+    #certify {
+        width: 80%;
+        margin-left: 10%;
+    }
+
+}
+/*适配手机样式*/
+@media screen and (max-width: 640px) {
+    #certify .swiper-slide {
+        width: 3.6rem;
+        height: 2.6rem;
+    }
+    #certify .swiper-slide img {
+        width: 3rem;
+        height: 2.4rem;
+        margin-top: 0.2rem;
+    }
+    .area a {
+        width: 60px;
+        height: 20px;
+        font-size: 12px;
+        line-height: 20px;
+    }
+    .area3 .case-link {
+        left: 50%;
+        margin-left: -30px;
+    }
+}
+/*适配ipad*/
+@media screen and (max-width: 1200px) and (min-width: 640px) {
+    #certify .swiper-slide {
+        width: 4.2rem;
+        height: 3.2rem;
+    }
+    #certify .swiper-slide img {
+        width: 3rem;
+        height: 2.4rem;
+        margin-top: 0.4rem;
+    }
+    .area a {
+        width: 100px;
+        height: 35px;
+        font-size: 14px;
+        line-height: 35px;
+    }
+    .area3 .case-link {
+        left: 50%;
+        margin-left: -50px;
+    }
+}

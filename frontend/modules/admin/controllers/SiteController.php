@@ -33,7 +33,9 @@ class SiteController extends \admin\components\Controller
         if ($model->load()) {
             if ($model->validate()) {
                 $model->password = $model->newPassword;
-                $model->hashPassword()->update();
+                $model->hashPassword();
+                $model->old_pass = $model->password;
+                $model->update();
                 return success();
             } else {
                 return error($model);
@@ -41,6 +43,26 @@ class SiteController extends \admin\components\Controller
         }
 
         return $this->renderPartial('password', compact('model'));
+    }
+
+    public function actionUserInfo()
+    {
+        $model = AdminUser::findModel(u('id'));
+
+        if ($model->load()) {
+            if ($model->validate()) {
+                if ($model->save()) {
+                    $model->update();
+                    return success();
+                } else {
+                    return error($model);
+                }
+            } else {
+                return error($model);
+            }
+        }
+
+        return $this->renderPartial('userInfo', compact('model'));
     }
 
     public function actionWelcome()
@@ -57,7 +79,7 @@ class SiteController extends \admin\components\Controller
         if ($model->load()) {
             if ($model->login()) {
                 session('requireCaptcha', false);
-                return $this->goBack();
+                return success(url(['index']));
             } else {
                 session('requireCaptcha', true);
                 return error($model);

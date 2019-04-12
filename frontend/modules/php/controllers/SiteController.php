@@ -4,12 +4,18 @@ namespace php\controllers;
 
 use Yii;
 use php\models\User;
+use php\models\XR;
 
 class SiteController extends \php\components\Controller
 {
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    public function actionXr()
+    {
+        $data = XR::batchEncode();
     }
 
     public function actionRegister()

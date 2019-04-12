@@ -27,4 +27,10 @@ class ArticleMenu extends \common\models\ArticleMenu
             // 'field2' => 'description2',
         ]);
     }
+
+    public static function getAllMenuQuery()
+    {
+        return self::find()
+            ->active();
+    }
 }

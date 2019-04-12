@@ -3,7 +3,11 @@
 body {
     font-size: 14px;
 }
-
+.clearfix:after {
+    display: block;
+    content: "";
+    clear: both;
+}
 .header,
 .footer {
     position: absolute;
@@ -16,7 +20,8 @@ body {
 .header {
     top: 0;
     height: 60px;
-    background: #426374 url(logo.png) no-repeat 0 center;
+    background: url(logo.png) no-repeat center center;
+    margin-top: 30px;
 }
 
 .login-wraper {
@@ -27,46 +32,122 @@ body {
     bottom: 0;
     right: 0;
     z-index: 1;
-    background: #3283AC url(admin-login-bg.jpg) no-repeat center
+    background: rgb(7, 5, 18) url(admin-login-bg.jpg) no-repeat center
 }
 
 .login-box {
     position: absolute;
-    width: 617px;
-    background: url(admin-loginform-bg.png) no-repeat;
+    width: 500px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.6);
     left: 50%;
     top: 50%;
-    margin-left: -309px;
+    margin-left: -250px;
     margin-top: -184px;
-    padding-top: 38px
+    border-radius: 10px;
+    padding-top: 30px;
+    box-shadow: 0px 0px 23px 0px rgba(0, 0, 0, 0.6);
 }
 
 .login-box label.form-label {
     font-weight: normal;
+    position: absolute;
+    left: -25px;
+    top: -2px;
+    z-index: 200;
 }
-
+.login-box input:focus { 
+    border-color: #e86f1b;
+}
 .login-box .row {
-    margin-top: 20px;
+    margin-top: 20px !important;
 }
 
 .login-box .row .form-label .Hui-iconfont {
     font-size: 24px;
+    color: #ff6600;
 }
 
 .login-box .input-text {
-    width: 360px;
+    width: 430px;
+    height: 45px !important;
+    line-height: 45px;
+    text-indent: 35px;
+    border-radius: 8px;
 }
-
+.login-box .row {
+    margin-top: 0px !important;
+}
+.login-btn {
+    border-radius: 10px !important;
+    background: #fe802c !important;
+    border: none !important;
+    width: 430px !important;
+    height: 45px !important;
+    line-height: 45px;
+    padding: 0px;
+    margin-left: 5px;
+    font-size: 20px !important;
+}
+.login-btn:hover {
+    background: #f96400 !important;
+}
+#loginform-captcha {
+    width: 300px !important;
+}
+.login-top img {
+    max-width: 184px;
+    max-height: 56px;
+}
+#loginform-captcha-image {
+    height: 45px;
+    width: 110px;
+    border-radius: 10px;
+    margin-left: 15px;
+}
+.login-line {
+    margin: 20px auto;
+}
 @media (max-width: 617px) {
+    .admin-name {
+        font-size: 25px !important;
+    }
+    .login-box {
+        width: 100%;
+        margin-left: 0px;
+        left: 0;
+        top: 45%;
+    }
     .login-box .input-text {
-        width: 40%; 
+        width: 90%;
+        text-indent: 14%;
     }
     .form-horizontal .form-label {
         text-align: right !important;
         margin-left: 47px;
+        left: -10% !important;
     }
-    .col-xs-offset-3 {
-        margin-left: 30% !important;
+    .captcha-row {
+        padding-left: 0px !important;
+    }
+    body {
+        overflow: hidden;
+    }
+    .login-btn {
+        width: 73% !important;
+    }
+    #loginform-captcha-image {
+        margin-left: 0px;
+    }
+    #loginform-captcha {
+        width: 40% !important;
+        margin-left: 4%;
+        text-indent: 25%;
+        margin-right: 8%;
+    }
+    .field-loginform-rememberme .formControls {
+        width: 100%;
+        margin-left: 0;
     }
 }
 
@@ -77,5 +158,42 @@ body {
     text-align: center;
     color: #fff;
     font-size: 12px;
-    background-color: #426374;
+    background-color: rgb(7, 5, 18);
+}
+.login-box label {
+    color: #ddd;
+}
+.login-top {
+    height: 55px;
+    line-height: 55px;
+}
+.login-top .admin-img {
+    width: 50%;
+    text-align: center;
+    float: left;
+}
+.admin-name {
+    width: 50%;
+    text-align: center;
+    height: 55px;
+    line-height: 55px;
+    color: #fff;
+    font-size: 30px;
+    float: left;
+    border-left: 2px solid #fff;
+    box-sizing: border-box;
+}
+.login-box .row {
+    position: relative;
+}
+.login-box .formControls {
+    margin-left: 40px;
+    background: transparent;
+    margin-bottom: 10px;
+    text-align: left;
+}
+/*去掉输入框的浅黄色*/
+.input-text:-webkit-autofill { 
+    -webkit-box-shadow: 0 0 0px 1000px white inset; 
+    border: 1px solid #CCC!important; 
 }

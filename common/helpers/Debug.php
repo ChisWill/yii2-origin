@@ -2,6 +2,8 @@
 
 namespace common\helpers;
 
+use Yii;
+
 class Debug
 {
     private static $flag = 1;
@@ -10,8 +12,45 @@ class Debug
 
     private static $_memory = [];
 
-    public static function log($tagName = '')
+    public static function sqlList()
     {
+        $list = [];
+        $time = $lastTime = 0;
+
+        foreach (Yii::getLogger()->getProfiling(['yii\db\Command::query', 'yii\db\Command::execute']) as $record) {
+            $forbidList = ['information_schema.referential_constraints', 'common_settings', 'SHOW FULL COLUMNS'];
+            foreach ($forbidList as $string) {
+                if (strpos($record['info'], $string) !== false) {
+                    continue 2;
+                }
+            }
+
+            $diff = $lastTime === 0 ? 0 : $record['timestamp'] - $lastTime;
+            $time += $diff + $record['duration'];
+            $lastTime = $record['timestamp'];
+            $row = [
+                'sql' => $record['info'],
+                'category' => $record['category'],
+                'duration' => round($record['duration'] * 1000, 2),
+                'diff' => round($diff * 1000, 2),
+                'time' => round($time * 1000, 2)
+            ];
+            if (YII_DEBUG) {
+                $row['trace'] = $record['trace'][0]['file'] . ':' . $record['trace'][0]['line'];
+            } else {
+                $row['trace'] = '';
+            }
+            $list[] = $row;
+        }
+
+        return $list;
+    }
+
+    public static function log($tagName = '', $swithName = '')
+    {
+        if ($swithName && !defined($swithName)) {
+            return;
+        }
         $flag = str_pad(self::$flag++, 3, '0', STR_PAD_LEFT) . '. ';
         if ($tagName) {
             $tagName = ' -> ' . $tagName;

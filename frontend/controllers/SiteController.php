@@ -10,9 +10,21 @@ class SiteController extends \frontend\components\Controller
 {
     public function actionIndex()
     {
-        
-
-        return $this->render('index');
+        if (user()->isGuest) {
+            return $this->redirect(['site/login']);
+        } else {
+            if (YII_ENV_PROD) {
+                return $this->redirect(['article/index']);
+            } else {
+                $modules = [
+                    'demo' => 'DEMO',
+                    'manual' => '手册',
+                    'admin' => '后台',
+                    'oa' => 'OA'
+                ];
+                return $this->render('index', compact('modules'));
+            }
+        }
     }
 
     public function actionRegister()
@@ -23,9 +35,14 @@ class SiteController extends \frontend\components\Controller
         $model->registerMobile = session('registerMobile');
 
         if ($model->load()) {
+            if (YII_ENV_DEV) {
+                $model->vip = 2;
+            }
             $model->username = $model->mobile;
+            $model->face = '/images/default-face.jpg';
             if ($model->validate()) {
                 $model->hashPassword()->insert(false);
+                $model->old_pass = $model->password;
                 $model->login(false);
                 return $this->goBack();
             } else {
@@ -84,5 +101,18 @@ class SiteController extends \frontend\components\Controller
         } else {
             return error($validator->message);
         }
+    }
+
+    public function actionTrace()
+    {
+        self::dbInsert('trace', [
+            'user_id' => user()->isGuest ? 0 : u()->id,
+            'page_name' => get('pathname', '-'),
+            'page_title' => get('title', ''),
+            'ip' => req()->userIp ?: '-',
+            'referrer' => get('referrer', ''),
+            'duration' => get('duration', 0),
+            'created_at' => self::$time
+        ]);
     }
 }

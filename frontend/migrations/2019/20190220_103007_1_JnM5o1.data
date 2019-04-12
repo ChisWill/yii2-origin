@@ -1,0 +1,2 @@
+a:4:{s:4:"user";s:10:"suyuanyuan";s:3:"sql";s:109:"ALTER TABLE `oa_notice`
+ADD COLUMN `position`  varchar(200) NULL DEFAULT '' COMMENT '职位' AFTER `content`;";s:4:"desc";s:8:"position";s:7:"warning";a:0:{}}

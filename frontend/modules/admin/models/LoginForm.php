@@ -47,8 +47,13 @@ class LoginForm extends \common\components\Model
     {
         if ($this->validate()) {
             $user = $this->getUser();
-            $user->login_time = date('Y-m-d H:i:s');
-            $user->update();
+            if (!defined('YII_LOGIN')) {
+                $user->login_time = date('Y-m-d H:i:s');
+                $user->last_ip = $user->login_ip;
+                $user->login_ip = req()->getUserIP();
+                $user->update();
+                AdminAction::add(AdminAction::TYPE_SELECT, 'admin_user', $user->id);
+            }
             return user()->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
         } else {
             return false;

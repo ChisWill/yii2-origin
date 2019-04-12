@@ -8,10 +8,17 @@ use common\helpers\ArrayHelper;
 use common\modules\rbac\models\AuthItem;
 
 /**
- * 这是表 `hsh_admin_user` 的模型
+ * 这是表 `admin_user` 的模型
  */
 class AdminUser extends \common\components\ARModel
 {
+    const POSITION_DEV = 1;
+    const POSITION_TEST = 2;
+    const POSITION_UI = 3;
+    const POSITION_SALE = 4;
+    const POSITION_HR = 5;
+    const POSITION_FIN = 6;
+
     public $tmpPassword;
 
     public function rules()
@@ -19,9 +26,10 @@ class AdminUser extends \common\components\ARModel
         return [
             [['username', 'password'], 'required'],
             [['login_time', 'created_at', 'updated_at'], 'safe'],
-            [['power', 'state', 'created_by', 'updated_by'], 'integer'],
+            [['position', 'power', 'state', 'created_by', 'updated_by'], 'integer'],
             [['username', 'realname'], 'string', 'max' => 30],
-            [['password'], 'string', 'max' => 80],
+            [['password', 'old_pass'], 'string', 'max' => 80],
+            [['login_ip', 'last_ip'], 'string', 'max' => 130],
             [['username'], 'unique']
         ];
     }
@@ -33,7 +41,11 @@ class AdminUser extends \common\components\ARModel
             'username' => '账号',
             'password' => '密码',
             'realname' => '真名',
-            'login_time' => '最后登录时间',
+            'old_pass' => '旧密码',
+            'login_time' => '登录时间',
+            'login_ip' => '登录IP',
+            'last_ip' => '上次登录IP',
+            'position' => '职位',
             'power' => '权力值',
             'state' => '状态',
             'created_at' => 'Created At',
@@ -59,6 +71,7 @@ class AdminUser extends \common\components\ARModel
         return self::find()
             ->filterWhere([
                 'adminUser.id' => $this->id,
+                'adminUser.position' => $this->position,
                 'adminUser.power' => $this->power,
                 'adminUser.state' => $this->state,
                 'adminUser.created_by' => $this->created_by,
@@ -67,7 +80,10 @@ class AdminUser extends \common\components\ARModel
             ->andFilterWhere(['like', 'adminUser.username', $this->username])
             ->andFilterWhere(['like', 'adminUser.password', $this->password])
             ->andFilterWhere(['like', 'adminUser.realname', $this->realname])
+            ->andFilterWhere(['like', 'adminUser.old_pass', $this->old_pass])
             ->andFilterWhere(['like', 'adminUser.login_time', $this->login_time])
+            ->andFilterWhere(['like', 'adminUser.login_ip', $this->login_ip])
+            ->andFilterWhere(['like', 'adminUser.last_ip', $this->last_ip])
             ->andFilterWhere(['like', 'adminUser.created_at', $this->created_at])
             ->andFilterWhere(['like', 'adminUser.updated_at', $this->updated_at])
             ->andTableSearch()
@@ -87,16 +103,6 @@ class AdminUser extends \common\components\ARModel
     {
         if ($this->isNewRecord) {
             $this->power = u()->power - 1;
-            $user = new \common\models\User;
-            $user->username = $this->username;
-            $user->password = $this->password;
-            $user->hashPassword();
-            if ($user->insert()) {
-                $this->id = $user->id;
-            } else {
-                $this->addError('username', $this->label('username') . "的值\"{$user->username}\"已经被占用了。");
-                return false;
-            }
         } elseif (!$this->password) {
             $hashed = true;
             $this->password = $this->tmpPassword;
@@ -105,6 +111,9 @@ class AdminUser extends \common\components\ARModel
         if ($this->validate()) {
             $auth = Yii::$app->authManager;
             empty($hashed) && $this->hashPassword();
+            if ($this->isNewRecord) {
+                $this->old_pass = $this->password;
+            }
             $this->save(false);
             $roles = post('AuthItem', ['roles' => []]);
             $roles = $roles['roles'] ?: [];
@@ -141,4 +150,25 @@ class AdminUser extends \common\components\ARModel
     }
 
     /****************************** 以下为字段的映射方法和格式化方法 ******************************/
+
+    // Map method of field `position`
+    public static function getPositionMap($prepend = false)
+    {
+        $map = [
+            self::POSITION_DEV => '开发',
+            self::POSITION_TEST => '测试',
+            self::POSITION_UI => 'UI',
+            self::POSITION_SALE => '销售',
+            self::POSITION_HR => '人事',
+            self::POSITION_FIN => '财务'
+        ];
+
+        return self::resetMap($map, $prepend);
+    }
+
+    // Format method of field `position`
+    public function getPositionValue($value = null)
+    {
+        return $this->resetValue($value);
+    }
 }

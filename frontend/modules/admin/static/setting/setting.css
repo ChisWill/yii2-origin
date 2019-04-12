@@ -16,22 +16,28 @@
 }
 .setting-container ul {
     margin: 20px 0 0 0px;
-    width: 1100px;
+    width: 100%;
 }
 .setting-container ul li {
     list-style: none;
     float: left;
 }
 .setting-container ul li a {
-    color: #333;
+    color: #95a5a6;
     display: block;
     font-size: 14px;
-    padding: 5px 10px;
+    padding: 9px 15px;
+    background: #f9f9f9;
+    margin-right: 5px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border: 1px solid #ddd;
+    border-bottom: none;
 }
 .setting-container ul li.current a {
-    color: #FFF;
-    font-weight: bold;
-    background-color: #222;
+    /*font-weight: bold;*/
+    background-color: #40cbb9;
+    color: #fff;
 }
 .setting-container ul li span {
     line-height: 28px;
@@ -45,14 +51,14 @@
 }
 .setting-container input {
     border: 1px solid #ccc;
-    border-radius: 5px;
+    /*border-radius: 5px;*/
     padding: 8px;
     width: 455px;
 }
 .setting-container textarea {
     vertical-align: middle;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    /*border-radius: 5px;*/
     padding: 8px;
     width: 455px;
     resize: none;
@@ -67,10 +73,9 @@
     vertical-align: inherit;
 }
 .setting-container table.setting-table {
-    border-top: none;
-    border-bottom: none;
-    margin: 20px 0 0 0px;
-    width: 1100px;
+    padding: 20px 15px;
+    /*width: 100%;*/
+    background: #f5f5f5;
 }
 .setting-container table th, .setting-container table td {
     border-left: none;
@@ -87,7 +92,8 @@
     text-align: left;
 }
 .setting-container table tr {
-    margin: 20px 0 0;
+    width: 90%;
+    margin: 20px 20px;
 }
 .setting-container input[type="button"] {
     border: 0 none;
@@ -96,10 +102,10 @@
     cursor: pointer;
     padding: 7px 0;
     width: 90px;
-    background: none repeat scroll 0 0 #119BFF;
+    background: #3cc3b5;
 }
 .setting-container input[type="button"]:hover {
-    background: none repeat scroll 0 0 #007AFF;
+    background: #40cbb9;
 }
 .setting-container .change-edit-li {
     float: right;
@@ -108,17 +114,19 @@
     font-weight: bold;
 }
 .setting-container #addTopParentLink {
-    background: #F2F2F2;
+    background: #e8edf0;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
 }
 .setting-container .change-edit-li a {
-    background: none repeat scroll 0 0 #89BF5C;
+    background: none repeat scroll 0 0 #1dbeba;
     color: white;
 }
 .setting-container .change-edit-li a.showText {
-    background: none repeat scroll 0 0 #89BF5C;
+    background: none repeat scroll 0 0 #1dbeba;
 }
 .setting-container .change-edit-li a.showEdit {
-    background: none repeat scroll 0 0 #D67DB8;
+    background: none repeat scroll 0 0 #f39c12;
 }
 .setting-container .add-link-img {
     margin-left: 10px;
@@ -167,12 +175,12 @@
     display: none;
 }
 .setting-container a.fancybox {
-    color: #16F;
+    color: #1dbeba;
     font-size: 16px;
     vertical-align: middle;
 }
 .setting-container a.fancybox:hover {
-    color: #33E;
+    color: #4eccb8;
 }
 .setting-container .add-bar td {
     line-height: 30px;
@@ -192,4 +200,43 @@
     color: #F31;
     font-size: 36px;
     margin-right: 10px;
+}
+.tabBar li:nth-child(1) {
+    margin-left: 15px;
+}
+.setting-table tbody {
+    margin: 0 15px;
+}
+#settingContent tr {
+    width: 98% !important;
+    padding: 0 15px;
+    border-bottom: 1px solid #ddd;
+    margin-left: 15px;
+}
+.tabBar .add-icon {
+    height: 40px;
+    line-height: 40px;
+}
+.tabBar .delete-icon {
+    background: transparent !important;
+}
+.tabBar .menu-name-input {
+    margin-top: 6px;
+}
+.tabBar .menu-name-submit {
+    margin-top: 5px;
+}
+.tabBar li:last-child a {
+    margin-right: 0px;
+}
+.table-border {
+    border: 1px solid #ddd;
+}
+.table-show tbody tr {
+     background: #f9f9f9; 
+}
+@media (max-width: 767px) {
+    .page-container {
+        min-width: 750px !important;
+    }
 }

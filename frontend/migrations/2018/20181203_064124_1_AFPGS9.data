@@ -1,0 +1,2 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:98:"ALTER TABLE `article`
+ADD COLUMN `count`  int NULL DEFAULT 0 COMMENT '浏览次数' AFTER `cover`;";s:4:"desc";s:7:"article";s:7:"warning";a:0:{}}

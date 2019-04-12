@@ -47,8 +47,8 @@ class FinanceController extends \oa\components\Controller
                     return Html::successSpan($row->amount);
                 }
             },
-            'remark' => ['type' => 'text'],
-            'category_id' => ['type' => 'select', 'header' => '分类'],
+            'remark' => ['type' => 'text', 'width' => '600px'],
+            'category_id' => ['type' => 'select', 'header' => '分类', 'width' => '300px'],
             'adminUser.realname' => '录入人'
         ], [
             'paging' => 15,

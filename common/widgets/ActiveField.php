@@ -60,8 +60,13 @@ class ActiveField extends \yii\widgets\ActiveField
 
     private function guessItems($items)
     {
+        $model = $this->model;
+        if (is_scalar($items)) {
+            $field = $this->attribute;
+            $model->$field = $items;
+            $items = null;
+        }
         if ($items === null) {
-            $model = $this->model;
             $method = 'get' . Inflector::id2camel($this->attribute, '_') . 'Map';
             if (method_exists($model::className(), $method)) {
                 return call_user_func([$model::className(), $method]);
@@ -137,6 +142,7 @@ class ActiveField extends \yii\widgets\ActiveField
      */
     public function verifyCode($config = [], $options = [])
     {
+        $btnId = ArrayHelper::remove($options, 'btnId', 'verifyCodeBtn');
         $default = [
             'action' => url(['site/verifyCode']),
             'mobile' => '#' . Html::getInputId($this->model, 'mobile'),
@@ -144,10 +150,10 @@ class ActiveField extends \yii\widgets\ActiveField
         ];
         $config = array_merge($default, $config);
         $input = Html::activeTextInput($this->model, $this->attribute, $options);
-        $button = Html::buttonInput('获取验证码', ['id' => 'verifyCodeBtn', 'data' => $config, 'class' => 'verifyCodeBtn']);
+        $button = Html::buttonInput('获取验证码', ['id' => $btnId, 'data' => $config, 'class' => 'verifyCodeBtn']);
         $this->parts['{input}'] = $input . $button;
 
-        Yii::$app->getView()->registerJs('$("#verifyCodeBtn").verifyCode()');
+        Yii::$app->getView()->registerJs('$("#' . $btnId . '").verifyCode()');
 
         return $this;
     }
@@ -201,6 +207,7 @@ JS
         if (strpos($this->attribute, '[]') !== false) {
             $attribute = explode('[]', $this->attribute)[0];
             $options['name'] = Html::getInputName($this->model, $attribute) . '[]';
+            $options['multiple'] = true;
         } else {
             $options['name'] = Html::getInputName($this->model, $this->attribute);
         }

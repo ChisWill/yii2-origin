@@ -17,5 +17,7 @@ class Module extends \common\components\Module
         parent::init();
 
         \admin\Module::moduleInit();
+
+        Yii::$app->user->loginUrl = ['oa/site/login'];
     }
 }

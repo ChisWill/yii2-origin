@@ -1,0 +1,2 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:101:"ALTER TABLE `article_menu`
+ADD COLUMN `top_id`  int NULL DEFAULT 0 COMMENT '最上级ID' AFTER `pid`;";s:4:"desc";s:12:"article_menu";s:7:"warning";a:0:{}}

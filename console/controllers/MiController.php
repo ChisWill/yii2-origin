@@ -24,6 +24,33 @@ class MiController extends \common\components\ConsoleController
         echo 'You could use command `yii mi frontend` to execute.' . "\n";
     }
 
+    public function actionData($appName = null)
+    {
+        $generator = new \common\modules\wizard\generators\migrate\Generator;
+        $generator->appName = $appName;
+        try {
+            $files = $generator->getDataFiles();
+
+            $count = count($files);
+
+            if ($count > 0) {
+                fwrite(STDOUT, sprintf('Total %d files, update? [y/n]' . "\n", $count));
+                $answer = fgets(STDIN);
+                if (strpos($answer, 'y') === 0) {
+                    $generator->syncData($files);
+                    echo 'Update ' . $count . ' Data Success.';
+                } else {
+                    echo 'Over.';
+                }
+            } else {
+                echo 'No Data.';
+            }
+            echo "\n";
+        } catch (\Exception $e) {
+            die($e->getMessage() . "\n");
+        }
+    }
+
     /**
      * Upgrades all versions.
      */

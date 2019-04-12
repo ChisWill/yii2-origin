@@ -5,7 +5,7 @@ namespace common\modules\rbac\models;
 use Yii;
 
 /**
- * 这是表 `hsh_auth_rule` 的模型
+ * 这是表 `auth_rule` 的模型
  */
 class AuthRule extends \common\components\ARModel
 {

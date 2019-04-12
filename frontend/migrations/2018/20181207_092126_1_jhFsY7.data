@@ -1,0 +1,2 @@
+a:4:{s:4:"user";s:10:"suyuanyuan";s:3:"sql";s:142:"ALTER TABLE `picture`
+ADD COLUMN `title`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '标题' AFTER `id`;";s:4:"desc";s:5:"title";s:7:"warning";a:0:{}}

@@ -57,7 +57,7 @@ class SiteController extends \oa\components\Controller
         if ($model->load()) {
             if ($model->login()) {
                 session('requireCaptcha', false);
-                return $this->redirect(['index']);
+                return success(url(['index']));
             } else {
                 session('requireCaptcha', true);
                 return error($model);

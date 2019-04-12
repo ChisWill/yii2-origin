@@ -882,6 +882,9 @@ a {
     color: #999;
     padding: 2px 0;
 }
+.view-foot .article-jump .jump-up-link:hover {
+    color: rgb(25, 130, 190);
+}
 .m-article .article-view .view-body pre {
     padding: 16px;
     overflow: auto;
@@ -1546,4 +1549,40 @@ a {
 }
 .highlight {
     background-color: #FEE72F!important;
+}
+.manual-head .right {
+    height: 32px;
+    right: 0;
+    line-height: 32px;
+    padding: 5px;
+    position: absolute;
+    top: 7px;
+}
+.logout-btn {
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #CCC;
+    background: #fff;
+    border-radius: 4px;
+    padding: 0px 10px;
+    color: #333;
+    margin-left: 10px;
+}
+.logout-btn:hover {
+    background: #F2F2F2;
+}
+.manual-head .username {
+    background-image: linear-gradient(to right, rgb(75, 73, 255), deeppink);
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-left: 10px;
+}
+.manual-head .username:hover {
+    background-image: linear-gradient(to right, rgb(115, 125, 255), red);
+}
+.user-face {
+    height: 100%; 
+    border-radius: 100%;
+    float: left;
 }

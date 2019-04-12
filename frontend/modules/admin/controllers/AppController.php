@@ -122,7 +122,19 @@ class AppController extends \admin\components\Controller
             'method',
             'url',
             'ip',
-            'post_data',
+            'post_data' => function ($row) {
+                $ret = unserialize($row->post_data);
+                if ($ret !== false) {
+                    $string = $d = '';
+                    foreach ($ret as $key => $value) {
+                        $string .= $d . $key . '：' . $value;
+                        $d = '<br />';
+                    }
+                    return $string;
+                } else {
+                    return $row->post_data;
+                }
+            },
             'state' => function ($row) {
                 if ($row->state == $row::STATE_VALID) {
                     return Html::successSpan('成功');
@@ -131,6 +143,12 @@ class AppController extends \admin\components\Controller
                 }
             },
             'created_at',
+        ], [
+            'searchColumns' => [
+                'app.app_name',
+                'ip',
+                'state' => 'select'
+            ]
         ]);
 
         return $this->render('callList', compact('html'));

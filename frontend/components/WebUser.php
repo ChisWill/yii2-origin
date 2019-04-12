@@ -16,6 +16,6 @@ class WebUser extends \common\components\Identity
 
     public static function findByUsername($username)
     {
-        return static::findOne(['username' => $username]);
+        return static::findOne(['username' => $username, 'state' => \common\components\ARModel::STATE_VALID]);
     }
 }

@@ -33,7 +33,7 @@ class AssetBundle extends \yii\web\AssetBundle
             $view->regJs = null;
         }
         // 当静态资源放在web可见的目录时，自动在文件末尾添加版本号
-        if (!$this->sourcePath) {
+        if (!$this->sourcePath && PHP_SAPI !== 'cli') { // 控制台压缩文件时，避免执行以下代码
             $basePath = Yii::getAlias('@' . FileHelper::getCurrentApp() . '/web/');
             $themePath = THEME_NAME === null ? '' : Yii::getAlias('@web/themes/' . THEME_NAME . '/');
             // js文件

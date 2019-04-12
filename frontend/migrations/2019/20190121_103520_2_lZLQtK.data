@@ -1,0 +1,4 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:271:"ALTER TABLE `user_charge`
+MODIFY COLUMN `charge_state`  tinyint(4) NULL DEFAULT 1 COMMENT '充值状态：1待付款，2成功，-1失败' AFTER `charge_type`,
+ADD COLUMN `account_id`  int NULL DEFAULT 0 COMMENT '充值账户' AFTER `rest_amount`,
+ADD INDEX (`user_id`) ;";s:4:"desc";s:11:"user_charge";s:7:"warning";a:0:{}}

@@ -13,6 +13,7 @@ return [
     'Obfuscate' => '混淆',
     'Not Obfuscate' => '不混淆',
     'Comment is too long.' => '注释内容太长',
+    'Download failed.' => '下载失败.',
     // 加密配置
     'Constant Name' => '常量',
     'Variable Name' => '变量',

@@ -27,8 +27,11 @@ class SiteController extends \common\components\WebController
     public function actionEdit()
     {
         $this->view->title = '编辑模式 - ChisWill';
-
-        return $this->render('edit');
+        if (u()->canWrite()) {
+            return $this->render('edit');
+        } else {
+            return $this->redirect(['index']);
+        }
     }
 
     public function actionCreateMenu()
@@ -190,6 +193,22 @@ class SiteController extends \common\components\WebController
         }
     }
 
+    public function actionChangeFace()
+    {
+        $upload = self::getUpload(['uploadName' => 'face', 'uploadPath' => 'face']);
+
+        if ($upload->move()) {
+            u()->face = $upload->filePath;
+            if (u()->update()) {
+                return success(u()->face);
+            } else {
+                return error(u());
+            }
+        } else {
+            return error($upload);
+        }
+    }
+
     public function actionDiff()
     {
         $versionId = post('id');
@@ -230,5 +249,12 @@ class SiteController extends \common\components\WebController
         } else {
             return error($article);
         }
+    }
+
+    public function actionLogout()
+    {
+        user()->logout(false);
+
+        return $this->redirect(['index']);
     }
 }

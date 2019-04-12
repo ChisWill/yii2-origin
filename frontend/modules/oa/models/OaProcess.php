@@ -9,11 +9,14 @@ use Yii;
  */
 class OaProcess extends \common\components\ARModel
 {
+    const TYPE_APP = 1;
+    const TYPE_TASK = 2;
+
     public function rules()
     {
         return [
-            [['app_id', 'desc'], 'required'],
-            [['app_id', 'created_by'], 'integer'],
+            [['target_id', 'desc', 'type'], 'required'],
+            [['target_id', 'type', 'created_by'], 'integer'],
             [['desc'], 'default', 'value' => ''],
             [['created_at'], 'safe']
         ];
@@ -23,8 +26,9 @@ class OaProcess extends \common\components\ARModel
     {
         return [
             'id' => 'ID',
-            'app_id' => 'App ID',
+            'target_id' => 'Target ID',
             'desc' => '进度描述',
+            'type' => 'Type',
             'created_at' => '发表时间',
             'created_by' => '发表人',
         ];
@@ -46,7 +50,8 @@ class OaProcess extends \common\components\ARModel
         return self::find()
             ->filterWhere([
                 'oaProcess.id' => $this->id,
-                'oaProcess.app_id' => $this->app_id,
+                'oaProcess.target_id' => $this->target_id,
+                'oaProcess.type' => $this->type,
                 'oaProcess.created_by' => $this->created_by,
             ])
             ->andFilterWhere(['like', 'oaProcess.desc', $this->desc])
@@ -57,7 +62,28 @@ class OaProcess extends \common\components\ARModel
 
     /****************************** 以下为公共操作的方法 ******************************/
 
-    
+    public static function getList($id, $type)
+    {
+        return OaProcess::find()
+            ->with(['adminUser'])
+            ->where(['target_id' => $id, 'type' => $type])
+            ->asArray()
+            ->all()
+            ;
+    }
+
+    public static function append($key, $desc, $type)
+    {
+        $model = new static;
+        $model->target_id = $key;
+        $model->desc = $desc;
+        $model->type = $type;
+        if ($model->insert()) {
+            return true;
+        } else {
+            return $model->errors;
+        }
+    }
 
     /****************************** 以下为字段的映射方法和格式化方法 ******************************/
 }

@@ -4,6 +4,7 @@ namespace common\modules\wizard\generators\migrate;
 
 use Yii;
 use common\helpers\Html;
+use common\helpers\Inflector;
 use common\helpers\FileHelper;
 use common\helpers\ArrayHelper;
 use common\helpers\StringHelper;
@@ -20,6 +21,8 @@ class Generator extends \common\modules\wizard\Generator
     public $commitUser;
     public $description;
     public $inputSql;
+    public $item;
+    public $tables;
     // 配置
     public $saveFile = 'migrations';
     public $tableName = '{{%migration}}';
@@ -32,8 +35,10 @@ class Generator extends \common\modules\wizard\Generator
     public function rules()
     {
         return [
-            [['commitUser', 'description', 'inputSql'], 'required'],
+            [['commitUser', 'description', 'inputSql'], 'required', 'on' => 'migrate'],
             [['commitUser', 'description', 'inputSql'], 'filter', 'filter' => 'trim'],
+            [['commitUser', 'item'], 'required', 'on' => 'data'],
+            [['tables'], 'safe']
         ];
     }
 
@@ -42,7 +47,9 @@ class Generator extends \common\modules\wizard\Generator
         return [
             'commitUser' => '提交人',
             'inputSql' => 'SQL语句',
-            'description' => '描述'
+            'description' => '描述',
+            'item' => '功能项',
+            'tables' => '其他要备份的表'
         ];
     }
 
@@ -50,6 +57,15 @@ class Generator extends \common\modules\wizard\Generator
     {
         $path = $this->appName ?: Yii::$app->basePath;
         $path .= '/' . $this->saveFile;
+        if (!file_exists($path)) {
+            FileHelper::mkdir($path);
+        }
+        return $path;
+    }
+
+    public function getDataFilePath()
+    {
+        $path = $this->getSaveFilePath() . '/data';
         if (!file_exists($path)) {
             FileHelper::mkdir($path);
         }
@@ -198,6 +214,11 @@ class Generator extends \common\modules\wizard\Generator
         }
     }
 
+    public function getDataFiles()
+    {
+        return FileHelper::findFiles($this->getDataFilePath(), ['only' => ['suffix' => '*.list']]);
+    }
+
     public function getFiles()
     {
         return FileHelper::findFiles($this->getSaveFilePath(), ['only' => ['suffix' => '*.data']]);
@@ -260,5 +281,147 @@ class Generator extends \common\modules\wizard\Generator
         }
 
         return ArrayHelper::getValue($cache[$fileName], $field, '');;
+    }
+
+    public function syncData($files)
+    {
+        $map = static::itemModelMap();
+        $mapArr = [];
+        foreach ($map as $value) {
+            foreach ($value as $v) {
+                $mapArr[] = Inflector::camel2id(StringHelper::basename($v), '_');
+            }
+        }
+        $mapArr = array_flip($mapArr);
+        $newArr = [];
+        foreach ($files as $file) {
+            $tableName = basename($file, '.list');
+            if (isset($mapArr[$tableName])) {
+                $newArr[$mapArr[$tableName]] = $file;
+            }
+        }
+        ksort($newArr);
+        $rest = array_diff($files, $newArr);
+        $newArr = array_merge($newArr, $rest);
+        foreach ($newArr as $file) {
+            $tableName = basename($file, '.list');
+            $data = unserialize(file_get_contents($file))['data'];
+            self::db('DELETE FROM `' . Yii::$app->db->tablePrefix . $tableName . '`')->execute();
+            foreach ($data as $item) {
+                self::dbInsert($tableName, $item);
+            }
+        }
+    }
+
+    public function recordData()
+    {
+        $dir = $this->getDataFilePath();
+        $files = FileHelper::findFiles($dir);
+        foreach ($files as $file) {
+            @unlink($file);
+        }
+        $map = static::itemModelMap();
+        foreach ($this->item as $item) {
+            $models = $map[$item];
+            foreach ($models as $class) {
+                $records = $class::find()->asArray()->all();
+                $tableName = self::getTableName($class::tableName());
+                $this->putContent($tableName, $records);
+            }
+        }
+        if ($this->tables) {
+            foreach ($this->tables as $tableName) {
+                $records = self::db('SELECT * FROM ' . $tableName)->queryAll();
+                $this->putContent($tableName, $records);
+            }
+        }
+    }
+
+    private static function getTableName($tableName)
+    {
+        preg_match('/{{%(.*)}}/', $tableName, $match);
+        return $match[1];
+    }
+
+    public function putContent($tableName, $records)
+    {
+        $filePath = $this->getDataFilePath() . '/' . $tableName . '.list';
+
+        $data = [
+            'user' => $this->commitUser,
+            'time' => self::$time,
+            'data' => $records
+        ];
+        file_put_contents($filePath, serialize($data));
+    }
+
+    public function deleteData($file)
+    {
+        $filePath = $this->getDataFilePath() . '/' . $file;
+
+        try {
+            unlink($filePath);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public static function itemModelMap()
+    {
+        return [
+            'option' => ['common\models\Option'],
+            'menu' => ['admin\models\AdminMenu'],
+            'auth' => [
+                'common\modules\rbac\models\AuthRule',
+                'common\modules\rbac\models\AuthItem',
+                'common\modules\rbac\models\AuthItemChild',
+                'common\modules\rbac\models\AuthAssignment'
+            ],
+            'map' => [
+                'common\models\Map'
+            ]
+        ];
+    }
+
+    public static function getItemMap($prepend = false)
+    {
+        $map = [
+            'option' => '配置项',
+            'menu' => '后台菜单',
+            'auth' => '角色权限',
+            'map' => '映射表'
+        ];
+
+        return self::resetMap($map, $prepend);
+    }
+
+    private static $_tables = null;
+    public static function getTablesMap($prepend = false)
+    {
+        if (self::$_tables === null) {
+            $config = [];
+            $pieces = explode(';', Yii::$app->db->dsn);
+            foreach ($pieces as $row) {
+                list($key, $value) = explode('=', $row);
+                $config[$key] = $value;
+            }
+            $ret = self::db(sprintf('SELECT table_name FROM information_schema.tables where table_schema="%s" and table_type="base table";', $config['dbname']))->queryAll();
+            $tables = [];
+            foreach ($ret as $row) {
+                $tables[$row['table_name']] = $row['table_name'];
+            }
+            $filter = ['admin_action', 'log', 'log_sql_list', 'log_sql_task', 'migration', 'test', 'trace'];
+            $classes = self::itemModelMap();
+            foreach ($classes as $row) {
+                foreach ($row as $class) {
+                    $filter[] = self::getTableName($class::tableName());
+                }
+            }
+            self::$_tables = array_diff($tables, $filter);
+        }
+        $map = self::$_tables;
+
+        return self::resetMap($map, $prepend);
     }
 }
