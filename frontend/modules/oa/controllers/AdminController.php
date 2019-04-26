@@ -293,10 +293,10 @@ class AdminController extends \oa\components\Controller
                 return lcfirst(Inflector::id2camel(implode('-', $namePieces)));
             }],
             'description' => ['type' => 'text', 'value' => function ($item) {
-                return Hui::textInput(null, $item->description);
+                return Hui::textInput(null, $item->description, ['type' => '']);
             }],
             'rule_name' => ['type' => 'text', 'value' => function ($item) {
-                return Hui::textInput(null, $item->rule_name, ['placeholder' => '规则名或是规则类名']);
+                return Hui::textInput(null, $item->rule_name, ['placeholder' => '规则名或是规则类名', 'type' => '']);
             }],
             ['type' => ['delete']]
         ], [
@@ -479,11 +479,26 @@ class AdminController extends \oa\components\Controller
             ->indexBy('user_id')
             ->asArray()
             ->all();
-
+        $getLv = function ($exp) {
+            return ceil((sqrt($exp / config('oa_base_exp', 20) * 8 + 1) - 1) / 2);
+        };
         $html = $query->select(['id', 'realname'])->getTable([
             'realname',
+            ['header' => '等级', 'value' => function ($row) use ($getLv, $scores) {
+                $exp = ArrayHelper::getValue($scores, $row->id, ['score' => 0])['score'];
+                if ($exp < 0) {
+                    return Html::errorSpan(0);
+                } else {
+                    return Html::successSpan($getLv($exp + 1));
+                }
+            }],
             'score' => ['header' => '累计绩效分', 'value' => function ($row) use ($scores) {
-                return ArrayHelper::getValue($scores, $row->id, ['score' => 0])['score'];
+                $exp = ArrayHelper::getValue($scores, $row->id, ['score' => 0])['score'];
+                if ($exp < 0) {
+                    return Html::errorSpan($exp);
+                } else {
+                    return Html::successSpan($exp);
+                }
             }],
             ['type' => ['view' => 'viewPerformanceHistory']]
         ], [

@@ -14,7 +14,7 @@ $end = ArrayHelper::getValue($search, 'end_date');
     <form class="search-form">
         <ul>
             <li>
-                <input type="text" class="input-text startdate" name="search[start_date]" placeholder="开始日期" style="width: 45%" value="<?= $start ?>">&nbsp;-&nbsp;<input type="text" class="input-text enddate" name="search[end_date]" placeholder="截止日期" style="width: 45%" value="<?= $end ?>">
+                <input type="text" class="input-text chart-startdate" name="search[start_date]" placeholder="开始日期" style="width: 45%" value="<?= $start ?>">&nbsp;-&nbsp;<input type="text" class="input-text chart-enddate" name="search[end_date]" placeholder="截止日期" style="width: 45%" value="<?= $end ?>">
             </li>
             <input type="submit" class="submit-input btn-success size-M btn radius" value="搜索">
         </ul>

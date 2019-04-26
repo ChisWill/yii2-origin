@@ -16,7 +16,6 @@
 </head>
 <body>
 <?php $this->beginBody() ?>
-
     <nav class="breadcrumb">
         <i class="Hui-iconfont">&#xe67f;</i> 首页 
         <span class="c-gray en">&gt;</span> <?= Html::span('', ['id' => 'breadcrumbMain']) ?> 
@@ -30,8 +29,15 @@
         <?= $content ?>
     </div>
 
+    <div class="loading-mask" style="display: none;">
+        <div></div>
+    </div>
 <script>
 $(function () {
+    // 打开页面加载效果
+    window.onbeforeunload = function () {
+        $(".loading-mask").show();
+    };
     // 面包屑自动处理
     ;!function () {
         var index = parent.$("#min_title_list li.active").index(),

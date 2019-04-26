@@ -300,10 +300,10 @@ class AdminController extends \admin\components\Controller
                 return lcfirst(Inflector::id2camel(implode('-', $namePieces)));
             }],
             'description' => ['type' => 'text', 'value' => function ($item) {
-                return Hui::textInput(null, $item->description);
+                return Hui::textInput(null, $item->description, ['type' => '']);
             }],
             'rule_name' => ['type' => 'text', 'value' => function ($item) {
-                return Hui::textInput(null, $item->rule_name, ['placeholder' => '规则名或是规则类名']);
+                return Hui::textInput(null, $item->rule_name, ['type' => '', 'placeholder' => '规则名或是规则类名']);
             }],
             ['type' => ['delete']]
         ], [

@@ -90,11 +90,28 @@ iGfFWFQ916nkpLCDRAIHibTrwPAd8H0WnGYiSWbANf3kHbrt4rUWXHm5Me70kXpj
     }
 
     /**
+     * 异或加密，特点为执行一次加密，再执行一次为解密
+     */
+    public static function xorEncrypt($data, $secretKey = SECRET_KEY)
+    {
+        $key = sha1($secretKey);
+        $dataLen = strlen($data);
+        $keyLen = strlen($key);
+        $mod = $dataLen % $keyLen;
+        if ($mod > 0) {
+            $preLen = floor($dataLen / $keyLen) * $keyLen;
+            return (substr($data, 0, $preLen) ^ str_repeat($key, $preLen)) . (substr($data, $preLen) ^ substr($key, 0, $mod));
+        } else {
+            return $data ^ str_repeat($key, $dataLen / $keyLen);
+        }
+    }
+
+    /**
      * 可用于页面间传输的加密
      */
     public static function base64encrypt($data)
     {
-        return Url::base64encode(static::encrypt($data));
+        return Url::base64encode(static::xorEncrypt($data));
     }
 
     /**
@@ -102,7 +119,7 @@ iGfFWFQ916nkpLCDRAIHibTrwPAd8H0WnGYiSWbANf3kHbrt4rUWXHm5Me70kXpj
      */
     public static function base64decrypt($base64encryptedData)
     {
-        return static::decrypt(Url::base64decode($base64encryptedData));
+        return static::xorEncrypt(Url::base64decode($base64encryptedData));
     }
 
     /**

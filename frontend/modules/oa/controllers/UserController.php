@@ -29,7 +29,7 @@ class UserController extends \oa\components\Controller
             'type' => ['width' => '60px', 'type' => 'select', 'header' => '客户类型'],
             'product_id' => ['width' => '60px', 'type' => 'select', 'header' => '项目类型'],
             'level' => ['width' => '60px', 'type' => 'select', 'header' => '客户等级'],
-            'is_chat' => ['width' => '45px', 'type' => 'select'],
+            'is_chat' => ['width' => '45px', 'type' => 'toggle'],
             'tel',
             'wechat_id',
             'qq',

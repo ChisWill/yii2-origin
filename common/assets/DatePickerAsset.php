@@ -5,18 +5,15 @@ namespace common\assets;
 use Yii;
 
 /**
- * 引入 Jquery-ui-datepicker 插件
+ * 引入 laydate 插件
  *
  * @author ChisWill
  */
 class DatePickerAsset extends \common\components\AssetBundle
 {
-    public $sourcePath = '@bower/jquery-ui';
+    public $sourcePath = '@bower/laydate';
     public $js = [
-        'ui/minified/datepicker.min.js'
-    ];
-    public $css = [
-        'themes/smoothness/jquery-ui.min.css'
+        'laydate.js'
     ];
     public $depends = [
         'common\assets\CommonAsset'
@@ -28,6 +25,10 @@ class DatePickerAsset extends \common\components\AssetBundle
 
         $view = Yii::$app->getView();
 
+        $view->registerJs('$.listen("datetimepicker");');
         $view->registerJs('$.listen("datepicker");');
+        $view->registerJs('$.listen("timepicker");');
+        $view->registerJs('$.listen("dateRange", "startdate");');
+        $view->registerJs('$.listen("timeRange", "starttime");');
     }
 }

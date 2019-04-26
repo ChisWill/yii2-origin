@@ -48,10 +48,10 @@ class AdminAction extends \common\components\ARModel
 
     /****************************** 以下为设置关联模型的方法 ******************************/
 
-    // public function getRelation()
-    // {
-    //     return $this->hasOne(Class::className(), ['foreign_key' => 'primary_key']);
-    // }
+    public function getAdmin()
+    {
+        return $this->hasOne(AdminUser::className(), ['id' => 'created_by']);
+    }
 
     /****************************** 以下为公共显示条件的方法 ******************************/
 
@@ -79,8 +79,10 @@ class AdminAction extends \common\components\ARModel
     public function listQuery()
     {
         return $this->search()
-                    ->andFilterWhere(['>=', 'created_at', $this->start_created_at])
-                    ->andFilterWhere(['<=', 'created_at', $this->end_created_at ? date('Y-m-d', strtotime($this->end_created_at) + 3600 * 24) : null]);
+                    ->joinWith(['admin'])
+                    ->andWhere(['not in', 'table_name', ['option', 'admin_menu']])
+                    ->andFilterWhere(['>=', 'adminAction.created_at', $this->start_created_at])
+                    ->andFilterWhere(['<=', 'adminAction.created_at', $this->end_created_at ? date('Y-m-d', strtotime($this->end_created_at) + 3600 * 24) : null]);
     }
 
     /****************************** 以下为公共操作的方法 ******************************/

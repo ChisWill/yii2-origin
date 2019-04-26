@@ -1,5 +1,4 @@
 <?php use common\helpers\Html; ?>
-<?php common\assets\My97DatePickerAsset::register($this) ?>
 
 <?= $html ?>
 

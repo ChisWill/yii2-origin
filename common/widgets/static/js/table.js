@@ -3,6 +3,24 @@ $(function () {
     var refreshView = '.list-view';
 
     $(container).coffee({
+        'switch-change': {
+            'td[data-action="toggleUpdate"]': function (e, data) {
+                var $this = $(data.el),
+                    $td = $this.parents('td'),
+                    value = data.value === true ? 1 : -1;
+
+                $.post($td.attr('href'), {
+                    'params[field]': $td.data('field'),
+                    'params[model]': $td.data('model'),
+                    'params[key]': $td.data('key'),
+                    'params[value]': value
+                }, function (msg) {
+                    if (!msg.state) {
+                        $.alert(msg.info);
+                    }
+                }, 'json');
+            }
+        },
         click: {
             // checkbox全选
             '[name="selection_all"]': function () {
@@ -87,7 +105,7 @@ $(function () {
             'td[data-action="textUpdate"]': function () {
                 var $td = $(this);
                 if ($td.find('input').length === 0) {
-                    var $input = $('<input>').data('oldValue', $td.html()).val($td.html()).keyup(function (event) {
+                    var $input = $('<input>').attr('type', 'text').data('oldValue', $td.html()).val($td.html()).keyup(function (event) {
                         var key = $.getEventKey(event);
                         if (key === $.keyCode['ENTER']) {
                             $(this).trigger('blur');
@@ -151,6 +169,23 @@ $(function () {
                         }
                     }, 'json');
                 });
+                return false;
+            },
+            // 普通Ajax提交按钮
+            'a.ajaxBtn': function () {
+                $.post($(this).attr('href'), function (msg) {
+                    if (msg.state) {
+                        if (msg.info) {
+                            $.alert(msg.info, function () {
+                                window.location.reload();
+                            });
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        $.alert(msg.info);
+                    }
+                }, 'json');
                 return false;
             }
         },

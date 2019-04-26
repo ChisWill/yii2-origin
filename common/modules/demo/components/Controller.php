@@ -15,13 +15,14 @@ class Controller extends \common\components\WebController
         'site/form' => '表单基础',
         'site/query' => '查询基础',
         'site/plugn' => '常用前端方法',
-        'site/upload-file' => '上传文件', // 对应的是 site 控制器 `actionUploadFile` 方法。
         'site/helper' => '常用助手方法',
         'admin/table' => '后台 - 数据表格',
         'admin/linkage' => '后台 - 层级列表',
+        'more/form' => '更多 - 表单演示',
         'advance/form' => '进阶 - 多表提交',
         'advance/tabular' => '进阶 - 列表模型',
         'advance/query' => '进阶 - 多表查询',
+        'advance/upload-file' => '进阶 - 上传文件', // 对应的是 advance 控制器 `actionUploadFile` 方法。
         'advance/plugn' => '进阶 - 更多前端插件'
     ];
 

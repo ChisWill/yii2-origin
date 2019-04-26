@@ -44,37 +44,33 @@
                     break;
                 case 'datepicker':
                     var defaultOptions = {
-                        dateFormat: 'yy-mm-dd'
+                        type: 'date',
+                        calendar: true,
+                        showBottom: false
                     };
                     break;
                 case 'timepicker':
                     var defaultOptions = {
-                        timeFormat: 'HH:mm:ss',
-                        stepHour: 1,
-                        stepMinute: 1,
-                        stepSecond: 1
+                        type: 'time'
                     };
                     break;
                 case 'datetimepicker':
                     var defaultOptions = {
-                        dateFormat: 'yy-mm-dd',
-                        timeFormat: 'HH:mm',
-                        stepMinute: 5
+                        type: 'datetime',
+                        calendar: true
                     };
                     break;
                 case 'dateRange':
                     var defaultOptions = {
-                        minInterval: 1000 * 3600 * 0, // 最小间隔小时数
-                        dateFormat: 'yy-mm-dd',
-                        start: {}, // start picker options
-                        end: {} // end picker options
+                        type: 'date',
+                        calendar: true,
+                        btns: ['clear', 'now']
                     };
                     break;
                 case 'timeRange':
                     var defaultOptions = {
-                        minInterval: 0, // 最小间隔小时数
-                        start: {}, // start picker options
-                        end: {} // end picker options
+                        type: 'datetime',
+                        calendar: true
                     };
                     break;
                 case 'dragSort':
@@ -266,7 +262,7 @@
          * @param  json    options 配置参数
          * @return integer
          */
-        loading: function (options) {
+        loading: function () {
             if (typeof layer !== 'undefined') {
                 return layer.load(2, {shade: [0.3, 'gray']});
             } else {
@@ -598,6 +594,106 @@
         },
 
         /**
+         * laydate的快捷方法：日期选择，须要引入php端的 DatePickerAsset
+         * 
+         * @param json options 配置参数
+         */
+        datepicker: function (options) {
+            $(this).each(function () {
+                laydate.render($.extend(options, {
+                    elem: this
+                }));
+            });
+            $(this).attr('autocomplete', 'off');
+        },
+
+        /**
+         * laydate的快捷方法：时间选择，须要引入php端的 DatePickerAsset
+         * 
+         * @param json options 配置参数
+         */
+        timepicker: function (options) {
+            $(this).datepicker(options);
+        },
+
+        /**
+         * laydate的快捷方法：日期时间选择，须要引入php端的 DatePickerAsset
+         * 
+         * @param json options 配置参数
+         */
+        datetimepicker: function (options) {
+            $(this).datepicker(options);
+        },
+
+
+        /**
+         * laydate的快捷方法：日期选择区间，须要引入php端的 DatePickerAsset
+         *
+         * @param json $options 配置参数
+         */
+        dateRange: function (options, map) {
+            // 定义对应的关键字映射组合
+            map = map || ['startdate', 'enddate']
+            // 先获取当前的选择器
+            var selector = this.selector.toLowerCase();
+            // 如果获取不到，表示是用$(this).dateRange形式调用的，则改为用正则匹配指定规则的class属性
+            if (!selector) {
+                selector = '.' + $(this).attr('class').match('/' + map[0] + '[\w\s]*/i');
+            }
+            // 根据映射组合，找出当前选择器包含的关键字
+            var otherSelector = selector.replaceLast(map[0], map[1]);
+            var start = laydate.render($.extend(options, {
+                elem: selector,
+                done: function (value, date) {
+                    if (value) {
+                        end.config.min = date;
+                        end.config.min.month = date.month - 1;
+                    } else {
+                        end.config.min = {
+                            date: 1,
+                            hours: 0,
+                            minutes: 0,
+                            month: 0,
+                            seconds: 0,
+                            year: 1900,
+                        };
+                    }
+                    $(selector).trigger('blur');
+                    $(otherSelector).trigger('focus');
+                }
+            }));
+            var end = laydate.render($.extend(options, {
+                elem: otherSelector,
+                done: function (value, date) {
+                    if (value) {
+                        start.config.max = date
+                        start.config.max.month = date.month - 1;
+                    } else {
+                        start.config.max = {
+                            date: 31,
+                            hours: 0,
+                            minutes: 0,
+                            month: 11,
+                            seconds: 0,
+                            year: 2099
+                        };
+                    }
+                }
+            }));
+            $(selector).attr('autocomplete', 'off');
+            $(otherSelector).attr('autocomplete', 'off');
+        },
+
+        /**
+         * laydate的快捷方法：日期时间选择区间，须要引入php端的 DatePickerAsset
+         *
+         * @param json $options 配置参数
+         */
+        timeRange: function (options) {
+            $(this).dateRange(options, ['starttime', 'endtime']);
+        },
+
+        /**
          * 在指定元素周围弹出会自动消失的消息层，须要引入php端的 LayerAsset
          * 
          * @param  string|json   info     消息
@@ -639,80 +735,6 @@
             [].forEach.call(this, function ($item) {
                 Sortable.create($item, options);
             });
-        },
-
-        /**
-         * timepicker插件的快捷方法：日期选择区间，须要先引入php端的 TimePickerAsset
-         *
-         * @param json $options 配置参数
-         */
-        dateRange: function (options) {
-            // 先获取当前的选择器
-            var selector = this.selector.toLowerCase();
-            // 如果获取不到，表示是用$(this).dateRange形式调用的，则改为用正则匹配指定规则的class属性
-            if (!selector) {
-                selector = '.' + $(this).attr('class').match(/startdate[\w\s]*/i);
-            }
-            // 定义对应的关键字映射组合
-            var map = {
-                startdate: 'enddate'
-            }
-                // 定义另外个选择器
-            var otherSelector = '';
-            // 根据映射组合，找出当前选择器包含的关键字
-            for (var key in map) {
-                if (selector.indexOf(key) !== -1) {
-                    otherSelector = selector.replaceLast(key, map[key]);
-                    break;
-                }
-            }
-            // 如果匹配不到另外个选择器
-            if (!otherSelector) {
-                return false;
-            }
-
-            $.timepicker.dateRange(
-                $(selector),
-                $(otherSelector),
-                $.config('dateRange', options)
-            );
-        },
-
-        /**
-         * timepicker插件的快捷方法：时间选择区间，须要先引入php端的 TimePickerAsset
-         *
-         * @param json $options 配置参数
-         */
-        timeRange: function (options) {
-            // 先获取当前的选择器
-            var selector = this.selector.toLowerCase();
-            // 如果获取不到，表示是用$(this).dateRange形式调用的，则改为用正则匹配指定规则的class属性
-            if (!selector) {
-                selector = '.' + $(this).attr('class').match(/starttime[\w\s]*/i);
-            }
-            // 定义对应的关键字映射组合
-            var map = {
-                starttime: 'endtime'
-            }
-                // 定义另外个选择器
-            var otherSelector = '';
-            // 根据映射组合，找出当前选择器包含的关键字
-            for (var key in map) {
-                if (selector.indexOf(key) !== -1) {
-                    otherSelector = selector.replaceLast(key, map[key]);
-                    break;
-                }
-            }
-            // 如果匹配不到另外个选择器
-            if (!otherSelector) {
-                return false;
-            }
-
-            $.timepicker.datetimeRange(
-                $(selector),
-                $(otherSelector),
-                $.config('timeRange', options)
-            );
         },
 
         /**

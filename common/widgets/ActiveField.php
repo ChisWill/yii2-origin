@@ -127,7 +127,7 @@ class ActiveField extends \yii\widgets\ActiveField
         $options['id'] = ArrayHelper::getValue($options, 'id', static::getInputId($this->model, $this->attribute));
 
         $view = Yii::$app->getView();
-        $view->depends[] = 'common\assets\TimePickerAsset';
+        $view->depends[] = 'common\assets\DatePickerAsset';
         $view->registerJs('$("#' . $options['id'] . '").timepicker($.config("timepicker"))');
 
         return $this->textInput($options);

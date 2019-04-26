@@ -201,6 +201,11 @@ class AuthItem extends \common\components\ARModel
         }
     }
 
+    public static function getNamespaceByAction($actionName)
+    {
+        return explode('/', $actionName)[0];
+    }
+
     public static function getCurrentAppId()
     {
         $module = Yii::$app->controller->module;

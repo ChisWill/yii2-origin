@@ -1,5 +1,5 @@
 <?php common\assets\FancyBoxAsset::register($this) ?>
-<?php common\assets\TimePickerAsset::register($this) ?>
+<?php common\assets\DatePickerAsset::register($this) ?>
 
 <fieldset class="layui-elem-field">
     <legend>提示框</legend>
@@ -37,7 +37,7 @@
 
 <fieldset class="layui-elem-field">
     <legend>日历选择器</legend>
-    <div class="layui-field-box">一般不需要主动调用插件的方法，只需添加指定 class 即可生效，以下全部示例须要加载`common\assets\TimePickerAsset`资源包</div>
+    <div class="layui-field-box">一般不需要主动调用插件的方法，只需添加指定 class 即可生效，以下全部示例须要加载`common\assets\DatePickerAsset`资源包</div>
 </fieldset>
 
 <div class="layui-row">

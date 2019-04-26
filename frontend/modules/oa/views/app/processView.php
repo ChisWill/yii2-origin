@@ -8,4 +8,3 @@ if ($processes) {
 } else {
     echo '<pre><code>还没有记录</code></pre>';
 }
-?>

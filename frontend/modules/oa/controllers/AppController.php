@@ -26,26 +26,24 @@ class AppController extends \oa\components\Controller
         $query = (new OaApp)->search()->joinWith(['server']);
 
         $html = $query->getTable([
-            'id' => ['header' => '项目代号', 'value' => function ($row) {
+            'id' => ['header' => '项目代号', 'width' => '60px', 'value' => function ($row) {
                 return $row->code;
             }],
-            'name' => ['type' => 'text'],
-            'domain' => ['type' => 'text'],
-            'server_id' => ['type' => 'select', 'value' => function ($row) {
+            'name' => ['type' => 'text', 'width' => '250px'],
+            'domain' => ['type' => 'text', 'width' => '250px'],
+            'type' => ['type' => 'select', 'width' => '100px'],
+            'server_id' => ['type' => 'select', 'width' => '120px', 'value' => function ($row) {
                 if ($row->server_id == 0) {
                     return '无';
                 } else {
                     return $row->server['server_name'];
                 }
             }],
-            'type' => ['type' => 'select'],
-            ['header' => '最新进展', 'width' => '105px', 'value' => function ($row) {
+            ['header' => '最新进展', 'value' => function ($row) {
                 return $row->process_info;
             }],
-            // 'server_info' => ['width' => '95px', 'options' => ['style' => ['position' => 'relative']], 'value' => 'advanceInfo'],
-            'wechat_info' => ['width' => '95px', 'options' => ['style' => ['position' => 'relative']], 'value' => 'advanceInfo'],
-            'pay_info' => ['width' => '95px', 'options' => ['style' => ['position' => 'relative']], 'value' => 'advanceInfo'],
-            'sms_info' => ['width' => '95px', 'options' => ['style' => ['position' => 'relative']], 'value' => 'advanceInfo'],
+            u()->can('app/advanceUpdate') ? 'server_info' : null => ['width' => '95px', 'options' => ['style' => ['position' => 'relative']], 'value' => 'advanceInfo'],
+            u()->can('app/advanceUpdate') ? 'third_info' : null => ['width' => '95px', 'options' => ['style' => ['position' => 'relative']], 'value' => 'advanceInfo'],
             'requirement_info' => ['width' => '95px', 'options' => ['style' => ['position' => 'relative']], 'value' => 'advanceInfo'],
             'process_info' => ['width' => '95px', 'options' => ['style' => ['position' => 'relative']], 'value' => 'advanceInfo'],
             'created_at' => ['header' => '立项日期', 'width' => '75px', 'value' => function ($row) {
@@ -74,7 +72,7 @@ class AppController extends \oa\components\Controller
         $model = OaApp::findModel($id);
 
         if ($model->load()) {
-            $serializeFields = ['server_info', 'wechat_info', 'pay_info', 'sms_info', 'requirement_info'];
+            $serializeFields = ['server_info', 'third_info', 'requirement_info'];
             foreach ($serializeFields as $field) {
                 if ($model->$field) {
                     $value = [
@@ -102,14 +100,20 @@ class AppController extends \oa\components\Controller
     {
         $query = (new OaApp)->search();
 
+        $totalAmount = $query->sum('total_amount') ?: 0;
+        $totalRest = $query->sum('rest_amount') ?: 0;
         $html = $query->getTable([
             'code',
             'name' => ['type' => 'text'],
             'server_rent' => ['type' => 'text', 'width' => '150px', 'header' => '服务器月租费'],
             'monthly' => ['type' => 'text', 'width' => '150px', 'header' => '维护费'],
             'ios_sign' => ['type' => 'text', 'header' => 'IOS月费'],
-            'total_amount' => ['type' => 'text'],
-            'rest_amount' => ['type' => 'text'],
+            'total_amount' => ['type' => 'text', 'value' => function ($row) {
+                return $row->total_amount > 0 ? $row->total_amount : '';
+            }],
+            'rest_amount' => ['type' => 'text', 'value' => function ($row) {
+                return $row->total_amount > 0 ? $row->rest_amount : '';
+            }],
             'created_at' => ['header' => '立项日期', 'width' => '80px', 'value' => function ($row) {
                 return substr($row->created_at, 0, 10);
             }]
@@ -117,6 +121,7 @@ class AppController extends \oa\components\Controller
             'showFooter' => true,
             'ajaxUpdateAction' => 'ajaxUpdateApp',
             'paging' => false,
+            'ajaxReturn' => compact('totalAmount', 'totalRest'),
             'searchColumns' => [
                 'code',
                 'name',
@@ -124,7 +129,7 @@ class AppController extends \oa\components\Controller
             ]
         ]);
 
-        return $this->render('feeList', compact('html'));
+        return $this->render('feeList', compact('html', 'totalAmount', 'totalRest'));
     }
 
     /**
@@ -184,7 +189,40 @@ class AppController extends \oa\components\Controller
      */
     public function actionCommonUpdate($id, $field, $type)
     {
-        return $this->actionAdvanceUpdate($id, $field, $type);
+        if ($field == 'requirement_info') {
+            $app = OaApp::findModel($id);
+            $title = $app->code . ' - ' . $app->label($field);
+            $info = unserialize($app->$field) ?: [];
+            if ($type == 'view') {
+                $app->readTips($field);
+                return $this->renderPartial('requirementView', compact('title', 'info'));
+            } else {
+                if (req()->isPost) {
+                    $upload = self::getUpload(['uploadName' => 'file', 'checkExtensionByMimeType' => false, 'extensions' => 'txt, doc, docs, xls, xlsx, ppt, pptx, rar', 'message' => '请选择要上传的文件']);
+                    if ($upload->move()) {
+                        $data = [
+                            'username' => u()->realname,
+                            'filePath' => $upload->filePath,
+                            'fileName' => $upload->originName,
+                            'time' => self::$time
+                        ];
+                        $info[] = $data;
+                        $app->$field = serialize($info);
+                        if ($app->save()) {
+                            $app->notify($field);
+                            return success();
+                        } else {
+                            return error($app);
+                        }
+                    } else {
+                        return error($upload);
+                    }
+                }
+                return $this->render('requirementUpdate', compact('title', 'info'));
+            }
+        } else {
+            return $this->actionAdvanceUpdate($id, $field, $type);
+        }
     }
 
     /**
@@ -194,7 +232,7 @@ class AppController extends \oa\components\Controller
     {
         $app = OaApp::findModel($id);
         if ($field == 'process_info') {
-            $title = $app->code . '-' . $app->label('process_info');
+            $title = $app->code . ' - ' . $app->label('process_info');
             $processes = OaProcess::getList($id, OaProcess::TYPE_APP);
             if ($type == 'view') {
                 $app->readTips('process_info');
@@ -238,6 +276,14 @@ class AppController extends \oa\components\Controller
                 return $this->render('advanceUpdate', compact('app', 'value', 'field'));
             }
         }
+    }
+
+    /**
+     * @authname 下载文件
+     */
+    public function actionDownload($path, $name)
+    {
+        return $this->download(Yii::getAlias('@webroot' . $path), $name);
     }
 
     /**

@@ -1,0 +1,7 @@
+a:4:{s:4:"user";s:8:"ChisWill";s:3:"sql";s:362:"ALTER TABLE `oa_app`
+DROP COLUMN `pay_info`,
+DROP COLUMN `sms_info`,
+CHANGE COLUMN `wechat_info` `third_info`  text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '第三方信息' AFTER `server_info`;
+
+ALTER TABLE `oa_app`
+MODIFY COLUMN `requirement_info`  text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '需求文档' AFTER `third_info`;";s:4:"desc";s:6:"oa_app";s:7:"warning";a:1:{i:0;s:4:"DROP";}}

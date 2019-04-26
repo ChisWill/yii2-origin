@@ -186,6 +186,50 @@ class AdvanceController extends \common\modules\demo\components\Controller
     }
 
     /**
+     * 进阶- 上传文件，此示例主要演示更一般的场景下，进行文件和数据的提交
+     */
+    public function actionUploadFile()
+    {
+        $this->title = 'AJAX上传文件或表单的使用示例';
+        $this->hint = '测试进度条效果，可使用谷歌的 network 选项卡， online 按钮（一般位于第一排的最右面）';
+
+        // 如果前端没使用 Yii2 的表单对象，则此处使用 self::getUpload() 方法接收上传文件
+        if (req()->isPost) { // 表单提交必须
+            // 测试模型，保存测试数据
+            $model = new Test;
+            // 匹配上传文件的 name 属性，如果要设置文件保存位置或更多其他配置，则此处必须传入数组格式配置项，具体参考 common\widgets\Upload 类
+            $upload = self::getUpload('file');
+            // 保存上传的文件到指定位置
+            if ($upload->move()) {
+                $model->title = post('title');
+                // 如果一次提交上传多个文件，此处则是数组
+                if (is_array($upload->filePath)) {
+                    // 此处仅作演示，实际项目根据实际情况处理
+                    $model->name = implode(',', $upload->filePath);
+                    $model->message = implode(',', $upload->originName);
+                } else {
+                    $model->name = $upload->filePath;
+                    // 获取上传文件的原始名称
+                    $model->message = $upload->originName;
+                }
+                if ($model->insert()) {
+                    return success($model->name);
+                } else {
+                    // 表单保存失败应该删除上传的文件，此处仅做演示，未考虑删除多个图片的情形
+                    @unlink(Yii::getAlias('@webroot' . $model->name));
+                    // 返回表单保存失败原因
+                    return error($model);
+                }
+            } else {
+                // 返回文件保存失败原因
+                return error($upload);
+            }
+        }
+
+        return $this->render('uploadFile');
+    }
+
+    /**
      * 进阶 - 前端使用演示
      */
     public function actionPlugn()

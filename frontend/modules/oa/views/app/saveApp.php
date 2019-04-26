@@ -7,9 +7,7 @@
 <?= $form->field($model, 'type')->dropDownList() ?>
 <?= $form->field($model, 'total_amount') ?>
 <?= $form->field($model, 'server_info')->textArea() ?>
-<?= $form->field($model, 'wechat_info')->textArea() ?>
-<?= $form->field($model, 'pay_info')->textArea() ?>
-<?= $form->field($model, 'sms_info')->textArea() ?>
+<?= $form->field($model, 'third_info')->textArea() ?>
 <?= $form->field($model, 'requirement_info')->textArea() ?>
 <?= $form->submit($model) ?>
 <?php self::endForm() ?>

@@ -1,15 +1,4 @@
 $(function () {
-    // var timer;
-    // $('.menuList dt').hover(function () {
-    //     var $this = $(this);
-    //     timer = setTimeout(function () {
-    //         if ($this.next().css('display') === 'none') {
-    //             $this.trigger('click');
-    //         }
-    //     }, 500);
-    // }, function () {
-    //     clearTimeout(timer);
-    // });
     // 扩展后台全局静态方法
     $.extend({
         /**
@@ -30,12 +19,11 @@ $(function () {
             $(tabCon).hide();
             $(tabCon).eq(i).show();
 
-            $tabMenu.on('click', function() {
+            $tabMenu.on('click', function () {
                 $tabMenu.removeClass(className);
                 $(this).addClass(className);
                 var index = $tabMenu.index(this);
                 $(tabCon).hide();
-                // $(tabCon).eq(index).hide();
                 $(tabCon).eq(index).fadeIn("slow");
             });
         },

@@ -201,8 +201,8 @@ class WebController extends \yii\web\Controller
 
         try {
             // 兼容 common\widget\Linkage 的参数形式，来获取模型类名
-            if ($linkageParams = Security::base64decrypt($params['model'])) {
-                $className = unserialize($linkageParams)['model'];
+            if (isset($params['isLinkage'])) {
+                $className = unserialize(Security::base64decrypt($params['model']))['model'];
             } else {
                 $className = $params['model'];
             }
@@ -349,6 +349,21 @@ class WebController extends \yii\web\Controller
             }
         } catch (\Exception $e) {
             throwex($e);
+        }
+    }
+
+    /**
+     * 模型字段的状态切换
+     */
+    public function actionToggle($params)
+    {
+        $params = json_decode(Security::base64decrypt($params), true);
+        $class = $params['class'];
+        $model = $class::findOne($params['key']);
+        if ($model->toggle($params['field'])) {
+            return success();
+        } else {
+            return error($model);
         }
     }
 

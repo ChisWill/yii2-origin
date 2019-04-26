@@ -19,7 +19,7 @@ class TableAsset extends \common\components\AssetBundle
     public $depends = [
         'common\assets\CommonAsset',
         'common\assets\JqueryFormAsset',
-        'common\assets\TimePickerAsset',
+        'common\assets\DatePickerAsset',
         'common\assets\FancyBoxAsset',
         'common\assets\LayerAsset'
     ];

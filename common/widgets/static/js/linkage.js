@@ -46,7 +46,7 @@ $(function () {
             '[data-action="textUpdate"]': function () {
                 var $this = $(this);
                 if ($this.find('input').length === 0) {
-                    var $input = $('<input>').data('oldValue', $this.html()).val($this.html()).keyup(function (event) {
+                    var $input = $('<input>').attr('type', 'text').data('oldValue', $this.html()).val($this.html()).keyup(function (event) {
                         var key = $.getEventKey(event);
                         if (key === $.keyCode['ENTER']) {
                             $(this).trigger('blur');
@@ -318,6 +318,7 @@ $(function () {
                     $col.html(value);
                 } else {
                     $.post(getUrl($input, 'ajax-update'), {
+                        'params[isLinkage]': 1,
                         'params[model]': $input.parents(container).find(".linkageParams").val(),
                         'params[field]': $col.data('field'),
                         'params[key]': $row.data('key'),
@@ -344,6 +345,7 @@ $(function () {
                     $col.html($input.data('oldValue'));
                 } else {
                     $.post(getUrl($input, 'ajax-update'), {
+                        'params[isLinkage]': 1,
                         'params[model]': $input.parents(container).find(".linkageParams").val(),
                         'params[field]': $col.data('field'),
                         'params[key]': $row.data('key'),
@@ -369,6 +371,7 @@ $(function () {
                     value = $select.val();
 
                 $.post(getUrl($select, 'ajax-update'), {
+                    'params[isLinkage]': 1,
                     'params[model]': $select.parents(container).find(".linkageParams").val(),
                     'params[field]': $col.data('field'),
                     'params[key]': $row.data('key'),

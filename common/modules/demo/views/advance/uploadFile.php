@@ -170,7 +170,7 @@ $(function() {
         }
     });
     // 同时对多个上传按钮绑定事件，在这个例子中，使用了全部四个参数，分别表示提交地址、额外提交的数据、回调方法、其他参数配置。参数顺序与`$.post()`方法保持一致
-    $(".inputFile").uploadFile('<?= url(['site/uploadFile']) ?>', {title: '文件上传'}, function (msg, self) {
+    $(".inputFile").uploadFile('<?= url(['advance/uploadFile']) ?>', {title: '文件上传'}, function (msg, self) {
         if (msg.state) {
             $(self).parents('.layui-row').find('p').html('上传成功：图片路径为：' + msg.info);
         } else {

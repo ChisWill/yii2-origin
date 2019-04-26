@@ -6,10 +6,12 @@ use Yii;
 use common\helpers\Hui;
 use common\helpers\Html;
 use common\helpers\Third;
+use common\helpers\Inflector;
 use common\helpers\FileHelper;
 use common\helpers\ArrayHelper;
 use common\helpers\StringHelper;
 use common\modules\setting\models\Setting;
+use common\modules\rbac\models\AuthItem;
 use common\models\LogSqlTask;
 use admin\models\Log;
 use admin\models\Trace;
@@ -246,13 +248,47 @@ class SystemController extends \admin\components\Controller
      */
     public function actionActionList()
     {
-        $query = (new AdminAction)->listQuery()->orderBy('id DESC');
+        $query = (new AdminAction)->listQuery()->orderBy('adminAction.id DESC');
+        $map = [];
+        $permissionData = AuthItem::getGroupPermissionData();
+
         $html = $query->getTable([
-            'table_name' => ['search' => true, 'width' => '75px'],
-            'key' => ['search' => true, 'width' => '40px'],
-            'action' => ['search' => true, 'width' => '180px'],
-            'field' => ['search' => true, 'width' => '150px'],
-            'value' => ['search' => true, 'value' => function ($row) {
+            'admin.username' => ['header' => '操作者', 'search' => true, 'width' => '60px'],
+            'table_name' => ['header' => '表名', 'width' => '75px', 'value' => function ($row) use (&$map) {
+                if (!isset($map[$row['table_name']])) {
+                    $namespace = AuthItem::getNamespaceByAction($row['action']);
+                    $className = $namespace . '\\models\\' . Inflector::id2camel($row['table_name'], '_');
+                    $map[$row['table_name']] = new $className;
+                }
+                return $row['table_name'];
+            }],
+            'key' => ['header' => '对象ID', 'search' => true, 'width' => '40px'],
+            'action' => ['header' => '操作描述', 'width' => '80px', 'value' => function ($row) use ($permissionData) {
+                list($module, $controller, $action) = explode('/', $row['action']);
+                if (in_array($action, ['ajax-update', 'toggle', 'login', 'password'])) {
+                    switch ($action) {
+                        case 'password':
+                            return '修改密码';
+                        case 'login':
+                            return '登录后台';
+                        case 'toggle':
+                            return '状态值切换';
+                        case 'ajax-update':
+                            return '快捷更新';
+                    }
+                }
+                if (isset($permissionData[$controller])) {
+                    $name = lcfirst(Inflector::id2camel(Inflector::id2camel($row['action'], '/'), '-'));
+                    if (isset($permissionData[$controller][$name])) {
+                        return $permissionData[$controller][$name];
+                    } else {
+                        return $row['action'];
+                    }
+                } else {
+                    return $row['action'];
+                }
+            }],
+            'value' => ['width' => '50%', 'value' => function ($row) use (&$map) {
                 $fields = StringHelper::explode(',', $row->field);
                 $values = unserialize($row->value);
                 $message = [];
@@ -261,20 +297,34 @@ class SystemController extends \admin\components\Controller
                         break;
                     case AdminAction::TYPE_UPDATE:
                         foreach ($fields as $key => $field) {
-                            $message[] = "{$field}： {$values[$key][0]} -> {$values[$key][1]}";
+                            $method = 'get' . Inflector::camelize($field) . 'Map';
+                            $field = $map[$row['table_name']]->label($field);
+                            if (method_exists($map[$row['table_name']], $method)) {
+                                try {
+                                    $v1 = $map[$row['table_name']]::$method()[$values[$key][0]];
+                                    $v2 = $map[$row['table_name']]::$method()[$values[$key][1]];
+                                } catch (\Exception $e) {
+                                    $v1 = $values[$key][0];
+                                    $v2 = $values[$key][1];
+                                }
+                            } else {
+                                $v1 = $values[$key][0];
+                                $v2 = $values[$key][1];
+                            }
+                            if ($v1 != $v2) {
+                                $message[] = sprintf('%s： %s 改为 %s', $field, Html::successSpan($v1), Html::errorSpan($v2));
+                            }
                         }
                         break;
                     case AdminAction::TYPE_DELETE:
                         break;
-                    case AdminAction::TYPE_SELECT:
-                        break;
                 }
                 return implode('<br>', $message);
             }],
-            'type' => ['header' => '操作类型', 'width' => '60px', 'search' => 'select'],
-            'ip' => ['search' => true, 'width' => '80px'],
-            'created_by' => ['search' => true, 'width' => '60px'],
+            'ip' => ['search' => true, 'width' => '60px'],
             'created_at' => ['search' => 'dateRange', 'width' => '70px'],
+        ], [
+            'export' => '管理员操作记录'
         ]);
 
         return $this->render('actionList', compact('html'));

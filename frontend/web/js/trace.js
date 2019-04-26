@@ -25,8 +25,9 @@
                 d = '&';
             }
             data = data ? '?' + data : '';
-            var xhr = new XMLHttpRequest();
-            xhr.open('get', '/site/trace' + data, false);
+            var xhr = new XMLHttpRequest(),
+                isAsync = !/firefox/.test(navigator.userAgent.toLowerCase());
+            xhr.open('get', '/site/trace' + data, isAsync);
             xhr.send();
         },
         submit: function (duration) {

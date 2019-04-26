@@ -12,9 +12,6 @@ use Yii;
 class LayerUiAsset extends \common\components\AssetBundle
 {
     public $sourcePath = '@bower/layui/dist';
-    public $js = [
-        'layui.js'
-    ];
     public $css = [
         'css/layui.css'
     ];

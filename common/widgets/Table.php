@@ -3,6 +3,7 @@
 namespace common\widgets;
 
 use Yii;
+use common\components\ARModel;
 use common\helpers\Hui;
 use common\helpers\Html;
 use common\helpers\Excel;
@@ -133,7 +134,7 @@ class Table extends \yii\base\Widget
     /**
      * @var boolean 当没有权限操作时，是否隐藏按钮，后台需要用到，前台不限制权限
      */
-    public $hideBtn = false;
+    public $hideBtn = true;
     /**
      * @var boolean 是否开启列设置功能
      */
@@ -628,6 +629,9 @@ class Table extends \yii\base\Widget
             }
             $type = ArrayHelper::getValue($value, 'type');
             if (is_string($type)) {
+                if ($type == 'toggle') {
+                    $depends[] = 'common\assets\SwitchAsset';
+                }
                 $flag = true;
             } elseif (is_array($type)) {
                 $type = ArrayHelper::resetOptions($type, ['key' => 'action', 'value' => 'link']);
@@ -667,7 +671,7 @@ class Table extends \yii\base\Widget
         $pickerPluginTypes = ['dateRange', 'timeRange', 'time', 'date', 'datetime'];
         foreach ($this->searchColumns as $key => $value) {
             if (is_string($value) && in_array($value, $pickerPluginTypes) || is_array($value) && in_array(ArrayHelper::getValue($value, 'type'), $pickerPluginTypes)) {
-                $depends[] = 'common\assets\TimePickerAsset';
+                $depends[] = 'common\assets\DatePickerAsset';
                 break;
             }
         }
@@ -1132,8 +1136,24 @@ class Table extends \yii\base\Widget
                         $content = Html::checkbox('selection[]', false, ['value' => $key]) . $content;
                         $content = Html::tag('label', $content);
                         break;
+                    case 'toggle':
+                        $cellOptions['data-action'] = 'toggleUpdate';
+                        $cellOptions['width'] = '80px';
+                        $divDataAttr = ['on' => 'success', 'off' => 'danger'];
+                        $items = $this->getMap($options['field']);
+                        $v = $this->getColumnValue($value, $options['field']);
+                        $checked = $v == ARModel::STATE_VALID ? 'checked' : '';
+                        if (isset($items[ARModel::STATE_VALID]) && isset($items[ARModel::STATE_INVALID])) {
+                            $divDataAttr['on-label'] = $items[ARModel::STATE_VALID];
+                            $divDataAttr['off-label'] = $items[ARModel::STATE_INVALID];
+                        }
+                        $checkboxAttr = ['style' => 'display: none;'];
+                        if (!$this->can($this->ajaxUpdateAction)) {
+                            $checkboxAttr['disabled'] = 'disabled;';
+                        }
+                        $content = Html::tag('div', Html::checkbox('', $checked, $checkboxAttr), ['class' => ['switch', 'size-S'], 'data' => $divDataAttr]);
                     case 'select':
-                        $cellOptions['data-action'] = 'selectUpdate';
+                        empty($cellOptions['data-action']) && $cellOptions['data-action'] = 'selectUpdate';
                     case 'text':
                         empty($cellOptions['data-action']) && $cellOptions['data-action'] = 'textUpdate';
                         // 如果没有权限操作，则直接跳过
@@ -1294,18 +1314,8 @@ class Table extends \yii\base\Widget
             } elseif (is_array($itemsOption)) {
                 $items = $itemsOption;
             } elseif ($this->modelClass) {
-                $alias = $this->getColumnAlias($options['field']);
-                $field = $this->getColumnName($options['field']);
-                $callback = $this->getMapMethod($field);
-                if ($alias) {
-                    if (array_key_exists($alias, $this->withModel) && method_exists($this->withModel[$alias], $callback)) {
-                        $items = call_user_func([$this->withModel[$alias], $callback], $content);
-                    }
-                } else {
-                    $items = call_user_func([$this->model, $callback], $content);
-                }
+                $items = $this->getMap($options['field'], $content);
             }
-            
             if (!empty($items)) {
                 $headerOptions['data-items'] = json_encode($items);
             }
@@ -1853,6 +1863,28 @@ class Table extends \yii\base\Widget
         $labelField = strpos($field, '_') === 0 ? substr($field, 1) : $field;
 
         return isset($labels[$labelField]) ? $labels[$labelField] : '';
+    }
+
+    /**
+     * 获取字段对应的映射
+     * 
+     * @param  string $field 字段名
+     * @return array         字段的映射
+     */
+    protected function getMap($field, $prepend = null)
+    {
+        $items = [];
+        $alias = $this->getColumnAlias($field);
+        $field = $this->getColumnName($field);
+        $callback = $this->getMapMethod($field);
+        if ($alias) {
+            if (array_key_exists($alias, $this->withModel) && method_exists($this->withModel[$alias], $callback)) {
+                $items = call_user_func([$this->withModel[$alias], $callback], $prepend);
+            }
+        } elseif (method_exists($this->model, $callback)) {
+            $items = call_user_func([$this->model, $callback], $prepend);
+        }
+        return $items;
     }
 
     /**

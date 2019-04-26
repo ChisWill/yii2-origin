@@ -16,6 +16,8 @@ class OaApp extends \oa\components\Model
 {
     public $tipsType = OaTips::TYPE_APP;
 
+    public $file;
+
     protected static $_type;
     protected static $_tips = null;
 
@@ -25,7 +27,7 @@ class OaApp extends \oa\components\Model
             [['code'], 'required'],
             [['server_id', 'has_simulater', 'created_by', 'updated_by'], 'integer'],
             [['total_amount', 'rest_amount'], 'number'],
-            [['server_info', 'wechat_info', 'pay_info', 'sms_info', 'requirement_info', 'process_info'], 'default', 'value' => ''],
+            [['server_info', 'third_info', 'requirement_info', 'process_info'], 'default', 'value' => ''],
             [['created_at', 'updated_at'], 'safe'],
             [['code', 'ip', 'type'], 'string', 'max' => 20],
             [['name', 'domain', 'ios_sign', 'monthly'], 'string', 'max' => 50],
@@ -50,10 +52,8 @@ class OaApp extends \oa\components\Model
             'type' => '项目类型',
             'has_simulater' => '是否包含模拟软件',
             'server_info' => '服务器信息',
-            'wechat_info' => '微信信息',
-            'pay_info' => '支付信息',
-            'sms_info' => '短信接口信息',
-            'requirement_info' => 'APP需求信息',
+            'third_info' => '第三方信息',
+            'requirement_info' => '需求文档',
             'process_info' => '进度描述',
             'created_at' => '创建时间',
             'created_by' => '创建人',
@@ -94,9 +94,7 @@ class OaApp extends \oa\components\Model
             ->andFilterWhere(['like', 'oaApp.server_rent', $this->server_rent])
             ->andFilterWhere(['like', 'oaApp.type', $this->type])
             ->andFilterWhere(['like', 'oaApp.server_info', $this->server_info])
-            ->andFilterWhere(['like', 'oaApp.wechat_info', $this->wechat_info])
-            ->andFilterWhere(['like', 'oaApp.pay_info', $this->pay_info])
-            ->andFilterWhere(['like', 'oaApp.sms_info', $this->sms_info])
+            ->andFilterWhere(['like', 'oaApp.third_info', $this->third_info])
             ->andFilterWhere(['like', 'oaApp.requirement_info', $this->requirement_info])
             ->andFilterWhere(['like', 'oaApp.process_info', $this->process_info])
             ->andFilterWhere(['like', 'oaApp.created_at', $this->created_at])
@@ -114,15 +112,13 @@ class OaApp extends \oa\components\Model
         } else {
             $action = 'advanceUpdate';
         }
-        if (u()->can('app/advanceUpdate') || $action !== 'advanceUpdate') {
-            if ($this->$field) {
-                $tips = $this->isNewTips($field) ? '<i class="tips"></i>' : '';
-                return Hui::warningBtn('更新', [$action, 'type' => 'update', 'id' => $key, 'field' => $field], ['class' => 'info-fancybox fancybox.iframe']) . '&nbsp;&nbsp;' . Hui::primaryBtn('查看', [$action, 'type' => 'view', 'id' => $key, 'field' => $field], ['class' => 'info-fancybox fancybox.ajax']) . $tips;
-            } else {
-                return Hui::successBtn('新建', [$action, 'type' => 'update', 'id' => $key, 'field' => $field], ['class' => 'info-fancybox fancybox.iframe']);
-            }
+        if ($this->$field) {
+            $tips = $this->isNewTips($field) ? '<i class="tips"></i>' : '';
+            return 
+                Hui::warningBtn('更新', [$action, 'type' => 'update', 'id' => $key, 'field' => $field], ['class' => 'info-fancybox fancybox.iframe']) . '&nbsp;&nbsp;' . 
+                Hui::primaryBtn('查看', [$action, 'type' => 'view', 'id' => $key, 'field' => $field], ['class' => 'info-fancybox fancybox.ajax']) . $tips;
         } else {
-            return '***';
+            return Hui::successBtn('新建', [$action, 'type' => 'update', 'id' => $key, 'field' => $field], ['class' => 'info-fancybox fancybox.iframe']);
         }
     }
 

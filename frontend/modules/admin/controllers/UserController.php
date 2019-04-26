@@ -26,8 +26,10 @@ class UserController extends \admin\components\Controller
             'vip' => ['type' => 'text'],
             'created_at',
             'state' => ['search' => 'select'],
-            ['type' => ['delete'], 'width' => '120px', 'value' => function ($row) {
-                return Hui::secondaryBtn('修改密码', ['editPass', 'id' => $row->id], ['class' => 'editPass']);
+            ['type' => [], 'width' => '120px', 'value' => function ($row) {
+                return 
+                    Hui::secondaryBtn('修改密码', ['editPass', 'id' => $row->id], ['class' => 'editPass']) . '&nbsp;&nbsp;' .
+                    $row->toggleBtn();
             }]
         ]);
 

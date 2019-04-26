@@ -4,6 +4,7 @@ namespace common\components;
 
 use Yii;
 use common\helpers\Hui;
+use common\helpers\Security;
 use common\helpers\ArrayHelper;
 use common\helpers\StringHelper;
 use yii\validators\Validator;
@@ -247,7 +248,7 @@ class ARModel extends \yii\db\ActiveRecord
      * @param  string  $field 字段名称
      * @return boolean
      */
-    public function toggle($field)
+    public function toggle($field = 'state')
     {
         if ($this->$field == static::STATE_VALID) {
             $this->$field = static::STATE_INVALID;
@@ -255,6 +256,31 @@ class ARModel extends \yii\db\ActiveRecord
             $this->$field = static::STATE_VALID;
         }
         return $this->update();
+    }
+
+    /**
+     * 状态切换的按钮
+     * 按钮顺序一般遵循以下逻辑：假定事物默认是正常态，则操作顺序应为先删除后恢复
+     *
+     * @param  string  $filed   字段
+     * @param  array   $btns    按钮描述
+     * @param  boolean $reverse 按钮逻辑是否反转
+     * @return string
+     */
+    public function toggleBtn($field = 'state', $btns = ['冻结', '恢复'], $reverse = false)
+    {
+        if ($this->$field == static::STATE_VALID && !$reverse) {
+            $method = 'dangerBtn';
+            $btn = $btns[0];
+        } else {
+            $method = 'successBtn';
+            $btn = $btns[1];
+        }
+        $key = $this->primaryKey()[0];
+        $keyValue = $this->$key;
+        $data = ['field' => $field, 'key' => $keyValue, 'class' => $this::className()];
+        $params = Security::base64encrypt(json_encode($data));
+        return Hui::$method($btn, ['toggle', 'params' => $params], ['class' => 'ajaxBtn']);
     }
 
     /**
