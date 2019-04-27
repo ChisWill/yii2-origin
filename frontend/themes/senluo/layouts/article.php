@@ -1,7 +1,7 @@
 <?php use frontend\models\Form; ?>
 <?php use frontend\models\Picture; ?>
+<?php use frontend\models\ArticleMenu; ?>
 <?php use common\helpers\Html; ?>
-<?php use common\models\ArticleMenu; ?>
 <?php frontend\assets\SenLuoAsset::register($this) ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -30,11 +30,7 @@
             <div class="header-right fr">
                 <nav class="navigator">
             <?php foreach (ArticleMenu::getMenus() as $action => $menu): ?>
-                <?php
-                $pieces = explode('-', $this->context->url);
-                $url = current($pieces);
-                ?>
-                <?php if ($url == $action): ?>
+                <?php if (ArticleMenu::getTopUrl($this->context->url) == $action): ?>
                     <?php $class = 'active' ?>
                 <?php else: ?>
                     <?php $class = null ?>

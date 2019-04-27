@@ -198,7 +198,7 @@ class ARModel extends \yii\db\ActiveRecord
      * @param  mixed $condition
      * @return object
      */
-    public static function findModel($condition = null)
+    public static function findModel($condition = null, $info = 'Not Found')
     {
         if ($condition === null) {
             return new static;
@@ -207,7 +207,7 @@ class ARModel extends \yii\db\ActiveRecord
         $model = static::findOne($condition);
 
         if ($model === null) {
-            throwex('Not Found');
+            throwex($info);
         }
         
         return $model;
@@ -263,13 +263,21 @@ class ARModel extends \yii\db\ActiveRecord
      * 按钮顺序一般遵循以下逻辑：假定事物默认是正常态，则操作顺序应为先删除后恢复
      *
      * @param  string  $filed   字段
-     * @param  array   $btns    按钮描述
      * @param  boolean $reverse 按钮逻辑是否反转
+     * @param  array   $btns    按钮描述
      * @return string
      */
-    public function toggleBtn($field = 'state', $btns = ['冻结', '恢复'], $reverse = false)
+    public function toggleBtn($field = 'state', $reverse = false, $btns = ['冻结', '恢复'])
     {
-        if ($this->$field == static::STATE_VALID && !$reverse) {
+        if ($this->$field == static::STATE_VALID) {
+            $flag = true;
+        } else {
+            $flag = false;
+        }
+        if ($reverse === true) {
+            $flag = !$flag;
+        }
+        if ($flag === true) {
             $method = 'dangerBtn';
             $btn = $btns[0];
         } else {

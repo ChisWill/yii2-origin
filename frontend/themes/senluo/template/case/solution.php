@@ -1,11 +1,6 @@
 <?php use frontend\models\Article; ?>
 <?php use yii\widgets\Breadcrumbs; ?>
 <?= $this->regCss('projectDetail') ?>
-<?php 
-    $id = get('id');
-    $article = Article::findModel($id);
- ?>
-
 <div class="content">
     <img class="project-img wow pulse animated" src="<?= img("project-detail-bg.jpg") ?>">
     <div class="crumbs">

@@ -3,7 +3,6 @@
     margin: 0;
 }
 .linkage-container {
-    overflow-x: auto;
     min-width: 600px;
 }
 .linkage-ul {
@@ -161,5 +160,6 @@
     padding: 0px 8px;
     box-shadow: 1px 1px 20px rgba(0, 0, 0, .15);
     outline: 0;
+    text-align: center;
     text-align-last: center;
 }

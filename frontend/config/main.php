@@ -26,9 +26,9 @@ return [
             'rules' => [
                 // 企业资讯站路由规则
                 'article/generate' => 'article/generate',
-                'article/<url:[\w|-]*>' => 'article/index',
+                'article/<url:[\w-]*>' => 'article/index',
                 // 支付回调路由规则
-                '<module:[\w|/]*>/notify/<type:[\d]+>' => '<module>/notify'
+                '<module:[\w/]*>/notify/<type:[\d]+>' => '<module>/notify'
             ]
         ],
         'log' => [

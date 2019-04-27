@@ -80,7 +80,7 @@
         </div>
     </div>
     <div id="slider">
-        <?php foreach (Article::getArticles('about-team') as $article): ?>
+        <?php foreach (Article::getArticleQuery('about-team')->asArray()->all() as $article): ?>
         <div class="spic">
             <img src="<?= img('zoom.png') ?>">
             <div class="spic-back"><img src="<?= $article['cover'] ?>" /></div>

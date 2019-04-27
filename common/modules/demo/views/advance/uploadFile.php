@@ -159,7 +159,7 @@
 <?php self::endForm() ?>
 
 <script>
-$(function() {
+$(function () {
     // 常规使用：任意单个文件上传
     $("#inputFile").uploadFile(function (msg) { // 在最简易的情形下，只需要提供一个回调方法作为参数，处理AJAX上传成功后的事件
         if (msg.state) {

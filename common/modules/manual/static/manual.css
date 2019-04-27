@@ -1043,6 +1043,7 @@ a {
     right: 0;
     top: 0;
     bottom: 0;
+    overflow: auto;
 }
 .edit-left-inner, .edit-right-inner {
     position: absolute;
@@ -1052,7 +1053,6 @@ a {
     bottom: 0;
     padding: 20px 10px;
     box-sizing: border-box;
-    overflow: auto;
 }
 .edit-right img, .view-body img {
     max-width: 100%;

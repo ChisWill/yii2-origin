@@ -64,7 +64,7 @@ class SystemController extends \oa\components\Controller
             ['type' => ['edit' => 'saveNotice', 'delete'], 'width' => '250px', 'value' => function ($row) {
                 $btns[] = Hui::primaryBtn('查看公告', ['lookNotice', 'id' => $row->id], ['class' => 'view-fancybox fancybox.iframe']);
                 if ($row->attach) {
-                    $btns[] = Hui::successBtn('下载附件', ['downloadAttach', 'id' => $row->id]);
+                    $btns[] = Hui::successBtn('下载附件', ['downloadAttach', 'id' => $row->id], ['target' => '_blank']);
                 }
                 return implode('&nbsp;&nbsp;', $btns);
             }],

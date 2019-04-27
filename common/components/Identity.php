@@ -90,11 +90,11 @@ class Identity extends \yii\db\ActiveRecord implements \yii\web\IdentityInterfac
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        throw new \yii\base\NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        return static::findOne($token);
     }
 
     /**
-     * 是基于 cookie 登录密钥的 验证的逻辑的实现。
+     * 基于 cookie 登录密钥的 验证的逻辑的实现。
      */
     public function validateAuthKey($authKey)
     {

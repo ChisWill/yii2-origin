@@ -220,20 +220,28 @@
          * js插件方式弹出prompt框，如果引入了php端的 LayerAsset ，则会以插件的方式弹窗
          * 
          * @param string   info     消息
+         * @param string   value    默认的输入文本
          * @param callback callback 确认按钮的回调函数
          */
-        prompt: function (info, callback) {
+        prompt: function (info, value, callback) {
+            if (typeof value === 'function') {
+                callback = value;
+                value = '';
+            }
             if (typeof layer !== 'undefined') {
                 layer.prompt({
                     formType: 0,
-                    title: info
-                }, function(value, index, elem) {
-                    callback(value);
-                    layer.close(index);
+                    title: info,
+                    value: value,
+                    yes: function (index, layero) {
+                        var value = layero.find(".layui-layer-input").val();
+                        callback(value);
+                        layer.close(index);
+                    }
                 });
             } else {
                 if (typeof callback == 'function') {
-                    callback(prompt(info));
+                    callback(prompt(info, value));
                 }
             }
         },
@@ -419,7 +427,7 @@
          * @param json      data     额外提交的数据
          * @param function  success  成功的回调方法
          * @param json      params   额外的参数配置，包含以下选项
-         * - before: function(this),自定义`AJAX`提交前的额外操作
+         * - before: function(this, data), 自定义`AJAX`提交前的额外操作，可以对提交参数进行调整
          * - preview: function(src, self), 预览的回调方法，如果绑定的是`input[file]`，`return false`可以阻止提交
          * - progress: function(percent), 显示当前进度的回调方法，返回当前提交进度的百分比数字
          */
@@ -507,7 +515,7 @@
                         }
                     });
                     $this.submit(function () {
-                        if ($.isFunction(params.before) && !params.before(this)) {
+                        if ($.isFunction(params.before) && !params.before(this, data)) {
                             return false;
                         }
                         url = url || $(this).attr('action');
@@ -528,7 +536,7 @@
                     $this.change(function () {
                         var $self = $(this),
                             formData = new FormData;
-                        if ($.isFunction(params.before) && !params.before(this)) {
+                        if ($.isFunction(params.before) && !params.before(this, data)) {
                             return false;
                         }
                         formData.append($self.attr('name'), this.files[0]);

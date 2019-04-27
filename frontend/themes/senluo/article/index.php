@@ -41,48 +41,48 @@
             <a href="<?= url('case') ?>" class="right_btn"></a>
             <div id="all-tab" class="tab-container clearfix">
             <?php foreach (Article::getAllArticleQuery('case-all')->limit(6)->asArray()->all() as $article): ?>
-                <div class="show-item wow zoomIn animated" href="<?= url(['case-all', 'id' => $article['id']]) ?>">
+                <div class="show-item wow zoomIn animated" href="<?= url(['detail', 'id' => $article['id']]) ?>">
                     <img src="<?= $article['cover'] ?>" alt="<?= config('web_name') . '-网站开发' ?>">
                     <figcaption>
                         <p><?= $article['title'] ?></p>
                         <i>View more</i>
-                        <a href="<?= url(['case-all', 'id' => $article['id']]) ?>" title="<?= $article['title'] ?>"></a>
+                        <a href="<?= url(['detail', 'id' => $article['id']]) ?>" title="<?= $article['title'] ?>"></a>
                     </figcaption>
                 </div>
             <?php endforeach ?>
             </div>
             <div id="pc-tab" class="tab-container clearfix hide">
             <?php foreach (Article::getArticleQuery('case-web')->limit(6)->asArray()->all() as $article): ?>
-                <div class="show-item" href="<?= url(['case-all', 'id' => $article['id']]) ?>">
+                <div class="show-item" href="<?= url(['detail', 'id' => $article['id']]) ?>">
                     <img src="<?= $article['cover'] ?>" alt="<?= config('web_name') . '-网站建设' ?>">
                     <figcaption>
                         <p><?= $article['title'] ?></p>
                         <i>View more</i>
-                        <a href="<?= url(['case-all', 'id' => $article['id']]) ?>" title="<?= $article['title'] ?>"></a>
+                        <a href="<?= url(['detail', 'id' => $article['id']]) ?>" title="<?= $article['title'] ?>"></a>
                     </figcaption>
                 </div>
             <?php endforeach ?>
             </div>
             <div id="phone-tab" class="tab-container clearfix hide">
             <?php foreach (Article::getArticleQuery('case-phone')->limit(6)->asArray()->all() as $article): ?>
-                <div class="show-item" href="<?= url(['case-all', 'id' => $article['id']]) ?>">
+                <div class="show-item" href="<?= url(['detail', 'id' => $article['id']]) ?>">
                     <img src="<?= $article['cover'] ?>" alt="<?= config('web_name') . '-移动端开发' ?>">
                     <figcaption>
                         <p><?= $article['title'] ?></p>
                         <i>View more</i>
-                        <a href="<?= url(['case-all', 'id' => $article['id']]) ?>"></a>
+                        <a href="<?= url(['detail', 'id' => $article['id']]) ?>"></a>
                     </figcaption>
                 </div>
             <?php endforeach ?>
             </div>
             <div id="program-tab" class="tab-container clearfix hide">
             <?php foreach (Article::getArticleQuery('case-mini')->limit(6)->asArray()->all() as $article): ?>
-                <div class="show-item" href="<?= url(['case-all', 'id' => $article['id']]) ?>">
+                <div class="show-item" href="<?= url(['detail', 'id' => $article['id']]) ?>">
                     <img src="<?= $article['cover'] ?>" alt="<?= config('web_name') . '-微信小程序开发' ?>">
                     <figcaption>
                         <p><?= $article['title'] ?></p>
                         <i>View more</i>
-                        <a href="<?= url(['case-all', 'id' => $article['id']]) ?>" title="<?= $article['title'] ?>"></a>
+                        <a href="<?= url(['detail', 'id' => $article['id']]) ?>" title="<?= $article['title'] ?>"></a>
                     </figcaption>
                 </div>
             <?php endforeach ?>
@@ -159,7 +159,7 @@
                 <div class="top-ad"></div>
                 <div class="bottom-content">
                     <?php foreach (Article::getAllArticleQuery('index-news')->limit(5)->asArray()->all() as $article): ?>
-                    <a class="news-item clearfix" href="<?= url(['index-detail', 'aid' => $article['id']]) ?>">
+                    <a class="news-item clearfix" href="<?= url(['detail', 'id' => $article['id']]) ?>">
                         <img src="<?= img('index-tri.png') ?>">
                         <span class="time"><?= substr($article['created_at'], 0, 10)?></span>
                         <span><?= $article['title'] ?></span>
@@ -171,7 +171,7 @@
             <div class="news-right fr wow lightSpeedIn animated">
                 <a class="know-more" href="<?= url(['index-news', 'type' => 'index-senluo']) ?>"></a>
                 <?php foreach (Article::getAllArticleQuery('index-news')->limit(1)->asArray()->all() as $article): ?>
-                <a class="newest-item" href="<?= url(['index-detail', 'aid' => $article['id']]) ?>">
+                <a class="newest-item" href="<?= url(['detail', 'id' => $article['id']]) ?>">
                     <div class="newest-title"><?= $article['title'] ?></div>
                     <div class="newsest-img" style="background: url(<?= $article['cover'] ?>) center center no-repeat;background-size: cover;"></div>
                 </a>
@@ -184,7 +184,7 @@
         <img class="mobile-news-title" src="<?= img('news-title.png') ?>">
         <div class="mobile-news-wrap">
             <?php foreach (Article::getAllArticleQuery('index-news')->limit(5)->asArray()->all() as $article): ?>
-            <a class="mobile-news-item wow lightSpeedIn animated" href="<?= url(['index-detail', 'aid' => $article['id']]) ?>">
+            <a class="mobile-news-item wow lightSpeedIn animated" href="<?= url(['detail', 'id' => $article['id']]) ?>">
                 <img class="news-item-cover" src="<?= $article['cover'] ?>">
                 <div class="mobile-news-info">
                     <div class="news-item-title"><?= $article['title'] ?></div>

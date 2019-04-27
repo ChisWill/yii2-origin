@@ -2,9 +2,6 @@
 <?php use frontend\models\ArticleMenu; ?>
 <?php use yii\widgets\Breadcrumbs; ?>
 <?= $this->regCss('news') ?>
-<?php 
-    $type = get('type');
- ?>
 <div class="content">
     <img class="news-img wow pulse animated" src="<?= img('news-img.jpg') ?>">
     <div class="crumbs">
@@ -16,20 +13,21 @@
     <div class="news-title-wrap">
         <img src="<?= img('new-title.png') ?>">
         <div class="news-tab">
-        <?php foreach (ArticleMenu::getSubMenus('index-news') as $value): ?>
+        <?php foreach ($subMenus as $menu): ?>
             <?php 
-                $class = '';
-                if($value['url'] == get('type')){
+                if ($menu['id'] == $child['id']) {
                     $class = 'active';
-                } 
+                } else {
+                    $class = '';
+                }
             ?>
-            <a href="<?= url([$value['url'], 'type' => $value['url']]) ?>" class="tab-title <?= $class ?>"><?= $value['name'] ?><span class="arrow-tri"></span></a>
+            <a href="<?= url([$parent['url'], 'id' => $menu['id']]) ?>" class="tab-title <?= $class ?>"><?= $menu['name'] ?><span class="arrow-tri"></span></a>
         <?php endforeach ?>
         </div>
     </div>
     <div class="news-list">
-        <?php foreach (Article::getArticleQuery($type)->paginate() as $article): ?>
-        <a class="news-item clearfix" href="<?= url(['index-detail', 'aid' => $article['id']]) ?>">
+        <?php foreach (Article::getArticleQuery($child['id'])->paginate() as $article): ?>
+        <a class="news-item clearfix" href="<?= url(['detail', 'id' => $article['id']]) ?>">
             <img class="fl item-left" src="<?= $article['cover'] ?>">
             <div class="fr item-right">
                 <div class="item-title"><?= $article['title'] ?></div>

@@ -18,8 +18,14 @@ class Url extends \yii\helpers\BaseUrl
             $params['@_@'] = self::getSign($params);
         }
         $info = parse_url($url);
-        $query = isset($info['query']) ? '?' . $info['query'] : '?';
-        return explode('?', $url)[0] .= $query . ($params ? '&' : '') . http_build_query($params);
+        $url = explode('?', $url)[0];
+        if (isset($info['query'])) {
+            $d = $params ? '&' : '';
+            return $url . '?' . $info['query'] . $d . http_build_query($params);
+        } else {
+            $d = $params ? '?' : '';
+            return $url . $d . http_build_query($params);
+        }
     }
 
     /**
@@ -29,7 +35,8 @@ class Url extends \yii\helpers\BaseUrl
      */
     public static function check()
     {
-        if (!empty($get = get()) && isset($get['@_@'])) {
+        $get = get();
+        if (!empty($get) && isset($get['@_@'])) {
             $old = $get['@_@']; 
             unset($get['@_@']);
             $new = self::getSign($get);

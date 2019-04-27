@@ -1,7 +1,7 @@
 <?php $form = self::beginForm() ?>
-<?= $model->title('录入绩效分') ?>
-<?= $form->field($model, 'user_id')->dropDownList(\oa\models\AdminUser::getDevUserMap()) ?>
-<?= $form->field($model, 'score')->label('绩效分') ?>
+<?= $model->title('绩效记录') ?>
+<?= $form->field($model, 'user_id')->dropDownList(\oa\models\AdminUser::getAllUserMap()) ?>
+<?= $form->field($model, 'score')->label('绩效点') ?>
 <?= $form->field($model, 'comment')->textArea() ?>
 <?= $form->submit($model) ?>
 <?php self::endForm() ?>

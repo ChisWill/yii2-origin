@@ -10,8 +10,25 @@ use frontend\models\Form;
 use frontend\models\Article;
 use frontend\models\ArticleMenu;
 
+/**
+ * 资讯类站点统一解决方案，涉及的表为`article_menu`和`article`，概念说明：
+ * 1. 资讯站本质分为三类页面，分别是首页、分类页和详情页；分别对应`index()`、`category()`和`detail()`方法。
+ * 2. 分类页必须在`article_menu`中设置`url`字段才能访问；如果不设置模板，则默认使用`views/article/category.php`作为视图文件。
+ * 3. 叶子节点的分类页无法访问，使用`url($parent['url'], 'id' => $child['id'])`构造分类页的访问链接，其中`$parent`是上级分类，`$child`是当前分类
+ * 4. 使用`url('detail', 'id' => $article['id'])`构造详情页的访问链接，其中`$article`是要访问的文章
+ *
+ * 另外，框架目前一共提供4个常用方法：
+ * 1. frontend\models\ArticleMenu::getMenus() ：获取顶级栏目列表
+ * 2. frontend\models\ArticleMenu::getSubMenus() ：获取指定栏目id或url的子栏目列表
+ * 3. frontend\models\Article::getAllArticleQuery() ：获取指定栏目url下的所有文章的查询条件
+ * 4. frontend\models\Article::getArticleQuery() ：获取指定栏目id或url下的文章的查询条件
+ * 
+ * @author ChisWill
+ */
 class ArticleController extends \frontend\components\Controller
 {
+    /****************************** 以下是内置属性与方法，无需修改 ******************************/
+
     public $layout = 'article';
     public $links = [];
     public $url;
@@ -19,28 +36,21 @@ class ArticleController extends \frontend\components\Controller
     public function init()
     {
         parent::init();
-    }
 
-    public function beforeAction($action)
-    {
-        if (!parent::beforeAction($action)) {
-            return false;
-        } else {
-            return true;
-        }
+        Yii::$container->set('yii\widgets\Breadcrumbs', [
+            'homeLink' => false
+        ]);
     }
 
     /**
-     * 所有 action 会统一路由到此
+     * 所有 action 统一路由到此
      */
     public function actionIndex()
     {
         $this->url = get('url', 'index');
-        $url = lcfirst(Inflector::id2camel($this->url));
-        $exceptActions = ['index', 'detail', 'submit', 'search', 'data'];
 
-        if (in_array($url, $exceptActions)) {
-            return $this->{$url}();
+        if (method_exists($this, $this->url)) {
+            return $this->{$this->url}();
         } else {
             return $this->category();
         }
@@ -53,7 +63,7 @@ class ArticleController extends \frontend\components\Controller
     {
         $this->view->title = '首页';
 
-        return $this->render('index', compact(''));
+        return $this->render('index');
     }
 
     /**
@@ -61,105 +71,65 @@ class ArticleController extends \frontend\components\Controller
      */
     public function category()
     {
-        $id = get('id') ?: get('aid');
         $url = $this->url;
-        $article = Article::findModel($id);
-        $self = ArticleMenu::findModel(['url' => $url]);
-        $subMenu = $self;
-        if ($self->top_id != 0) {//二级菜单
-            $menu = $self->top;
-        } else {//一级菜单
-            $menu = $self;
-        }
-        if ($id) {
-            $this->links[] = ['label' => $subMenu->name, 'url' => url([$menu->url, 'id' => $subMenu->id])];
-            $this->links[] = $article->title;
+        $parent = ArticleMenu::findModel(['url' => $url, 'state' => ArticleMenu::STATE_VALID]);
+        $subMenus = ArticleMenu::getSubMenus($parent->id);
+        if (get('id')) {
+            $child = current(ArrayHelper::filter($subMenus, ['eq' => ['id' => get('id')]]));
         } else {
-            $this->links[] = $subMenu->name;
+            $child = ArrayHelper::getValue($subMenus, '0');
         }
-
-        $this->view->title = $menu->name;
-        $subMenus = ArticleMenu::getSubMenus($menu->id);
-
-        if ($self->template) {
-            $articleId = get('aid');
-            if ($articleId) {
-                $article = Article::findModel($articleId);
-                $article->updateCounters(['count' => 1]);
-                return $this->renderTemplate($menu->url . '/' . $self->template, compact('self', 'menu', 'subMenus', 'article'));
-            } else {
-                return $this->renderTemplate($menu->url . '/' . $self->template, compact('self', 'menu', 'subMenus'));
-            }
+        if ($parent->top_id != 0) {
+            $this->links[] = ['label' => $parent->top->name, 'url' => url([$parent->top->url])];
         }
-        if (!$id) {
-            $id = ArrayHelper::getValue($subMenus, '0.id', 0);
+        $this->links[] = ['label' => $parent->name, 'url' => url([$parent->url])];
+        if ($child) {
+            $this->links[] = $child['name'];
         }
-        if ($id) {
-            $subMenu = ArticleMenu::findModel($id);
-            // 校验密码是否已经输入
-            if (!$subMenu->checkPasswd()) {
-                return $this->redirect(['checkPasswd', 'id' => $subMenu->id]);
-            }
-            list($view, $params) = $subMenu->prepare();
-            if (count($params['list']) === 1 || $view === 'detail') {
-                return $this->redirect(['detail', 'menuId' => $subMenu->id, 'id' => ArrayHelper::getValue($params, 'list.0.id', null)]);
-            }
+        if ($parent->template) {
+            return $this->renderTemplate(ArticleMenu::getTopUrl($parent->url) . '/' . $parent->template, compact('parent', 'child', 'subMenus'));
         } else {
-            $view = 'list';
-            $params['list'] = [];
+            return $this->render('category', compact('parent', 'child', 'subMenus'));
         }
-        $params['menu'] = $menu;
-        $params['subMenus'] = $subMenus;
-
-        // if (!empty($subMenu)) {
-        //     $this->links[] = ['label' => $menu->name, 'url' => url([$menu->url])];
-        //     $this->links[] = $subMenu->name;
-        // } else {
-        //     $this->links[] = $menu->name;
-        // }
-
-        return $this->render($view, $params);
     }
 
     /**
-     * 内容页
+     * 详情页
      */
     public function detail()
     {
         $id = get('id');
-        $menuId = get('mid');
-        $article = Article::findModel($id);
-        $subMenu = ArticleMenu::findModel($menuId);
-        if ($id) {
-            $title = $article->title;
+        $article = Article::findModel(['id' => $id, 'state' => Article::STATE_VALID]);
+        $child = $article->menu;
+        if ($child->top_id == 0) {
+            $parent = $child;
         } else {
-            $title = $subMenu->name;
+            $parent = $child->parent;
         }
-        $this->view->title = $title;
-        $menu = $subMenu->parent;
-        $this->url = $menu->url;
-        $subMenus = ArticleMenu::getSubMenus($subMenu['pid']);
+        $this->url = $parent->url;
+        $subMenus = ArticleMenu::getSubMenus($parent->id);
 
-        $this->links[] = ['label' => $menu->name, 'url' => url([$menu->url])];
-        if ($id) {
-            $this->links[] = ['label' => $subMenu->name, 'url' => url([$menu->url, 'id' => $subMenu->id])];
-            $this->links[] = $article->title;
+        if ($parent->top_id != 0) {
+            $this->links[] = ['label' => $parent->top->name, 'url' => url([$parent->top->url])];
+        }
+        if ($parent->id != $child->id) {
+            $this->links[] = ['label' => $parent->name, 'url' => url([$parent->url])];
+            $this->links[] = ['label' => $child->name, 'url' => url([$parent->url, 'id' => $child->id])];
         } else {
-            $this->links[] = $subMenu->name;
+            $this->links[] = ['label' => $parent->name, 'url' => url([$parent->url])];
         }
+        $this->links[] = $article->title;
 
-        if ($article->template) {
-            $view = 'template/' . $article->template;
+        $template = $article->template ?: ($child->template ?: '');
+        if ($template) {
+            return $this->renderTemplate(ArticleMenu::getTopUrl($parent->url) . '/' . $template, compact('parent', 'child', 'subMenus', 'article'));
         } else {
-            $view = 'detail';
+            return $this->render('detail', compact('parent', 'child', 'subMenus', 'article'));
         }
-
-        return $this->render($view, compact('menu', 'subMenu', 'subMenus', 'article'));
     }
 
-    /**
-     * 表单提交
-     */
+    /****************************** 以下是自定义区块 ******************************/
+
     public function submit()
     {
         $model = new Form;
@@ -175,9 +145,6 @@ class ArticleController extends \frontend\components\Controller
         }
     }
 
-    /**
-     * 搜索
-     */
     public function search()
     {
         $keywords = get('keywords', '');
@@ -199,30 +166,6 @@ class ArticleController extends \frontend\components\Controller
             // 搜索不到时的处理
             // return $this->actionInfo();
         }
-    }
-
-    public function checkPasswd()
-    {
-        $id = get('id');
-        $this->view->title = '输入密码';
-        $subMenu = Menu::findOne($id);
-        $menu = $subMenu->parent;
-        $this->url = $menu->url;
-        $menus = Menu::find()->where(['pid' => $subMenu['pid']])->orderBy('sort')->all();
-
-        if (req()->isPost) {
-            $passwd = post('passwd');
-            if ($passwd === $subMenu->passwd) {
-                $passwdList = session('articlePasswdList') ?: [];
-                $passwdList[$subMenu->id] = true;
-                session('articlePasswdList', $passwdList, 3600 * 10);
-                return $this->goBack();
-            } else {
-                return error('密码错误');
-            }
-        }
-
-        return $this->render('checkPasswd', compact('menus', 'menu', 'subMenu'));
     }
 
     public function data()

@@ -9,10 +9,6 @@ use Yii;
  */
 class ArticleMenu extends AbstractMenu
 {
-    const CATEGORY_COVER = 1;
-    const CATEGORY_LIST = 2;
-    const CATEGORY_CONT = 3;
-
     public function rules()
     {
         return [
@@ -95,88 +91,8 @@ class ArticleMenu extends AbstractMenu
 
     /****************************** 以下为公共操作的方法 ******************************/
 
-    public function checkPasswd()
-    {
-        if ($this->passwd === '') {
-            return true;
-        }
-        $passwdList = session('articlePasswdList') ?: [];
 
-        user()->setReturnUrl(url());
-
-        return isset($passwdList[$this->id]);
-    }
-
-    public function prepare()
-    {
-        switch ($this->category) {
-            case self::CATEGORY_COVER:
-                $view = 'news';
-                $page = 10;
-                break;
-            case self::CATEGORY_LIST:
-                $view = 'list';
-                $page = 10;
-                break;
-            case self::CATEGORY_CONT:
-                $view = 'detail';
-                $page = 1;
-                break;
-            default:
-                $view = 'list';
-                $page = 10;
-                break;
-        }
-        $subMenu = $this;
-        $list = Article::find()->where(['menu_id' => $subMenu->id, 'state' => Article::STATE_VALID])->paginate($page);
-
-        return [$view, compact('list', 'subMenu')];
-    }
-
-    private static $_menus = null;
-    public static function getMenus()
-    {
-        if (self::$_menus === null) {
-            self::$_menus = [];
-            $data = ArticleMenu::find()->where(['pid' => 0, 'state' => ArticleMenu::STATE_VALID])->orderBy('sort')->asArray()->all();
-            foreach ($data as $row) {
-                self::$_menus[$row['url']] = $row;
-            }
-        }
-        return self::$_menus;
-    }
-
-    public static function getSubMenus($pid)
-    {
-        $query = ArticleMenu::find()
-            ->joinWith('parent')
-            ->where(['articleMenu.state' => ArticleMenu::STATE_VALID])
-            ->orderBy('articleMenu.sort');
-        if (is_int($pid)) {
-            $query->andWhere(['articleMenu.pid' => $pid]);
-        } elseif (is_string($pid)) {
-            $query->andWhere(['parent.url' => $pid]);
-        }
-        return $query->all();
-    }
 
     /****************************** 以下为字段的映射方法和格式化方法 ******************************/
 
-    // Map method of field `category`
-    public static function getCategoryMap($prepend = false)
-    {
-        $map = [
-            self::CATEGORY_COVER => '配图列表',
-            self::CATEGORY_LIST => '列表',
-            self::CATEGORY_CONT => '内容'
-        ];
-
-        return self::resetMap($map, $prepend);
-    }
-
-    // Format method of field `category`
-    public function getCategoryValue($value = null)
-    {
-        return $this->resetValue($value);
-    }
 }

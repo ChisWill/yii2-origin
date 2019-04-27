@@ -105,6 +105,6 @@ $(function () {
             var newStr = src.substr(0, src.length - 4) + '-active.jpg';
         }
         $(".swiper-slide-active").find("img").attr('src', newStr);
-    })
+    });
 });
 </script>

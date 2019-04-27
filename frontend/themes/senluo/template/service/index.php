@@ -18,7 +18,7 @@
         </div>
         <img class="question-img wow bounceIn animated" src="<?= img('question-img.png') ?>" alt="模板建站，快速无忧">
         <div class="question-content clearfix mainmenu">
-        <?php foreach (Article::getArticles('service-qa') as $article): ?>
+        <?php foreach (Article::getArticleQuery('service-qa')->asArray()->all() as $article): ?>
             <div class="question-item wow lightSpeedIn animated">
                 <div class="item-title">
                     <span class="add-icon"></span>

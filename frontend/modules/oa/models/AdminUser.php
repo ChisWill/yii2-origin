@@ -24,6 +24,11 @@ class AdminUser extends \admin\models\AdminUser
         ]);
     }
 
+    public static function getAllUserMap()
+    {
+        return AdminUser::find()->active()->map('id', 'realname');
+    }
+
     public static function getDevUserMap()
     {
         return AdminUser::find()->where(['position' => self::POSITION_DEV])->active()->map('id', 'realname');

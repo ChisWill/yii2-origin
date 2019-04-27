@@ -467,14 +467,22 @@ class AdminController extends \oa\components\Controller
     }
 
     /**
-     * @authname 绩效分列表
+     * @authname 绩效列表
      */
     public function actionPerformanceScore()
     {
-        $query = AdminUser::find()->where(['position' => AdminUser::POSITION_DEV])->active();
+        $query = AdminUser::find()->active();
         $scores = OaBonus::find()
-            ->select(['user_id', 'SUM(score) AS score'])
+            ->select(['user_id', 'SUM(IF(score > 0, score, 0)) AS score'])
             ->where(['user_id' => $query->map('id', 'id'), 'type' => OaBonus::TYPE_PERFORMANCE])
+            ->groupBy('user_id')
+            ->indexBy('user_id')
+            ->asArray()
+            ->all();
+        $punishments = OaBonus::find()
+            ->select(['user_id', 'SUM(IF(score < 0, score, 0)) AS score'])
+            ->where(['user_id' => $query->map('id', 'id'), 'type' => OaBonus::TYPE_PERFORMANCE])
+            ->andWhere(['>=', 'created_at', date('Y-m-01 00:00:00')])
             ->groupBy('user_id')
             ->indexBy('user_id')
             ->asArray()
@@ -492,12 +500,22 @@ class AdminController extends \oa\components\Controller
                     return Html::successSpan($getLv($exp + 1));
                 }
             }],
-            'score' => ['header' => '累计绩效分', 'value' => function ($row) use ($scores) {
+            ['header' => '累计绩效点', 'value' => function ($row) use ($scores) {
                 $exp = ArrayHelper::getValue($scores, $row->id, ['score' => 0])['score'];
-                if ($exp < 0) {
+                if ($exp == 0) {
+                    return 0;
+                } elseif ($exp < 0) {
                     return Html::errorSpan($exp);
                 } else {
-                    return Html::successSpan($exp);
+                    return Html::likeSpan($exp);
+                }
+            }],
+            ['header' => '当月累计扣除', 'value' => function ($row) use ($punishments) {
+                $exp = ArrayHelper::getValue($punishments, $row->id, ['score' => 0])['score'];
+                if ($exp == 0) {
+                    return $exp;
+                } else {
+                    return Html::errorSpan($exp);
                 }
             }],
             ['type' => ['view' => 'viewPerformanceHistory']]
@@ -509,7 +527,7 @@ class AdminController extends \oa\components\Controller
     }
 
     /**
-     * @authname 录入绩效分
+     * @authname 录入绩效
      */
     public function actionAddPerformanceScore()
     {
@@ -537,7 +555,7 @@ class AdminController extends \oa\components\Controller
             ->where(['user_id' => $id, 'type' => OaBonus::TYPE_PERFORMANCE])
             ->orderBy('id DESC');
         $html = $query->getTable([
-            'score' => ['header' => '绩效分', 'width' => '100px'],
+            'score' => ['header' => '绩效点', 'width' => '100px'],
             'comment',
             'created_at' => ['header' => '时间', 'width' => '150px']
         ]);

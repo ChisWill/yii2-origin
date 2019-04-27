@@ -55,7 +55,7 @@ class Version extends \common\components\ARModel
 
     public function getUser()
     {
-        return $this->hasOne('common\models\User', ['id' => 'created_by'])->select(['id', 'nickname', 'face']);
+        return $this->hasOne('common\models\User', ['id' => 'created_by'])->select(['id', 'nickname', 'face', 'username']);
     }
 
     public function getArticle()

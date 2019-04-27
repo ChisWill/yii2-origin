@@ -8,15 +8,19 @@ use yii\base\InvalidParamException;
 
 /**
  * 获取树形下拉的小组件，可以获取带层级的下拉列表
- * [with]属性表示相关联的层级表，该表必须有`code`字段
- * 该组件已集成进 common\traits\QueryTrait 中
+ * [with]属性表示相关联的层级表，该组件已集成进 common\traits\QueryTrait 中
  * 以下是一个使用例子：
  * 
  * ```php
  * // 关联表用法：
  * $query = \common\models\AdminUser::find()->with('department');
- * $html = $query->getTree(['withName' => ['code' => 'name']])
- *               ->dropDownList('realname');
+ * $html = $query
+ *     ->getTree([
+ *         'header' => '请选择...',
+ *         'withName' => ['department_id' => 'department_name'],
+ *         'withOptions' => ['disabled' => 'disabled']
+ *     ])
+ *     ->dropDownList('realname');
  * // 或者单表用法：
  * $query = \common\models\Department::find();
  * $html = $query->getTree()
@@ -195,14 +199,14 @@ class Tree extends \yii\base\Object
     /**
      * 以 select 标签形式输出数据
      * 
-     * @param  string $name      用作当 select 标签的 [name] 属性的字段名称
+     * @param  string $field     显示<option>的[html]值的字段名称
      * @param  mixed  $selection 选中值
-     * @param  array  $options   配置参数
+     * @param  array  $options   配置参数，配置`name`来修改默认的设定值
      * @return string            select 标签的 HTML 代码
      */
-    public function dropDownList($name, $selection = '', $options = [])
+    public function dropDownList($field, $selection = '', $options = [])
     {
-        $this->name = $name;
+        $this->name = $field;
 
         $this->prepareItems();
 
@@ -216,8 +220,9 @@ class Tree extends \yii\base\Object
             }
         }
         $options['encodeSpaces'] = true;
+        $name = ArrayHelper::getValue($options, 'name', $this->getName());
 
-        return Html::dropDownList($this->getName(), $selection, $items, $options);
+        return Html::dropDownList($name, $selection, $items, $options);
     }
 
     /**
@@ -261,7 +266,7 @@ class Tree extends \yii\base\Object
             if ($this->sort) {
                 $this->withQuery->addOrderBy($this->sort);
             }
-            $this->withData = $this->withQuery->indexBy($this->key)->asArray()->all();
+            $this->withData = $this->withQuery->indexBy($this->withKey)->asArray()->all();
             $this->data = $this->query->asArray()->all();
 
             $pid = $this->getItemParentId($this->withData);
@@ -329,7 +334,7 @@ class Tree extends \yii\base\Object
                     'options' => [$withKey => $this->withOptions]
                 ];
                 foreach ($this->data as $k => $item) {
-                    if ($item[$this->with][$this->key] == $row[$this->key]) {
+                    if ($item[$this->with][$this->withKey] == $row[$this->withKey]) {
                         $prefix = str_repeat(' ', ($recursionLevel - 1) * 3) . ' ┕ ';
                         $value = $this->getNameValue($item);
                         $this->items[$item[$this->key]] = [
@@ -344,7 +349,7 @@ class Tree extends \yii\base\Object
                     }
                 }
                 unset($this->withData[$key]);
-                $this->setWithItems($row[$this->key], $recursionLevel);
+                $this->setWithItems($row[$this->withKey], $recursionLevel);
             }
         }
     }

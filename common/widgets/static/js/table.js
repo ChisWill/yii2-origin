@@ -49,9 +49,13 @@ $(function () {
                     $form.ajaxSubmit($.config('ajaxSubmit', {
                         success: function (msg) {
                             hideLoadingImg($this);
-                            $this.parents(container).find(refreshView).html(msg.info);
-                            for (var key in msg.data) {
-                                $('.' + key).html(msg.data[key]);
+                            if (msg.state) {
+                                $this.parents(container).find(refreshView).html(msg.info);
+                                for (var key in msg.data) {
+                                    $('.' + key).html(msg.data[key]);
+                                }
+                            } else {
+                                $.alert(msg.info);
                             }
                         }
                     }));

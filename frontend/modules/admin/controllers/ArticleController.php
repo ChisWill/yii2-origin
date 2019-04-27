@@ -92,9 +92,6 @@ class ArticleController extends \admin\components\Controller
             'id',
             'name' => ['type' => 'text'],
             u()->isMe ? 'url' : '' => ['type' => 'text'],
-            u()->isMe ? 'category' : '' => ['type' => 'select', 'value' => function ($row) {
-                return $row->pid ? $row->category : '';
-            }],
             'template' => ['type' => 'text'],
         ]);
 
@@ -106,24 +103,6 @@ class ArticleController extends \admin\components\Controller
      */
     public function actionAjaxUpdate()
     {
-        $params = post('params');
-
-        if ($linkageParams = Security::base64decrypt($params['model'])) {
-            $className = unserialize($linkageParams)['model'];
-        } else {
-            $className = $params['model'];
-        }
-
-        if ($className === 'admin\models\ArticleMenu') {
-            if (in_array($params['field'], ['url', 'category']))
-            $model = ArticleMenu::findModel($params['key']);
-            if ($params['field'] === 'category') {
-                if ($model->pid == 0) {
-                    return error('无需设置');
-                }
-            }
-        }
-
         return parent::actionAjaxUpdate();
     }
 }

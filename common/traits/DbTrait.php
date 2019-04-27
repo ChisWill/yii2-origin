@@ -67,6 +67,32 @@ trait dbTrait
     }
 
     /**
+     * 批量更新多行数据
+     * Note.被更新的表必须含有主键，且被更新的列中必须包含主键，因为是根据主键的值是否重复来判断
+     * 
+     * @param  string $table   表名
+     * @param  array  $columns 字段名
+     * @param  array  $rows    每行更新的值
+     * @return int             成功更新的行数
+     */
+    public static function dbReplace($table, $columns, $rows)
+    {
+        $table = self::_trimTableQuote($table);
+        
+        if (empty($columns) || empty($rows)) {
+            return 0;
+        }
+        $sql = Yii::$app->db->createCommand()->batchInsert('{{%' . $table . '}}', $columns, $rows)->getRawsql();
+        $sql .= ' ON DUPLICATE KEY UPDATE ';
+        $d = '';
+        foreach ($columns as $column) {
+            $sql .= sprintf('%s`%s`=VALUES(`%s`)', $d, $column, $column);
+            $d = ',';
+        }
+        return self::db($sql)->execute();
+    }
+
+    /**
      * 快捷更新表数据的方法
      * 
      * @param  string $table     表名

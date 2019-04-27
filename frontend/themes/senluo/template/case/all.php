@@ -1,10 +1,6 @@
 <?php use frontend\models\Article; ?>
 <?php use yii\widgets\Breadcrumbs; ?>
 <?= $this->regCss('case') ?>
-<?php 
-    $id = get('id');
-    $article = Article::findModel($id);
- ?>
 
 <div class="content">
     <img class="case-img wow pulse animated" src="<?= img('case-img.jpg') ?>" />

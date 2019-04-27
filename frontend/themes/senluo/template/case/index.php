@@ -25,8 +25,8 @@
             </div>
             <div class="show-content">
                 <div id="all-tab" class="tab-container clearfix">
-                <?php foreach (Article::getAllArticles('case-all') as $article): ?>
-                    <a href="<?= url(['caseAll', 'id' => $article['id']]) ?>" class="show-item wow zoomIn animated">
+                <?php foreach (Article::getAllArticleQuery('case-all')->asArray()->all() as $article): ?>
+                    <a href="<?= url(['detail', 'id' => $article['id']]) ?>" class="show-item wow zoomIn animated">
                     <div class="case-cover" style="background: url(<?= $article['cover'] ?>) center center no-repeat;background-size: cover;"></div>
                         <div class="product-title"><?= $article['title'] ?></div>
                         <img class="case-line" src="<?= img('case-line.png') ?>" alt="<?= config('web_name') . '-网站开发' ?>">
@@ -35,8 +35,8 @@
                 <?php endforeach ?>
                 </div>
                 <div id="pc-tab" class="tab-container clearfix hide">
-                <?php foreach (Article::getArticles('case-web') as $article): ?>
-                    <a href="<?= url(['caseAll', 'id' => $article['id']]) ?>" class="show-item">
+                <?php foreach (Article::getArticleQuery('case-web')->asArray()->all() as $article): ?>
+                    <a href="<?= url(['detail', 'id' => $article['id']]) ?>" class="show-item">
                         <img class="case-cover" src="<?= $article['cover'] ?>" alt="<?= config('web_name') . '-网站建设' ?>">
                         <div class="product-title"><?= $article['title'] ?></div>
                         <img class="case-line" src="<?= img('case-line.png') ?>">
@@ -45,8 +45,8 @@
                 <?php endforeach ?>
                 </div>
                 <div id="phone-tab" class="tab-container clearfix hide">
-                <?php foreach (Article::getArticles('case-phone') as $article): ?>
-                    <a href="<?= url(['caseAll', 'id' => $article['id']]) ?>" class="show-item">
+                <?php foreach (Article::getArticleQuery('case-phone')->asArray()->all() as $article): ?>
+                    <a href="<?= url(['detail', 'id' => $article['id']]) ?>" class="show-item">
                         <img class="case-cover" src="<?= $article['cover'] ?>" alt="<?= config('web_name') . '-移动端开发' ?>">
                         <div class="product-title"><?= $article['title'] ?></div>
                         <img class="case-line" src="<?= img('case-line.png') ?>">
@@ -55,8 +55,8 @@
                 <?php endforeach ?>
                 </div>
                 <div id="program-tab" class="tab-container clearfix hide">
-                <?php foreach (Article::getArticles('case-mini') as $article): ?>
-                    <a href="<?= url(['caseAll', 'id' => $article['id']]) ?>" class="show-item">
+                <?php foreach (Article::getArticleQuery('case-mini')->asArray()->all() as $article): ?>
+                    <a href="<?= url(['detail', 'id' => $article['id']]) ?>" class="show-item">
                         <img class="case-cover" src="<?= $article['cover'] ?>" alt="<?= config('web_name') . '-微信小程序开发' ?>">
                         <div class="product-title"><?= $article['title'] ?></div>
                         <img class="case-line" src="<?= img('case-line.png') ?>">
@@ -70,7 +70,7 @@
         <img class="teamwork-title wow zoomIn animated" src="<?= img('teamwork-title.jpg') ?>">
         <div class="teamwork" id="marquee1">
             <ul class="teamwork-content clearfix" >
-            <?php foreach (Article::getArticles('case-cooperate') as $article): ?>
+            <?php foreach (Article::getArticleQuery('case-cooperate')->asArray()->all() as $article): ?>
                 <li class="teamwork-item fl">
                   <img src="<?= $article['cover'] ?>">
                   <span class="help_img"></span>
@@ -118,7 +118,7 @@ $(function () {
                     var $solutionTitle = $("<div>").html(article[key]['title']);
                     var $solutionSummary = $("<div>").html(article[key]['summary']);
                     var $solutionContent = $("<div>").html((article[key]['content']).replace(/<\/?(img|a)[^>]*>/gi, '').substr(0, 90));
-                    var $solutionUrl = $("<a>").html("了解详情").attr("href", 'case-solution?id=' + article[key]["id"]);
+                    var $solutionUrl = $("<a>").html("了解详情").attr("href", 'detail?id=' + article[key]["id"]);
                     var $solutionIcon = $("<span>").addClass("know-icon");
                     $solutionItem.append($solutionImg);
                     $solutionRight.append($solutionTitle);

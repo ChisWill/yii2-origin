@@ -37,26 +37,17 @@ class Article extends \common\models\Article
             ->active();
     }
 
-    public static function getAllArticles($url)
-    {
-        return self::getAllArticleQuery($url)
-            ->asArray()
-            ->all();
-    }
-
     public static function getArticleQuery($url)
     {
-        return self::find()
+        $query = self::find()
             ->joinWith(['menu'])
-            ->where(['menu.url' => $url])
             ->orderBy('article.id desc')
             ->active();
-    }
-
-    public static function getArticles($url)
-    {
-        return self::getArticleQuery($url)
-            ->asArray()
-            ->all();
+        if (is_numeric($url)) {
+            $query->andWhere(['menu.id' => $url]);
+        } elseif (is_string($url)) {
+            $query->andWhere(['menu.url' => $url]);
+        }
+        return $query;
     }
 }

@@ -1,10 +1,6 @@
 <?php use frontend\models\Article; ?>
 <?php use yii\widgets\Breadcrumbs; ?>
 <?= $this->regCss('detail') ?>
-<?php 
-    $id = get('aid');
-    $article = Article::findModel($id);
- ?>
 <title>首页详情</title>
 <div class="wrap">
     <!-- 内容 -->

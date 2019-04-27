@@ -417,7 +417,7 @@ $(function () {
                     return a + b;
                 });
                 // 每列该增加的宽度
-                var avg = Math.round(($(this).find('.linkage-header').width() - sum) / length);
+                var avg = Math.round(($(this).find('.linkage-header').width() - sum) / length) - 1.1;
                 // 标题增加列宽
                 $(this).find('.linkage-header > p').each(function () {
                     $(this).width(widthMap[$(this).index()] + avg); 
