@@ -34,7 +34,6 @@ class Article extends \common\models\Article
     {
         return $this->search()
             ->joinWith(['menu'])
-            ->andWhere(['article.state' => self::STATE_VALID])
             ->andFilterWhere(['menu_id' => $this->categories])
             ->orderBy('article.id DESC');
     }

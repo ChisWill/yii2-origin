@@ -170,6 +170,58 @@
         },
 
         /**
+         * 用法类似 PHP 的 `date()` 函数
+         * 
+         * @param  string format 格式标识与PHP版的相同
+         * @param  mixed  date   毫秒级的时间戳或时间对象，不传默认为当前时间
+         * @return string        格式化话后的结果
+         */
+        date: function (format, date) {
+            if (!format) {
+                return '';
+            }
+            if (!date) {
+                date = new Date;
+            } else {
+                if (!isNaN(date)) {
+                    date = Number(date);
+                }
+                date = new Date(date);
+            }
+            var dealNum = function (num) {
+                if (num < 10) {
+                    return '0' + num;
+                } else {
+                    return num;
+                }
+            };
+            var formatArr = ['Y', 'm', 'd', 'H', 'i', 's'];
+            for (var i = 0; i < formatArr.length; i++) {
+                switch (formatArr[i]) {
+                    case 'Y':
+                        format = format.replace(formatArr[i], date.getFullYear());
+                        break;
+                    case 'm':
+                        format = format.replace(formatArr[i], dealNum(date.getMonth() + 1));
+                        break;
+                    case 'd':
+                        format = format.replace(formatArr[i], dealNum(date.getDate()));
+                        break;
+                    case 'H':
+                        format = format.replace(formatArr[i], dealNum(date.getHours()));
+                        break;
+                    case 'i':
+                        format = format.replace(formatArr[i], dealNum(date.getMinutes()));
+                        break;
+                    case "s":
+                        format = format.replace(formatArr[i], dealNum(date.getSeconds()));
+                        break;
+                }
+            }
+            return format;
+        },
+
+        /**
          * 增加支持json对象的alert，如果引入了php端的 LayerAsset ，则会以插件的方式弹窗
          * 
          * @param string|json info     消息
@@ -529,10 +581,12 @@
                     });
                     break;
                 case 'INPUT':
-                    var name = $this.attr('name');
-                    if (name.search('[A-Z].*\\[.+\\]') === -1) {
-                        $this.attr('name', 'Upload[' + name + ']');
-                    }
+                    $this.each(function () {
+                        var name = $(this).attr('name');
+                        if (name.search('[A-Z].*\\[.+\\]') === -1) {
+                            $(this).attr('name', 'Upload[' + name + ']');
+                        }
+                    });
                     $this.change(function () {
                         var $self = $(this),
                             formData = new FormData;
@@ -1007,33 +1061,6 @@
             };
         }
     });
-
-    /**
-     * 获取当前时间
-     */
-    Date.prototype.format = function(format) {
-        var options = {
-            "M+": this.getMonth() + 1, //month 
-            "d+": this.getDate(), //day 
-            "h+": this.getHours(), //hour 
-            "m+": this.getMinutes(), //minute 
-            "s+": this.getSeconds(), //second 
-            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter 
-            "S": this.getMilliseconds() //millisecond 
-        }
-
-        if (/(y+)/.test(format)) {
-            format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-        }
-
-        for (var k in options) {
-            if (new RegExp("(" + k + ")").test(format)) {
-                format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? options[k] : ("00" + options[k]).substr(("" + options[k]).length));
-            }
-        }
-
-        return format;
-    }
 
     /**
      * 为已有插件设置参数，目的在于可以沿用默认参数

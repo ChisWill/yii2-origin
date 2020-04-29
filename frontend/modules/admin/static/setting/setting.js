@@ -203,6 +203,20 @@ $(function () {
             }
         }));
     });
+    // 顶级菜单删除按钮
+    $("#topParentUl").on('click', '.deleteItemLink', function () {
+        var $this = $(this);
+        $.confirm('确认删除顶级菜单“' + $this.data('name') + '”的所有配置项 ！？', function() {
+            $.post($this.attr('href'), {
+                id: $this.data('id')
+            }, function(msg) {
+                $this.parent('li').remove();
+                if ($this.parent('li').hasClass('current')) {
+                    $("#topParentUl").find('li:first .topMenuList').trigger('click');
+                }
+            }, 'json');
+        });
+    });
     // 配置删除按钮
     $("#settingContent").on('click', '.deleteItemLink', function () {
         var $img = $(this),
@@ -214,14 +228,10 @@ $(function () {
             $.post($img.attr('href') + '?nowTopId=' + $("#topParentId").val(), {
                 id: $img.attr('data-id')
             }, function(msg) {
-                if (msg.state) {
-                    $("#settingContent").html(msg.info);
-                    keepShowMode();
-                } else {
-                    $.alert(msg.info);
-                }
+                $("#settingContent").html(msg.info);
+                keepShowMode();
             }, 'json');
-        })
+        });
     });
     // 快速修改备注信息
     $("#settingContent").on('click', '.updateSetting', function () {

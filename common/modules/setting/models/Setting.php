@@ -207,7 +207,7 @@ class Setting extends \common\components\Model
                     @unlink(Yii::getAlias('@webroot' . $setting['value']));
                 }
                 unset($settings[$key]);
-                $pid[] = $id;
+                $pid[] = $setting['id'];
             }
         }
 

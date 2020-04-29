@@ -85,8 +85,11 @@ class SystemController extends \admin\components\Controller
         $setting = new Setting;
 
         $setting->delete(post('id'));
-
-        return $this->ajaxDisplay();
+        if (get('nowTopId')) {
+            return $this->ajaxDisplay();
+        } else {
+            return success();
+        }
     }
 
     /**

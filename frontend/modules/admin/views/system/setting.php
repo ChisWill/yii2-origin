@@ -1,5 +1,4 @@
 <?php admin\assets\SettingAsset::register($this) ?>
-
 <div class="setting-container">
     <ul class="tabBar cl" id="topParentUl">
         <?php
@@ -16,6 +15,7 @@
             <a href="javascript:;" class="topMenuList" data-id="' . $setting['id'] . '">
             ' . $setting['name'] . '
             </a>
+            <span class="delete-btn showMode deleteItemLink" data-id="' . $setting['id'] . '" data-name="' . $setting['name'] . '" href="' . self::createUrl(['deleteSetting']) . '">x</span>
         </li>';
                 $selected = '';
             }

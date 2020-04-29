@@ -40,9 +40,12 @@ class ArticleController extends \admin\components\Controller
             'title' => ['type' => 'text', 'width' => '220px'],
             'summary' => ['type' => 'text', 'width' => '300px'],
             'template' => ['type' => 'text', 'width' => '120px'],
+            'state',
             ['type' => ['edit' => function ($row) {
                 return url(['saveArticle', 'id' => $row->id, 'pid' => $row->menu->id]);
-            }, 'delete']]
+            }], 'width' => '100px', 'value' => function ($row) {
+                return $row->toggleBtn('state', false, ['下架', '上架']);
+            }]
         ], [
             'addBtn' => ['saveArticle' => '添加文章'],
             'searchColumns' => [
@@ -104,5 +107,13 @@ class ArticleController extends \admin\components\Controller
     public function actionAjaxUpdate()
     {
         return parent::actionAjaxUpdate();
+    }
+
+    /**
+     * @authname 删除文章
+     */
+    public function actionDelete()
+    {
+        return parent::actionDelete();
     }
 }

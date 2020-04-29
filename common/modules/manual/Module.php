@@ -20,11 +20,13 @@ class Module extends \common\components\Module
 
     public static function moduleInit()
     {
-        // 修改用户组件配置
-        Yii::$app->user->identityClass = 'common\modules\manual\components\WebUser';
+        if (Yii::$app instanceof \yii\web\Application) {
+            // 修改用户组件配置
+            Yii::$app->user->identityClass = 'common\modules\manual\components\WebUser';
 
-        if (user()->isGuest || !u()->canRead()) {
-            Yii::$app->response->redirect(['site/index'])->send();
+            if (user()->isGuest || !u()->canRead()) {
+                Yii::$app->response->redirect(['site/index'])->send();
+            }
         }
     }
 }
