@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\helpers\Curl;
 use Yii;
 use frontend\models\User;
 use common\helpers\Third;
@@ -25,6 +26,18 @@ class SiteController extends \frontend\components\Controller
                 return $this->render('index', compact('modules'));
             }
         }
+    }
+
+    public function actionTest()
+    {
+        // sleep(1);
+        return success($_POST);
+    }
+
+    public function actionTest2()
+    {
+        return success($_POST);
+        // sleep(2);
     }
 
     public function actionRegister()

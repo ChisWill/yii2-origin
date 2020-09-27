@@ -1,6 +1,7 @@
 <?php
 // 后台作为一个子模块，嵌入项目内，缩略命名空间长度
 Yii::setAlias('admin', dirname(__DIR__) . '/modules/admin');
+Yii::setAlias('shudu', dirname(__DIR__) . '/modules/shudu');
 Yii::setAlias('chat', dirname(__DIR__) . '/modules/chat');
 Yii::setAlias('pay', dirname(__DIR__) . '/modules/pay');
 Yii::setAlias('php', dirname(__DIR__) . '/modules/php');

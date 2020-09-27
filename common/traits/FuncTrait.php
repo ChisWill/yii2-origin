@@ -17,7 +17,7 @@ use common\helpers\ArrayHelper;
 trait FuncTrait
 {
     /**
-     * @var yii\data\Pagination
+     * @var array yii\data\Pagination
      */
     public static $_pager = [];
     /**

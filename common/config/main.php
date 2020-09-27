@@ -54,7 +54,7 @@ return [
             }
         ],
         'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
+            'traceLevel' => YII_DEBUG ? 0 : 0,
             'targets' => [
                 YII_DEBUG ?
                 [

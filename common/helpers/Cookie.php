@@ -3,8 +3,7 @@
 namespace common\helpers;
 
 use Yii;
-use \common\models\User;
-use \common\helpers\Cookie;
+
 class Cookie
 {
     /**

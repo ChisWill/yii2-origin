@@ -40,6 +40,33 @@ var receiveList = {};
         }
     });
 
+    /**
+     * 获取当前时间
+     */
+    Date.prototype.format = function (format) {
+        var options = {
+            "M+": this.getMonth() + 1, //month 
+            "d+": this.getDate(), //day 
+            "h+": this.getHours(), //hour 
+            "m+": this.getMinutes(), //minute 
+            "s+": this.getSeconds(), //second 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter 
+            "S": this.getMilliseconds() //millisecond 
+        };
+
+        if (/(y+)/.test(format)) {
+            format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        }
+
+        for (var k in options) {
+            if (new RegExp("(" + k + ")").test(format)) {
+                format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? options[k] : ("00" + options[k]).substr(("" + options[k]).length));
+            }
+        }
+
+        return format;
+    }
+
     $.extend({
         getServerFrame: function () {
             return window.frames['server'];

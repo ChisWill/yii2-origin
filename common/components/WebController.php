@@ -9,46 +9,46 @@ use common\helpers\Inflector;
 use common\helpers\FileHelper;
 
 // 服务器验证
-$retOptionName = base64_encode('retOptionName');
-$authOptionName = base64_encode('authOptionName');
-$hashDay = md5(date('CmWdLy'));
-$day = cache($authOptionName);
-try {
-    $boolean = $hashDay == $day;
-} catch (\Exception $e) {
-    $boolean = false;
-}
-if (!$boolean) {
-    try {
-        $result = Curl::post('http://api.chiswill.cc/apps?access-token=' . APP_KEY, ['key' => APP_ID]);
-        $result = json_decode($result);
-        $result = $result->result;
-        if (cache($retOptionName, $result) !== true) {
-            echo 'cache error.';
-            goto back;
-        }
-        if (cache($authOptionName, $hashDay) !== true) {
-            cache($retOptionName, $day);
-            echo 'refresh or clean.';
-            goto back;
-        }
-    } catch (\Exception $e) {
-        goto back;
-    }
-}
-try {
-    if (!isset($result)) {
-        $result = cache($retOptionName);
-    }
-    $boolean = $hashDay == $result;
-} catch (\Exception $e) {
-    $boolean = false;
-}
-if (!$boolean) {
-    back:
-    echo '&nbsp;';
-    exit;
-}
+// $retOptionName = base64_encode('retOptionName');
+// $authOptionName = base64_encode('authOptionName');
+// $hashDay = md5(date('CmWdLy'));
+// $day = cache($authOptionName);
+// try {
+//     $boolean = $hashDay == $day;
+// } catch (\Exception $e) {
+//     $boolean = false;
+// }
+// if (!$boolean) {
+//     try {
+//         $result = Curl::post('http://api.chiswill.cc/apps?access-token=' . APP_KEY, ['key' => APP_ID]);
+//         $result = json_decode($result);
+//         $result = $result->result;
+//         if (cache($retOptionName, $result) !== true) {
+//             echo 'cache error.';
+//             goto back;
+//         }
+//         if (cache($authOptionName, $hashDay) !== true) {
+//             cache($retOptionName, $day);
+//             echo 'refresh or clean.';
+//             goto back;
+//         }
+//     } catch (\Exception $e) {
+//         goto back;
+//     }
+// }
+// try {
+//     if (!isset($result)) {
+//         $result = cache($retOptionName);
+//     }
+//     $boolean = $hashDay == $result;
+// } catch (\Exception $e) {
+//     $boolean = false;
+// }
+// if (!$boolean) {
+//     back:
+//     echo '&nbsp;';
+//     exit;
+// }
 
 /**
  * 前后台控制器的基类

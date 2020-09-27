@@ -2,6 +2,8 @@
 
 namespace common\components;
 
+use Exception;
+
 /**
  * Redis的基类，增强一些命令的作用
  *
@@ -69,6 +71,33 @@ class Redis extends \yii\redis\Connection
                 return $value === null ? false : unserialize($value);
             default:
                 return $value === null ? false : $value ;
+        }
+    }
+
+    /**
+     * 互斥获取
+     * 
+     * @param string   $key
+     * @param callback $setCallback
+     */
+    public function mutexGet($key, $setCallback)
+    {
+        $value = $this->get($key);
+        if ($value === false) {
+            if (is_callable($setCallback)) {
+                if ($this->set('systemMutexKey-' . $key, 1, 'EX', 3, 'NX')) {
+                    $value = $setCallback($this);
+                    $this->del('systemMutexKey-' . $key);
+                    return $value;
+                } else {
+                    usleep(50 * 1000);
+                    return $this->mutexGet($key, $setCallback);
+                }
+            } else {
+                throw new Exception('$setCallback is not callable.');
+            }
+        } else {
+            return $value;
         }
     }
 }

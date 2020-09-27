@@ -118,11 +118,11 @@ class StringHelper extends \yii\helpers\BaseStringHelper
         $strlen = strlen($string);
         for ($i = 0; (($i < $strlen) && ($length > 0)); $i++) {
             if ($number = strpos(str_pad(decbin(ord(substr($string, $i, 1))), 8, '0', STR_PAD_LEFT), '0')) {
-                if ($length < 1.0) {
+                if ($length < 1) {
                     break;
                 }
                 $result .= substr($string, $i, $number);
-                $length -= 1.0;
+                $length -= 1;
                 $i += $number - 1;
             } else {
                 $result .= substr($string, $i, 1);

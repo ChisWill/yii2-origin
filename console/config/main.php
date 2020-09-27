@@ -21,6 +21,10 @@ return [
                 ]
             ]
         ],
+        'view' => [
+            'class' => 'common\components\View',
+            'theme' => null
+        ],
     ],
     'params' => $params,
 ];

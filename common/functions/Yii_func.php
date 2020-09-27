@@ -4,6 +4,7 @@
  * 快捷调用`Yii::getAlias()`方法
  * 
  * @see BaseYii::getAlias()
+ * @return string
  */
 function path($alias)
 {
@@ -204,6 +205,8 @@ function cache()
 
 /**
  * 快捷获取 `redis` 组件信息
+ * 
+ * @return common\components\Redis
  */
 function redis()
 {
