@@ -80,26 +80,40 @@ class Curl
     protected static function initParams($urls, $data, $options, $batch, $callback)
     {
         $params = [];
-        if (is_string($urls) && $batch > 0) {
+        $multiUrl = is_array($urls);
+        $multiData = ArrayHelper::isIndexed($data);
+        $multiOptions = ArrayHelper::isIndexed($options);
+        if ($multiUrl) {
+            $forData = &$urls;
+        } elseif ($multiData) {
+            $forData = &$data;
+        } elseif ($multiOptions) {
+            $forData = &$options;
+        }
+        if ($batch > 1 || !isset($forData)) {
             for ($i = 0; $i < $batch; $i++) {
                 $params[$i] = call_user_func($callback, $options, $urls, $data);
             }
-        } elseif (is_array($urls)) {
-            if ($batch !== false) {
-                foreach ($urls as $k => $url) {
-                    $params[$k] = call_user_func($callback, $options, $url, $data);
-                }
-            } else {
-                foreach ($urls as $k => $url) {
-                    $params[$k] = call_user_func($callback, $options[$k], $url, ArrayHelper::getValue($data, $k));
-                }
-            }
         } else {
-            throw new Exception('参数格式错误');
+            foreach ($forData as $k => $v) {
+                $url = $multiUrl ? ArrayHelper::getValue($urls, $k, '') : $urls;
+                $row = $multiData ? ArrayHelper::getValue($data, $k, []) : $data;
+                $opt = $multiOptions ? ArrayHelper::getValue($options, $k, []) : $options;
+                $params[$k] = call_user_func($callback, $opt, $url, $row);
+            }
         }
         return $params;
     }
 
+    /**
+     * 并发PostCurl，支持一次执行多批次任务
+     *
+     * @param  array|string $urls     一维数组时，表示请求多个地址
+     * @param  array        $data     二维数组时，表示使用多个请求参数
+     * @param  array        $options  二维数组时，表示使用多个选项
+     * @param  int          $batch    当设置值大于1时，表示直接使用以上参数值，此时以上参数必须为单个值，以发起批量请求
+     * @return mixed
+     */
     public static function postMulti($urls, $data, $options = [], $batch = 1)
     {
         $params = static::initParams($urls, $data, $options, $batch, function ($option, $url, $data) {
@@ -120,6 +134,14 @@ class Curl
         return $results;
     }
 
+    /**
+     * 并发GetCurl，支持一次执行多批次任务
+     *
+     * @param  array|string $urls     一维数组时，表示请求多个地址
+     * @param  array        $options  二维数组时，表示使用多个选项
+     * @param  int          $batch    当设置值大于1时，表示直接使用以上参数值，此时以上参数必须为单个值，以发起批量请求
+     * @return mixed
+     */
     public static function getMulti($urls, $options = [], $batch = 1)
     {
         $params = static::initParams($urls, [], $options, $batch, function ($option, $url) {

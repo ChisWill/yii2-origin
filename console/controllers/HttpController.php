@@ -28,6 +28,11 @@ class HttpController extends \common\components\ConsoleController
         Worker::runAll();
     }
 
+    public function actionTest()
+    {
+        echo 'ok';
+    }
+
     public function index()
     {
         $name = 'mary';
