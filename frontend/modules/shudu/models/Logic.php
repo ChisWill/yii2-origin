@@ -9,16 +9,16 @@ class Logic extends Object
     const ROW = 'Row';
     const COL = 'Col';
     const GRID = 'Grid';
-    
-    const EMPTY = 0;
+
+    const NONE = 0;
     const COMPARE = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
     public $rawData = [];
-    
+
     protected $rowData = [];
     protected $colData = [];
     protected $gridData = [];
-    
+
     protected $tagRowData = [];
     protected $tagColData = [];
     protected $tagGridData = [];
@@ -39,7 +39,7 @@ class Logic extends Object
         $this->addTags();
     }
 
-    public function checkRawData($data) : bool
+    public function checkRawData($data)
     {
         $data = preg_replace('/[\D]*/', '', $data);
         if (strlen($data) != 81) {
@@ -73,39 +73,7 @@ class Logic extends Object
 
     public function getResult()
     {
-        $return = new class($this->rawData, $this->rowData, $this->tagRowData) {
-            public $raw;
-            public $data;
-            public $tag;
-            public $step = 0;
-
-            private $g;
-            private $v;
-            private $h;
-            private $e;
-
-            public function __construct($raw, $data, $tag)
-            {
-                $this->raw = $raw;
-                $this->data = $data;
-                $this->tag = $tag;
-            }
-
-            public function setCount($step, $g, $v, $h, $e)
-            {
-                $this->step = $step;
-                $this->g = $g;
-                $this->v = $v;
-                $this->h = $h;
-                $this->e = $e;
-            }
-
-            public function getDesc()
-            {
-                return sprintf('当前探索 %d 次，宫线排除 %d 个，显性数对 %d 个，隐性数对 %d 个，解答数 %d 个', $this->step, $this->g, $this->v, $this->h, $this->e);
-            }
-        };
-        return $return;
+        return new Result($this->rawData, $this->rowData, $this->tagRowData);
     }
 
     public function solve($step = -1)
@@ -142,11 +110,11 @@ class Logic extends Object
         return $result;
     }
 
-    public function addTags() : void
+    public function addTags()
     {
         foreach ($this->rowData as $row => $value) {
             foreach ($value as $col => $v) {
-                if ($v == self::EMPTY) {
+                if ($v == self::NONE) {
                     $this->tagRowData[$row][$col] = array_diff(self::COMPARE, $value);
                     $this->tagRowData[$row][$col] = array_intersect($this->tagRowData[$row][$col], array_diff(self::COMPARE, $this->colData[$this->getColRow($row, $col)]));
                     $this->tagRowData[$row][$col] = array_intersect($this->tagRowData[$row][$col], array_diff(self::COMPARE, $this->gridData[$this->getGridRow($row, $col)]));
@@ -157,28 +125,28 @@ class Logic extends Object
         ksort($this->tagColData);
     }
 
-    private function setNumber($row, $col, $number) : void
+    private function setNumber($row, $col, $number)
     {
         $this->rowData[$row][$col] = $number;
-        [$r, $c] = $this->getColPos($row, $col);
+        list($r, $c) = $this->getColPos($row, $col);
         $this->colData[$r][$c] = $number;
-        [$r, $c] = $this->getGridPos($row, $col);
+        list($r, $c) = $this->getGridPos($row, $col);
         $this->gridData[$r][$c] = $number;
     }
 
-    private function unsetTag($row, $col, $number) : void
+    private function unsetTag($row, $col, $number)
     {
-        [$r1, $c1] = $this->getColPos($row, $col);
-        [$r2, $c2] = $this->getGridPos($row, $col);
+        list($r1, $c1) = $this->getColPos($row, $col);
+        list($r2, $c2) = $this->getGridPos($row, $col);
         $this->tagRowData[$row][$col] = array_diff($this->tagRowData[$row][$col], [$number]);
         $this->tagColData[$r1][$c1] = array_diff($this->tagColData[$r1][$c1], [$number]);
         $this->tagGridData[$r2][$c2] = array_diff($this->tagGridData[$r2][$c2], [$number]);
     }
 
-    private function setTag($row, $col, $item) : void
+    private function setTag($row, $col, $item)
     {
-        [$r1, $c1] = $this->getColPos($row, $col);
-        [$r2, $c2] = $this->getGridPos($row, $col);
+        list($r1, $c1) = $this->getColPos($row, $col);
+        list($r2, $c2) = $this->getGridPos($row, $col);
         if ($item === 0) {
             unset($this->tagRowData[$row][$col]);
             unset($this->tagColData[$r1][$c1]);
@@ -190,12 +158,12 @@ class Logic extends Object
     }
 
     // 唯一选择
-    private function chooseOnly() : int
+    private function chooseOnly()
     {
         $success = 0;
         $solve = function ($data, $type, &$success) {
             $chooseNumber = function ($row, $col, $number) {
-                if ($this->rowData[$row][$col] != self::EMPTY) {
+                if ($this->rowData[$row][$col] != self::NONE) {
                     return false;
                 }
                 $this->setNumber($row, $col, $number);
@@ -210,11 +178,11 @@ class Logic extends Object
                                 $r = $chooseNumber($row, $col, current($v));
                                 break;
                             case self::COL:
-                                [$r, $c] = $this->getColPos($row, $col);
+                                list($r, $c) = $this->getColPos($row, $col);
                                 $r = $chooseNumber($r, $c, current($v));
                                 break;
                             case self::GRID:
-                                [$r, $c] = $this->getGridPos($row, $col);
+                                list($r, $c) = $this->getGridPos($row, $col);
                                 $r = $chooseNumber($r, $c, current($v));
                                 break;
                         }
@@ -235,7 +203,7 @@ class Logic extends Object
     }
 
     // 宫线排除
-    public function solveByExclusion() : void
+    public function solveByExclusion()
     {
         $solve = function ($data, $type) {
             foreach ($data as $row => $value) {
@@ -267,11 +235,11 @@ class Logic extends Object
                     foreach ($item as $number => $count) {
                         if ($count == 1) {
                             foreach ($this->tagGridData[$gridRow] as $gridCol => $val) {
-                                [$rr, $rc] = $this->getGridPos($gridRow, $gridCol);
+                                list($rr, $rc) = $this->getGridPos($gridRow, $gridCol);
                                 if ($type == self::COL) {
-                                    [$r, $c] = $this->getColPos($rr, $rc);
+                                    list($r, $c) = $this->getColPos($rr, $rc);
                                 } else {
-                                    [$r, $c] = [$rr, $rc];
+                                    list($r, $c) = [$rr, $rc];
                                 }
                                 if ($r != $row && in_array($number, $val)) {
                                     $this->exclusionData[$this->getKey([$rr, $rc])] = $number;
@@ -288,7 +256,7 @@ class Logic extends Object
     }
 
     // 显性数对
-    public function solveByVisiblePair() : void
+    public function solveByVisiblePair()
     {
         $solve = function ($data, $row, $type) {
             $record = [];
@@ -328,12 +296,12 @@ class Logic extends Object
                                         $this->unsetTag($row, $i, $v);
                                     }
                                 } elseif ($type == self::COL) {
-                                    [$r, $c] = $this->getColPos($row, $i);
+                                    list($r, $c) = $this->getColPos($row, $i);
                                     foreach ($remove as $v) {
                                         $this->unsetTag($r, $c, $v);
                                     }
                                 } elseif ($type == self::GRID) {
-                                    [$r, $c] = $this->getGridPos($row, $i);
+                                    list($r, $c) = $this->getGridPos($row, $i);
                                     foreach ($remove as $v) {
                                         $this->unsetTag($r, $c, $v);
                                     }
@@ -358,7 +326,7 @@ class Logic extends Object
     }
 
     // 隐性数对
-    public function solveByHidePair() : void
+    public function solveByHidePair()
     {
         $solve = function ($data, $type) {
             $record = [];
@@ -415,17 +383,17 @@ class Logic extends Object
         }
     }
 
-    private function getKey($array) : string
+    private function getKey($array)
     {
         return implode('-', $array);
     }
 
-    private function resetKey($string) : array
+    private function resetKey($string)
     {
         return explode('-', $string);
     }
 
-    private function inArray($base, $target) : bool
+    private function inArray($base, $target)
     {
         $flag = true;
         foreach ($target as $n) {
@@ -437,29 +405,63 @@ class Logic extends Object
         return $flag;
     }
 
-    private function getColRow($row, $col) : int
+    private function getColRow($row, $col)
     {
         return $this->getColPos($row, $col)[0];
     }
 
-    private function getGridRow($row, $col, $type = self::ROW) : int
+    private function getGridRow($row, $col, $type = self::ROW)
     {
         if ($type == self::COL) {
-            [$row, $col] = $this->getColPos($row, $col);
+            list($row, $col) = $this->getColPos($row, $col);
         }
         return $this->getGridPos($row, $col)[0];
     }
 
-    private function getColPos($row, $col) : array
+    private function getColPos($row, $col)
     {
         return [$col, $row];
     }
 
-    private function getGridPos($row, $col, $type = self::ROW) : array
+    private function getGridPos($row, $col, $type = self::ROW)
     {
         if ($type == self::COL) {
-            [$row, $col] = $this->getColPos($row, $col);
+            list($row, $col) = $this->getColPos($row, $col);
         }
         return [floor($row / 3) * 3 + floor($col / 3), floor($row % 3) * 3 + floor($col % 3)];
     }
 }
+
+class Result
+{
+    public $raw;
+    public $data;
+    public $tag;
+    public $step = 0;
+
+    private $g;
+    private $v;
+    private $h;
+    private $e;
+
+    public function __construct($raw, $data, $tag)
+    {
+        $this->raw = $raw;
+        $this->data = $data;
+        $this->tag = $tag;
+    }
+
+    public function setCount($step, $g, $v, $h, $e)
+    {
+        $this->step = $step;
+        $this->g = $g;
+        $this->v = $v;
+        $this->h = $h;
+        $this->e = $e;
+    }
+
+    public function getDesc()
+    {
+        return sprintf('当前探索 %d 次，宫线排除 %d 个，显性数对 %d 个，隐性数对 %d 个，解答数 %d 个', $this->step, $this->g, $this->v, $this->h, $this->e);
+    }
+};

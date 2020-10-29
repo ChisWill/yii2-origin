@@ -39,6 +39,9 @@ table.buttonArea {
     width: 500px;
     margin-top: 50px;
 }
+table.buttonArea tr {
+    line-height: 50px;
+}
 table.buttonArea td {
     text-align: center;
 }
@@ -49,6 +52,15 @@ table#sub #inputDataArea {
     font-size: 35px;
     letter-spacing: 28px;
     padding-left: 20px;
+}
+table#sub .inputRowArea {
+    width: 500px;
+    height: 50px;
+    font-size: 35px;
+    letter-spacing: 30px;
+    padding-left: 30px;
+    border: none;
+    border-bottom: 1px solid black;
 }
 </style>
 
@@ -84,10 +96,13 @@ table#sub #inputDataArea {
         </table>
         <table class="buttonArea">
             <tr>
-                <td><button v-on:click="first" id="first" class="btn-warning-outline btn radius size-M">初始</button></td>
+                <td><button v-on:click="first" id="first" class="btn-danger-outline btn radius size-M">初始</button></td>
                 <td><button v-on:click="prev" id="prev" class="btn-secondary-outline btn radius size-S">上一步</button></td>
                 <td><button v-on:click="next" id="next" class="btn-secondary-outline btn radius size-S">下一步</button></td>
                 <td><button v-on:click="last" id="last" class="btn-danger-outline btn radius size-M">最后</button></td>
+            </tr>
+            <tr>
+                <td colspan="4"><button v-on:click="reset" id="reset" class="btn-warning-outline btn radius size-M">重置</button></td>
             </tr>
         </table>
     </div>
@@ -95,7 +110,32 @@ table#sub #inputDataArea {
         <h2 class="text-c mb-20">手动创建数独题目</h2>
         <table id="sub" class="buttonArea">
             <tr>
-                <td><textarea id="inputDataArea" @paste="onPaste"></textarea></td>
+                <td><input type="text" class="inputRowArea" placeholder="输入数独题干" maxlength="9" @paste="onPasteInput"></td>
+                <!-- <td><textarea id="inputDataArea" @paste="onPaste"></textarea></td> -->
+            </tr>
+            <tr>
+                <td><input type="text" class="inputRowArea" placeholder="" maxlength="9" @paste="onPasteInput"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="inputRowArea" placeholder="只可输入数字" maxlength="9" @paste="onPasteInput"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="inputRowArea" placeholder="" maxlength="9" @paste="onPasteInput"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="inputRowArea" placeholder="空位用0表示" maxlength="9" @paste="onPasteInput"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="inputRowArea" placeholder="" maxlength="9" @paste="onPasteInput"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="inputRowArea" placeholder="也可直接粘贴" maxlength="9" @paste="onPasteInput"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="inputRowArea" placeholder="" maxlength="9" @paste="onPasteInput"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="inputRowArea" placeholder="粘贴过滤非数字" maxlength="9" @paste="onPasteInput"></td>
             </tr>
             <tr>
                 <td><button v-on:click="submitData" id="submitData" class="btn-danger-outline btn radius size-M">确认创建</button></td>
@@ -136,13 +176,38 @@ var component = new Vue({
         last: function () {
             this.query(-1);
         },
+        reset: function () {
+            location.reload();
+        },
         onPaste: function (event) {
             event.preventDefault();
             let text = event.clipboardData.getData("text");
             $("#inputDataArea").val(text.replace(/[\D]/g, ""));
         },
+        onPasteInput: function (event) {
+            event.preventDefault();
+            let text = event.clipboardData.getData("text").replace(/[\D]/g, "").substr(0, 81);
+            let strChunk = (str, size) => {
+                let len = str.length,
+                    row = parseInt(len / size),
+                    result = [];
+                for (let i = 0; i <= row; i++) {
+                    result.push(str.slice(i * size, size + i * size))
+                }
+                return result;
+            };
+            let pieces = strChunk(text, 9);
+            for (let i = 0; i < pieces.length; i++) {
+                $(".inputRowArea").eq(i).val(pieces[i]);
+            }
+        },
         submitData: function () {
-            this.text = $("#inputDataArea").val();
+            // this.text = $("#inputDataArea").val();
+            let text = "";
+            $(".inputRowArea").each(function () {
+                text += $(this).val();
+            });
+            this.text = text;
             $.post(url, {action: 'init', data: this.text}, msg => {
                 if (msg.state) {
                     this.raw = msg.info.data;
@@ -156,7 +221,9 @@ var component = new Vue({
             }, 'json');
         },
         query: function (step) {
+            let index = $.loading();
             $.post(url, {action: 'query', step: step, data: this.text}, msg => {
+                layer.close(index)
                 if (msg.state) {
                     this.data = msg.info.data;
                     this.tag = msg.info.tag;
