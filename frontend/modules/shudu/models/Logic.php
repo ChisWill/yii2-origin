@@ -2,13 +2,15 @@
 
 namespace shudu\models;
 
-use yii\base\Object;
-
-class Logic extends Object
+class Logic extends \yii\base\Object
 {
     const ROW = 'Row';
     const COL = 'Col';
     const GRID = 'Grid';
+
+    const EX_EXL = 'exl';
+    const EX_VIP = 'vip';
+    const EX_INP = 'inp';
 
     const NONE = 0;
     const COMPARE = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -26,6 +28,8 @@ class Logic extends Object
     protected $exclusionData = [];
     protected $visibleData = [];
     protected $hideData = [];
+
+    protected $methods = [];
 
     public function init()
     {
@@ -73,7 +77,12 @@ class Logic extends Object
 
     public function getResult()
     {
-        return new Result($this->rawData, $this->rowData, $this->tagRowData);
+        return new Result($this->rawData, $this->rowData, $this->tagRowData, $this->methods);
+    }
+
+    public function setMethods($methods = [])
+    {
+        $this->methods = array_flip($methods);
     }
 
     public function solve($step = -1)
@@ -84,9 +93,15 @@ class Logic extends Object
         $undo = 0;
         do {
             $num = $this->chooseOnly();
-            $this->solveByExclusion();
-            $this->solveByVisiblePair();
-            $this->solveByHidePair();
+            if (isset($this->methods[self::EX_EXL])) {
+                $this->solveByExclusion();
+            }
+            if (isset($this->methods[self::EX_VIP])) {
+                $this->solveByVisiblePair();
+            }
+            if (isset($this->methods[self::EX_INP])) {
+                $this->solveByHidePair();
+            }
             $enum += $num;
             $n++;
             if ($step < 0) {
@@ -437,6 +452,7 @@ class Result
     public $raw;
     public $data;
     public $tag;
+    public $methods;
     public $step = 0;
 
     private $g;
@@ -444,11 +460,12 @@ class Result
     private $h;
     private $e;
 
-    public function __construct($raw, $data, $tag)
+    public function __construct($raw, $data, $tag, $methods)
     {
         $this->raw = $raw;
         $this->data = $data;
         $this->tag = $tag;
+        $this->methods = $methods;
     }
 
     public function setCount($step, $g, $v, $h, $e)
@@ -462,6 +479,17 @@ class Result
 
     public function getDesc()
     {
-        return sprintf('当前探索 %d 次，宫线排除 %d 个，显性数对 %d 个，隐性数对 %d 个，解答数 %d 个', $this->step, $this->g, $this->v, $this->h, $this->e);
+        $template = '当前探索 %d 次';
+        if (isset($this->methods[Logic::EX_EXL])) {
+            $template .= '，宫线排除 %d 个';
+        }
+        if (isset($this->methods[Logic::EX_VIP])) {
+            $template .= '，显性数对 %d 个';
+        }
+        if (isset($this->methods[Logic::EX_INP])) {
+            $template .= '，隐性数对 %d 个';
+        }
+        $template .= '，解答数 %d 个';
+        return sprintf($template, $this->step, $this->g, $this->v, $this->h, $this->e);
     }
 };

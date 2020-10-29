@@ -1,6 +1,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <?php common\assets\HuiAsset::register($this) ?>
 <?php common\assets\LayerAsset::register($this) ?>
+<?php common\assets\ICheckAsset::register($this) ?>
 
 <style>
 table#main {
@@ -95,6 +96,11 @@ table#sub .inputRowArea {
             </tr>
         </table>
         <table class="buttonArea">
+            <tr>
+                <td><label><input class="methodCheckbox" data-key="exl" type="checkbox" checked> 宫线排除</label></td>
+                <td><label><input class="methodCheckbox" data-key="vip" type="checkbox" checked> 显性数对</label></td>
+                <td><label><input class="methodCheckbox" data-key="inp" type="checkbox" checked> 隐形数对</label></td>
+            </tr>
             <tr>
                 <td><button v-on:click="first" id="first" class="btn-danger-outline btn radius size-M">初始</button></td>
                 <td><button v-on:click="prev" id="prev" class="btn-secondary-outline btn radius size-S">上一步</button></td>
@@ -215,6 +221,9 @@ var component = new Vue({
                     this.tag = msg.info.tag;
                     this.desc = msg.info.desc;
                     this.step = msg.info.step;
+                    setTimeout(function () {
+                        $("input[type=checkbox], input[type=radio]").iCheck($.config('iCheck'));
+                    }, 20);
                 } else {
                     $.alert(msg.info);
                 }
@@ -222,7 +231,18 @@ var component = new Vue({
         },
         query: function (step) {
             let index = $.loading();
-            $.post(url, {action: 'query', step: step, data: this.text}, msg => {
+            let methods = [];
+            $(".methodCheckbox").each(function () {
+                if ($(this).is(":checked")) {
+                    methods.push($(this).data('key'));
+                }
+            });
+            $.post(url, {
+                action: 'query', 
+                step: step, 
+                data: this.text,
+                methods: methods
+            }, msg => {
                 layer.close(index)
                 if (msg.state) {
                     this.data = msg.info.data;

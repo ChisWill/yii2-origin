@@ -70,6 +70,7 @@ class SiteController extends \shudu\components\Controller
                 case 'query':
                     $step = post('step', 0);
                     if ($logic->checkRawData(post('data'))) {
+                        $logic->setMethods(post('methods'));
                         if ($step == 0) {
                             $answer = $logic->getResult();
                         } else {
