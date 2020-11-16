@@ -11,6 +11,7 @@ class Logic extends \yii\base\Object
     const EX_EXL = 'exl';
     const EX_VIP = 'vip';
     const EX_INP = 'inp';
+    const EX_XWING = 'xwing';
 
     const NONE = 0;
     const COMPARE = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -25,9 +26,10 @@ class Logic extends \yii\base\Object
     protected $tagColData = [];
     protected $tagGridData = [];
 
-    protected $exclusionData = [];
-    protected $visibleData = [];
-    protected $hideData = [];
+    public $exclusionData = [];
+    public $visibleData = [];
+    public $hideData = [];
+    public $xwingData = [];
 
     protected $methods = [];
 
@@ -85,11 +87,23 @@ class Logic extends \yii\base\Object
         $this->methods = array_flip($methods);
     }
 
+    private function isFail()
+    {
+        foreach ($this->rowData as $row => $value) {
+            foreach ($value as $col => $v) {
+                if (empty($v) && empty($this->tagRowData[$row][$col])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public function solve($step = -1)
     {
         $continue = true;
         $n = 0;
-        $enum = 0;
+        $answer = 0;
         $undo = 0;
         do {
             $num = $this->chooseOnly();
@@ -102,7 +116,10 @@ class Logic extends \yii\base\Object
             if (isset($this->methods[self::EX_INP])) {
                 $this->solveByHidePair();
             }
-            $enum += $num;
+            if (isset($this->methods[self::EX_XWING])) {
+                $this->solveByXWing();
+            }
+            $answer += $num;
             $n++;
             if ($step < 0) {
                 if ($num == 0) {
@@ -119,9 +136,12 @@ class Logic extends \yii\base\Object
                     $continue = false;
                 }
             }
+            if ($this->isFail()) {
+                $continue = false;
+            }
         } while ($continue && $n < 20);
         $result = $this->getResult();
-        $result->setCount($n, count($this->exclusionData), count($this->visibleData), count($this->hideData), $enum);
+        $result->setCount($n, count($this->exclusionData), count($this->visibleData), count($this->hideData), count($this->xwingData), $answer);
         return $result;
     }
 
@@ -149,7 +169,7 @@ class Logic extends \yii\base\Object
         $this->gridData[$r][$c] = $number;
     }
 
-    private function unsetTag($row, $col, $number)
+    public function unsetTag($row, $col, $number)
     {
         list($r1, $c1) = $this->getColPos($row, $col);
         list($r2, $c2) = $this->getGridPos($row, $col);
@@ -347,9 +367,8 @@ class Logic extends \yii\base\Object
             $record = [];
             $split = function ($array) {
                 $return = [];
-                $length = count($array);
-                foreach ($array as $key => $value) {
-                    foreach ($return as $k => $v) {
+                foreach ($array as $value) {
+                    foreach ($return as $v) {
                         $return[] = array_unique(array_merge($v, [$value]));
                     }
                     $return[] = [$value];
@@ -398,7 +417,17 @@ class Logic extends \yii\base\Object
         }
     }
 
-    private function getKey($array)
+    // X翼
+    public function solveByXWing()
+    {
+        $xwing = new XWingSolution($this, $this->tagRowData, $this->tagColData, self::ROW);
+        $xwing->solve();
+
+        $xwing = new XWingSolution($this, $this->tagColData, $this->tagRowData, self::COL);
+        $xwing->solve();
+    }
+
+    public function getKey($array)
     {
         return implode('-', $array);
     }
@@ -447,6 +476,141 @@ class Logic extends \yii\base\Object
     }
 }
 
+class XWingSolution
+{
+    /** @var Logic $logic */
+    private $logic;
+    private $rowData;
+    private $colData;
+    private $type;
+
+    public function __construct($logic, $rowData, $colData, $type)
+    {
+        $this->logic = $logic;
+        $this->rowData = $rowData;
+        $this->colData = $colData;
+        $this->type = $type;
+    }
+
+    public function solve()
+    {
+        $numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        foreach (array_keys($this->colData) as $col) {
+            foreach ($numbers as $number) {
+                $this->solveCol($col, $number);
+            }
+        }
+    }
+
+    /**
+     * @param int   $col    为从0开始计数的列号
+     * @param int   $number 表示当前计算的数字
+     */
+    private function solveCol($col, $number)
+    {
+        $group = $this->findCol($col, $number);
+        // 每列必须只有2个笔记数
+        if ($group !== false) {
+            $group = $this->findRow($group, $number);
+            if ($group !== false && $this->checkGroup($group)) {
+                $this->unsetTag($group, $number);
+            }
+        }
+    }
+
+    /**
+     * @param array $group 此时格式如下
+     * ```
+     * $group = [
+     *     0 => [1],
+     *     4 => [1]
+     * ]
+     * ```
+     */
+    private function findRow($group, $number)
+    {
+        $rows = array_keys($group);
+        $currentRow = key($group);
+        $currentCol = current(current($group));
+        foreach ($this->rowData[$currentRow] as $col => $tags) {
+            if ($col > $currentCol && in_array($number, $tags)) {
+                $ret = $this->findCol($col, $number);
+                if ($ret !== false) {
+                    $targetRows = array_keys($ret);
+                    if ($rows == $targetRows) {
+                        foreach ($group as $k => $v) {
+                            $group[$k] = array_merge($v, $ret[$k]);
+                        }
+                        return $group;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param  int   $col   当前列
+     * @return array|bool
+     */
+    private function findCol($col, $number)
+    {
+        $count = 0;
+        $return = [];
+        foreach ($this->colData[$col] as $row => $tags) {
+            if (in_array($number, $tags)) {
+                $count++;
+                $return[$row][] = $col;
+            }
+        }
+        if ($count == 2) {
+            return $return;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * ```
+     * $group = [
+     *     0 => [1, 5],
+     *     4 => [1, 5]
+     * ]
+     * ```
+     */
+    private function checkGroup($group)
+    {
+        if (count($group) == 2) {
+            foreach ($group as $v) {
+                if (count($v) != 2) {
+                    return false;
+                }
+            }
+            $values = array_values($group);
+            return count(array_diff(...$values)) == 0;
+        } else {
+            return false;
+        }
+    }
+
+    private function unsetTag($gruop, $number)
+    {
+        foreach ($gruop as $row => $cols) {
+            foreach ($this->rowData[$row] as $col => $data) {
+                if (!in_array($col, $cols) && in_array($number, $data)) {
+                    if ($this->type == Logic::COL) {
+                        list($r, $c) = $this->logic->getColPos($row, $col);
+                    } else {
+                        list($r, $c) = [$row, $col];
+                    }
+                    $this->logic->xwingData[$this->logic->getKey([$this->type, $r, $c])] = $number;
+                    $this->logic->unsetTag($r, $c, $number);
+                }
+            }
+        }
+    }
+}
+
 class Result
 {
     public $raw;
@@ -458,6 +622,7 @@ class Result
     private $g;
     private $v;
     private $h;
+    private $x;
     private $e;
 
     public function __construct($raw, $data, $tag, $methods)
@@ -468,28 +633,38 @@ class Result
         $this->methods = $methods;
     }
 
-    public function setCount($step, $g, $v, $h, $e)
+    public function setCount($step, $g, $v, $h, $x, $e)
     {
         $this->step = $step;
         $this->g = $g;
         $this->v = $v;
         $this->h = $h;
+        $this->x = $x;
         $this->e = $e;
     }
 
     public function getDesc()
     {
         $template = '当前探索 %d 次';
+        $args = [$this->step];
         if (isset($this->methods[Logic::EX_EXL])) {
             $template .= '，宫线排除 %d 个';
+            $args[] = $this->g;
         }
         if (isset($this->methods[Logic::EX_VIP])) {
             $template .= '，显性数对 %d 个';
+            $args[] = $this->v;
         }
         if (isset($this->methods[Logic::EX_INP])) {
             $template .= '，隐性数对 %d 个';
+            $args[] = $this->h;
+        }
+        if (isset($this->methods[Logic::EX_XWING])) {
+            $template .= '，X翼 %d 个';
+            $args[] = $this->x;
         }
         $template .= '，解答数 %d 个';
-        return sprintf($template, $this->step, $this->g, $this->v, $this->h, $this->e);
+        $args[] = $this->e;
+        return sprintf($template, ...$args);
     }
-};
+}

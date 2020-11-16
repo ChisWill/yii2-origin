@@ -2,6 +2,7 @@
 
 namespace shudu\controllers;
 
+use common\helpers\ArrayHelper;
 use shudu\models\Logic;
 use Yii;
 
@@ -44,6 +45,7 @@ class SiteController extends \shudu\components\Controller
         //     [7,0,0,0,0,0,0,0,9],
         //     [0,2,0,4,0,3,0,0,0],
         // ];
+        // 强弱链
         // $data = [
         //     [0, 8, 0, 0, 0, 0, 6, 0, 0],
         //     [0, 0, 0, 4, 8, 0, 0, 0, 9],
@@ -55,6 +57,46 @@ class SiteController extends \shudu\components\Controller
         //     [8, 1, 0, 3, 4, 0, 9, 0, 0],
         //     [0, 4, 0, 0, 0, 5, 3, 0, 0],
         // ];
+        // X翼
+        // 090000030
+        // 631040258
+        // 057023690
+        // 900658000
+        // 085274960
+        // 006391805
+        // 069030580
+        // 508000309
+        // 020080076
+        // 剑鱼删减
+        // 320481000
+        // 000350802
+        // 508029130
+        // 902038071
+        // 801900300
+        // 030000908
+        // 694875213
+        // 285003000
+        // 003294685
+        // 7.2 难题
+        // 000102860
+        // 060008300
+        // 508000129
+        // 000407008
+        // 680015402
+        // 004000010
+        // 726000500
+        // 000070206
+        // 090006700
+        // 最难数独
+        // 800000000
+        // 003600000
+        // 070090200
+        // 050007000
+        // 000045700
+        // 000100030
+        // 001000068
+        // 008500010
+        // 090000400
         // 060000100001240600003050200000000006000027310728000000690300000000000000050010040
         $logic = new Logic();
         if (req()->isAjax) {
@@ -70,7 +112,7 @@ class SiteController extends \shudu\components\Controller
                 case 'query':
                     $step = post('step', 0);
                     if ($logic->checkRawData(post('data'))) {
-                        $logic->setMethods(post('methods'));
+                        $logic->setMethods(post('methods', []));
                         if ($step == 0) {
                             $answer = $logic->getResult();
                         } else {
