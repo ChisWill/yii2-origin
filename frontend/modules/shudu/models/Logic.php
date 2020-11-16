@@ -462,7 +462,7 @@ class Logic extends \yii\base\Object
         return $this->getGridPos($row, $col)[0];
     }
 
-    private function getColPos($row, $col)
+    public function getColPos($row, $col)
     {
         return [$col, $row];
     }
