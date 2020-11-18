@@ -2,6 +2,8 @@
 
 namespace shudu\models;
 
+use Exception;
+
 class Logic extends \yii\base\Object
 {
     const ROW = 'Row';
@@ -15,22 +17,22 @@ class Logic extends \yii\base\Object
 
     const NONE = 0;
     const COMPARE = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
+    // 原始数据
     public $rawData = [];
-
+    // 各维度最终数据
     protected $rowData = [];
     protected $colData = [];
     protected $gridData = [];
-
+    // 各维度笔记
     protected $tagRowData = [];
     protected $tagColData = [];
     protected $tagGridData = [];
-
-    public $exclusionData = [];
-    public $visibleData = [];
-    public $hideData = [];
-    public $xwingData = [];
-
+    // 各方法解答记录
+    protected $exclusionData = [];
+    protected $visibleData = [];
+    protected $hideData = [];
+    protected $xwingData = [];
+    // 解题使用的方法
     protected $methods = [];
 
     public function init()
@@ -89,14 +91,24 @@ class Logic extends \yii\base\Object
 
     private function isFail()
     {
-        foreach ($this->rowData as $row => $value) {
-            foreach ($value as $col => $v) {
+        foreach ($this->rowData as $row => $data) {
+            foreach ($data as $col => $v) {
                 if (empty($v) && empty($this->tagRowData[$row][$col])) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    private function isOver()
+    {
+        foreach ($this->rowData as $data) {
+            if (in_array(0, $data)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function solve($step = -1)
@@ -139,6 +151,9 @@ class Logic extends \yii\base\Object
             if ($this->isFail()) {
                 $continue = false;
             }
+            if ($this->isOver()) {
+                $continue = false;
+            }
         } while ($continue && $n < 20);
         $result = $this->getResult();
         $result->setCount($n, count($this->exclusionData), count($this->visibleData), count($this->hideData), count($this->xwingData), $answer);
@@ -169,13 +184,25 @@ class Logic extends \yii\base\Object
         $this->gridData[$r][$c] = $number;
     }
 
-    public function unsetTag($row, $col, $number)
+    /**
+     * 根据行级坐标，同时消除各个维度的笔记数据
+     */
+    public function unsetTag($row, $col, $number, $type = self::ROW, $callback = null)
     {
+        if ($type == self::COL) {
+            list($row, $col) = $this->getColPos($row, $col);
+        } elseif ($type == self::GRID) {
+            list($row, $col) = $this->getGridPos($row, $col);
+        }
         list($r1, $c1) = $this->getColPos($row, $col);
         list($r2, $c2) = $this->getGridPos($row, $col);
         $this->tagRowData[$row][$col] = array_diff($this->tagRowData[$row][$col], [$number]);
         $this->tagColData[$r1][$c1] = array_diff($this->tagColData[$r1][$c1], [$number]);
         $this->tagGridData[$r2][$c2] = array_diff($this->tagGridData[$r2][$c2], [$number]);
+        // 事后行为，参数为行级坐标与消除的数字
+        if (is_callable($callback)) {
+            call_user_func($callback, $row, $col, $number);
+        }
     }
 
     private function setTag($row, $col, $item)
@@ -237,23 +264,66 @@ class Logic extends \yii\base\Object
         return $success;
     }
 
-    // 宫线排除
+    // 宫线排除，集成排除数对
     public function solveByExclusion()
     {
         $solve = function ($data, $type) {
             foreach ($data as $row => $value) {
+                // 获取当前行对应宫数据
                 $record = [];
-                foreach ($value as $col => $val) {
+                foreach ($value as $col => $numbers) {
                     $gridRow = $this->getGridRow($row, $col, $type);
                     if (!isset($record[$gridRow])) {
                         $record[$gridRow] = [];
                     }
-                    $record[$gridRow] = array_unique(array_merge($record[$gridRow], $val));
+                    $record[$gridRow] = array_unique(array_merge($record[$gridRow], $numbers));
                 }
+                //-------------------------------------------------
+                //                以下为排除数对
+                //-------------------------------------------------
+                foreach ($record as $gridRow => $numbers) {
+                    // 找到仅存于该行的笔记
+                    $pairRecord = $numbers;
+                    foreach ($this->tagGridData[$gridRow] as $gridCol => $gridData) {
+                        if (empty($pairRecord)) {
+                            break;
+                        }
+                        // 将当前宫坐标转换为行坐标
+                        list($r, $c) = $this->getGridPos($gridRow, $gridCol);
+                        if ($type == self::COL) {
+                            $r = $this->getColRow($r, $c);
+                        }
+                        if ($r != $row) {
+                            $intersect = array_intersect($numbers, $gridData);
+                            $pairRecord = array_diff($pairRecord, $intersect);
+                        }
+                    }
+                    if (!empty($pairRecord)) {
+                        // 消除该行中，其他宫的该数字
+                        foreach ($value as $col => $numbers) {
+                            // 将当前行数据转换为宫坐标
+                            $gr = $this->getGridRow($row, $col, $type);
+                            if ($gr != $gridRow) {
+                                foreach ($pairRecord as $n) {
+                                    if (in_array($n, $numbers)) {
+                                        $this->unsetTag($row, $col, $n, $type, function ($row, $col, $number) use ($type) {
+                                            $this->exclusionData[$this->getKey([$type, $row, $col])] = $number;
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //-------------------------------------------------
+                //                以下为宫线排除
+                //-------------------------------------------------
+                // 初始化获得宫数据的每个数字的出现次数为1
                 $countRecord = [];
-                foreach ($record as $gridRow => $val) {
-                    $countRecord[$gridRow] = array_count_values($val);
+                foreach ($record as $gridRow => $numbers) {
+                    $countRecord[$gridRow] = array_count_values($numbers);
                 }
+                // 每个宫依次与别的宫进行交集比较，如果产生交集，则表示该行该数存在多个
                 foreach ($countRecord as $k1 => $v1) {
                     foreach ($countRecord as $k2 => $v2) {
                         if ($k1 >= $k2) {
@@ -266,19 +336,22 @@ class Logic extends \yii\base\Object
                         }
                     }
                 }
+                // 如果该数字只在当前宫出现，则排除该宫的其他位置的该数字笔记
                 foreach ($countRecord as $gridRow => $item) {
                     foreach ($item as $number => $count) {
                         if ($count == 1) {
                             foreach ($this->tagGridData[$gridRow] as $gridCol => $val) {
-                                list($rr, $rc) = $this->getGridPos($gridRow, $gridCol);
+                                // 将宫坐标转换为行坐标
+                                list($rowPos, $colPos) = $this->getGridPos($gridRow, $gridCol);
                                 if ($type == self::COL) {
-                                    list($r, $c) = $this->getColPos($rr, $rc);
+                                    list($tr, $tc) = $this->getColPos($rowPos, $colPos);
                                 } else {
-                                    list($r, $c) = [$rr, $rc];
+                                    list($tr, $tc) = [$rowPos, $colPos];
                                 }
-                                if ($r != $row && in_array($number, $val)) {
-                                    $this->exclusionData[$this->getKey([$rr, $rc])] = $number;
-                                    $this->unsetTag($rr, $rc, $number);
+                                if ($tr != $row && in_array($number, $val)) {
+                                    $this->unsetTag($rowPos, $colPos, $number, self::ROW, function ($row, $col, $number) {
+                                        $this->exclusionData[$this->getKey([$row, $col])] = $number;
+                                    });
                                 }
                             }
                         }
@@ -320,28 +393,17 @@ class Logic extends \yii\base\Object
             foreach ($record as $k => $num) {
                 $pieces = $this->resetKey($k);
                 if (count($pieces) == $num) {
-                    foreach ($data as $i => $item) {
+                    foreach ($data as $col => $item) {
                         if (!$this->inArray($pieces, $item)) {
-                            $before = $data[$i];
-                            $data[$i] = array_diff($item, $pieces);
-                            if (count($before) != count($data[$i]) && count($pieces) > 1) {
+                            $before = $data[$col];
+                            $data[$col] = array_diff($item, $pieces);
+                            if (count($before) != count($data[$col]) && count($pieces) > 1) {
                                 $remove = array_intersect($item, $pieces);
-                                if ($type == self::ROW) {
-                                    foreach ($remove as $v) {
-                                        $this->unsetTag($row, $i, $v);
-                                    }
-                                } elseif ($type == self::COL) {
-                                    list($r, $c) = $this->getColPos($row, $i);
-                                    foreach ($remove as $v) {
-                                        $this->unsetTag($r, $c, $v);
-                                    }
-                                } elseif ($type == self::GRID) {
-                                    list($r, $c) = $this->getGridPos($row, $i);
-                                    foreach ($remove as $v) {
-                                        $this->unsetTag($r, $c, $v);
-                                    }
+                                foreach ($remove as $v) {
+                                    $this->unsetTag($row, $col, $v, $type, function ($row, $col, $number) use ($type) {
+                                        $this->visibleData[$this->getKey([$type, $row, $col])] = $number;
+                                    });
                                 }
-                                $this->visibleData[$this->getKey([$type, $i, $k])] = $pieces;
                             }
                         }
                     }
@@ -420,14 +482,25 @@ class Logic extends \yii\base\Object
     // X翼
     public function solveByXWing()
     {
-        $xwing = new XWingSolution($this, $this->tagRowData, $this->tagColData, self::ROW);
+        $xwing = new XWingSolution(function ($rowData, $gruop, $number, $type) {
+            foreach ($gruop as $row => $cols) {
+                foreach ($rowData[$row] as $col => $data) {
+                    if (!in_array($col, $cols) && in_array($number, $data)) {
+                        $this->unsetTag($row, $col, $number, $type, function ($row, $col, $number) use ($type) {
+                            $this->xwingData[$this->getKey([$type, $row, $col])] = $number;
+                        });
+                    }
+                }
+            }
+        });
+        $xwing->initData($this->tagRowData, $this->tagColData, self::ROW);
         $xwing->solve();
 
-        $xwing = new XWingSolution($this, $this->tagColData, $this->tagRowData, self::COL);
+        $xwing->initData($this->tagColData, $this->tagRowData, self::COL);
         $xwing->solve();
     }
 
-    public function getKey($array)
+    private function getKey($array)
     {
         return implode('-', $array);
     }
@@ -462,11 +535,17 @@ class Logic extends \yii\base\Object
         return $this->getGridPos($row, $col)[0];
     }
 
-    public function getColPos($row, $col)
+    /**
+     * 行坐标与列坐标的相互转换
+     */
+    private function getColPos($row, $col)
     {
         return [$col, $row];
     }
 
+    /**
+     * 行坐标与宫坐标相互转换
+     */
     private function getGridPos($row, $col, $type = self::ROW)
     {
         if ($type == self::COL) {
@@ -478,15 +557,18 @@ class Logic extends \yii\base\Object
 
 class XWingSolution
 {
-    /** @var Logic $logic */
-    private $logic;
     private $rowData;
     private $colData;
     private $type;
+    private $unsetCallback;
 
-    public function __construct($logic, $rowData, $colData, $type)
+    public function __construct($unsetCallback)
     {
-        $this->logic = $logic;
+        $this->unsetCallback = $unsetCallback;
+    }
+
+    public function initData($rowData, $colData, $type)
+    {
         $this->rowData = $rowData;
         $this->colData = $colData;
         $this->type = $type;
@@ -513,7 +595,7 @@ class XWingSolution
         if ($group !== false) {
             $group = $this->findRow($group, $number);
             if ($group !== false && $this->checkGroup($group)) {
-                $this->unsetTag($group, $number);
+                call_user_func($this->unsetCallback, $this->rowData, $group, $number, $this->type);
             }
         }
     }
@@ -590,23 +672,6 @@ class XWingSolution
             return count(array_diff(...$values)) == 0;
         } else {
             return false;
-        }
-    }
-
-    private function unsetTag($gruop, $number)
-    {
-        foreach ($gruop as $row => $cols) {
-            foreach ($this->rowData[$row] as $col => $data) {
-                if (!in_array($col, $cols) && in_array($number, $data)) {
-                    if ($this->type == Logic::COL) {
-                        list($r, $c) = $this->logic->getColPos($row, $col);
-                    } else {
-                        list($r, $c) = [$row, $col];
-                    }
-                    $this->logic->xwingData[$this->logic->getKey([$this->type, $r, $c])] = $number;
-                    $this->logic->unsetTag($r, $c, $number);
-                }
-            }
         }
     }
 }
