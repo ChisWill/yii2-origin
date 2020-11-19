@@ -494,10 +494,16 @@ class Logic extends \yii\base\Object
             }
         });
         $xwing->initData($this->tagRowData, $this->tagColData, self::ROW);
-        $xwing->solve();
+        $xwing->solveXWing();
 
         $xwing->initData($this->tagColData, $this->tagRowData, self::COL);
-        $xwing->solve();
+        $xwing->solveXWing();
+
+        $xwing->initData($this->tagRowData, $this->tagColData, self::ROW);
+        $xwing->solveXFish();
+
+        $xwing->initData($this->tagColData, $this->tagRowData, self::COL);
+        $xwing->solveXFish();
     }
 
     private function getKey($array)
@@ -574,7 +580,112 @@ class XWingSolution
         $this->type = $type;
     }
 
-    public function solve()
+    public function solveXFish()
+    {
+        $numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        foreach (array_keys($this->colData) as $col) {
+            foreach ($numbers as $number) {
+                $this->solveFishCol($col, $number);
+            }
+        }
+    }
+
+    private function solveFishCol($col, $number)
+    {
+        $group = $this->findFishCol($col, $number);
+        if ($group !== false) {
+            // 找到剩下两列数据
+            $this->findNextCol($group, $col, $number, 1);
+        }
+    }
+
+    private function findNextCol($group, $col, $number, $restColNum)
+    {
+        foreach (array_keys($this->colData) as $c) {
+            if ($c > $col) {
+                $foundGroup = $this->findFishCol($c, $number);
+                if ($foundGroup !== false) {
+                    if ($restColNum > 0) {
+                        $nextGroup = $this->mergeGroup($group, $foundGroup);
+                        $this->findNextCol($nextGroup, $c, $number, $restColNum - 1);
+                    } else {
+                        $finalGroup = $this->mergeGroup($group, $foundGroup);
+                        if ($this->checkFishGroup($finalGroup)) {
+                            call_user_func($this->unsetCallback, $this->rowData, $finalGroup, $number, $this->type);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private function findFishCol($col, $number)
+    {
+        $count = 0;
+        $return = [];
+        foreach ($this->colData[$col] as $row => $tags) {
+            if (in_array($number, $tags)) {
+                $count++;
+                $return[$row][] = $col;
+            }
+        }
+        if ($count == 2 || $count == 3) {
+            return $return;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * ```
+     * $group = [
+     *     0 => [1, 5, 8],
+     *     4 => [1, 5, 8],
+     *     7 => [1, 5, 8]
+     * ]
+     * ```
+     */
+    private function checkFishGroup($group)
+    {
+        if (count($group) != 3) {
+            return false;
+        }
+        $record = [];
+        foreach ($group as $row => $value) {
+            $group[$row] = array_unique($value);
+            $count = count($group[$row]);
+            if ($count > 3 || $count < 2) {
+                return false;
+            }
+            foreach ($group[$row] as $v) {
+                $record[$v] = $record[$v] ?? 0;
+                $record[$v]++;
+            }
+        }
+        if (count($record) != 3) {
+            return false;
+        }
+        foreach ($record as $c) {
+            if ($c < 2) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private function mergeGroup($group1, $group2)
+    {
+        foreach ($group2 as $key => $value) {
+            if (isset($group1[$key])) {
+                $group1[$key] = array_merge($group1[$key], $value);
+            } else {
+                $group1[$key] = $value;
+            }
+        }
+        return $group1;
+    }
+
+    public function solveXWing()
     {
         $numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         foreach (array_keys($this->colData) as $col) {
