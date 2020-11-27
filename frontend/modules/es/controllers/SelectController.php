@@ -18,14 +18,27 @@ class SelectController extends \es\components\Controller
     public function actionIndex()
     {
         $list = [
-            'all' => '所有',
+            'all' => '所有指定索引下的所有文档',
+            'mget' => '获取多个文档',
         ];
         return $this->render('index', compact('list'));
     }
 
     public function actionAll()
     {
-        $r = $this->curlSearch('megacorp');
+        $r = $this->esSearch();
+        return $this->response($r);
+    }
+
+    public function actionMget()
+    {
+        $params = [
+            'body' => [
+                'index' => 'faker',
+                'id' => ''
+            ]
+        ];
+        $r = $this->client->mget($params);
         return $this->response($r);
     }
 }

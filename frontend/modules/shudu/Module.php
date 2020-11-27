@@ -9,4 +9,5 @@ use Yii;
  */
 class Module extends \common\components\Module
 {
+    public $loginRequired = false;
 }

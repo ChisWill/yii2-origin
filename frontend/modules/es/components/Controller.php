@@ -33,9 +33,12 @@ class Controller extends \common\components\WebController
         }
     }
 
-    protected function curlSearch($index, $data = '')
+    protected function esSearch($index = '', $data = '')
     {
-        return Curl::get(sprintf('http://localhost:9200/%s/_search', $index), $data, ['header' => 'Content-Type:application/json;charset="utf-8"']);
+        if ($index) {
+            $index .= '/';
+        }
+        return Curl::get(sprintf('http://localhost:9200/%s_search', $index), $data, ['header' => 'Content-Type:application/json;charset="utf-8"']);
     }
 
     protected function response($data)

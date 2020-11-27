@@ -18,8 +18,18 @@ class DeleteController extends \es\components\Controller
     public function actionIndex()
     {
         $list = [
-            // 'simple' => '简单查询',
+            'byid' => '根据id删除',
         ];
         return $this->render('index', compact('list'));
+    }
+
+    public function actionByid()
+    {
+        $params = [
+            'index' => '',
+            'id' => '',
+        ];
+        $r = $this->client->delete($params);
+        $this->response($r);
     }
 }
