@@ -19,12 +19,20 @@ use Exception;
  */
 class Curl
 {
-    public static function get($url, $options = [])
+    public static function get($url, $data = '', $options = [])
     {
+        if (is_array($data)) {
+            $options = $data;
+            $data = '';
+        }
+
         $handle = new CurlHandle($options);
 
         curl_setopt($handle->ch, CURLOPT_URL, $url);
         curl_setopt($handle->ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        if ($data) {
+            curl_setopt($handle->ch, CURLOPT_POSTFIELDS, $data);
+        }
 
         $result = $handle->exec();
 

@@ -1,0 +1,23 @@
+body {
+    background: #eee;
+}
+
+header {
+    height: 60px;
+    line-height: 60px;
+    background: #333;
+    text-align: center;
+    color: #ddd;
+    font-size: 22px;
+}
+
+div.breadcrumbs {
+    text-align: right;
+}
+
+div.breadcrumbs a {
+    color: #00a9e5;
+    font-weight: 400;
+    text-decoration: none;
+    font-size: 18px;
+}

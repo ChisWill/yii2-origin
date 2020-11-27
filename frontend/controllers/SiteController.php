@@ -28,26 +28,6 @@ class SiteController extends \frontend\components\Controller
         }
     }
 
-    public function actionTest()
-    {
-        // sleep(1);
-        $data = [
-            'a' => $_POST,
-            'b' => '1'
-        ];
-        return success($data);
-    }
-
-    public function actionTest2()
-    {
-        // sleep(2);
-        $data = [
-            'a' => $_POST,
-            'b' => '2'
-        ];
-        return success($data);
-    }
-
     public function actionRegister()
     {
         $this->view->title = '注册';
