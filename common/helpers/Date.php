@@ -6,6 +6,14 @@ use yii\base\InvalidParamException;
 
 class Date
 {
+    public static function time($stamp = null)
+    {
+        if ($stamp === null) {
+            $stamp = time();
+        }
+        return date('Y-m-d H:i:s', $stamp);
+    }
+
     /**
      * 将任意一个给定的过去的时间，转换成过去了多久的形式
      * 
