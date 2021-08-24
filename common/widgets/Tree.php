@@ -4,6 +4,7 @@ namespace common\widgets;
 
 use common\helpers\Html;
 use common\helpers\ArrayHelper;
+use yii\base\BaseObject;
 use yii\base\InvalidParamException;
 
 /**
@@ -29,7 +30,7 @@ use yii\base\InvalidParamException;
  * 
  * @author ChisWill
  */
-class Tree extends \yii\base\Object
+class Tree extends BaseObject
 {
     use \common\traits\ChisWill;
 

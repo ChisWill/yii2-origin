@@ -10,6 +10,7 @@ use common\helpers\Excel;
 use common\helpers\Inflector;
 use common\helpers\ArrayHelper;
 use common\helpers\StringHelper;
+use PHPExcel;
 use yii\base\InvalidParamException;
 
 /**
@@ -301,6 +302,8 @@ class Table extends \yii\base\Widget
      */
     public $layoutCallback = [];
 
+    public $dbConnection;
+
     /************************* 以下属性均为程序运算需要，不要尝试从外部进行复制 *************************/
     /**
      * @var string 当前表格的ID
@@ -382,14 +385,20 @@ class Table extends \yii\base\Widget
             if ($this->isSort === true) {
                 $this->setSort();
             }
+            if ($this->dbConnection) {
+                $db = $this->dbConnection;
+            } else {
+                $db = null;
+            }
             // 如果开启了分页，则使用分页查询方式
             if ($this->paging !== false && !get('exportExcel')) {
                 $pageSize = is_array($this->paging) ? $this->paging['pageSize'] : $this->paging;
-                $this->data = $this->query->paginate($pageSize);
+                $this->data = $this->query->paginate($pageSize, $db);
                 $this->count = $this->query->totalCount;
             } else { // 否则使用普通查询方式
-                $this->data = $this->query->all();
-                $this->count = $this->query->count();
+                
+                $this->data = $this->query->all($db);
+                $this->count = $this->query->count('*', $db);
             }
         } else {
             throw new InvalidParamException('比如传入 $data 或 $query 中的一个作为显示列表的最基本的参数！');
@@ -686,6 +695,7 @@ class Table extends \yii\base\Widget
 
     protected function exportExcel()
     {
+        /** @var PHPExcel */
         $excel = self::createExcel();
         // 设置Sheet
         $sheet = $excel->setActiveSheetIndex(0);

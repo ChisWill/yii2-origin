@@ -22,7 +22,7 @@ class Module extends \yii\base\Module
      */
     public $loginRequired = true;
     /**
-     * @var string 允许访问的action
+     * @var array 允许访问的action
      */
     public $allowActions = ['login', 'captcha'];
 

@@ -221,6 +221,7 @@ class ArrayHelper extends \yii\helpers\BaseArrayHelper
         $condition = trim($condition, '&&'); 
         
         return array_filter($array, function ($array) use ($condition) {
+            /** @var string $res */
             eval('$res = ' . $condition . ';');
             return !!$res;
         });
@@ -259,5 +260,24 @@ class ArrayHelper extends \yii\helpers\BaseArrayHelper
         return implode('', array_map(function ($key) use ($array) {
             return $array[$key];
         }, $randomKeys));
-    }    
+    }
+
+    public static function toXml($array)
+    {
+        $xml = '<xml>';
+        foreach ($array as $key => $val) {
+            if (is_numeric($val)) {
+                $xml .= '<' . $key . '>' . $val . '</' . $key . '>';
+            } else {
+                $xml .= '<' . $key . '><![CDATA[' . $val . ']]></' . $key . '>';
+            }
+        }
+        $xml .= '</xml>';
+        return $xml;
+    }
+
+    public static function fromXml($xml)
+    {
+    	return json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+    }
 }

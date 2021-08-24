@@ -10,7 +10,7 @@ return [
     'id' => 'frontend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'frontend\controllers',
-    'defaultRoute' => YII_ENV_PROD ? 'article' : 'site',
+    'defaultRoute' => 'site',
     'bootstrap' => ['log'],
     'modules' => [
         ROUTE_OA => 'oa\Module',
@@ -26,7 +26,7 @@ return [
             'rules' => [
                 // 企业资讯站路由规则
                 'article/generate' => 'article/generate',
-                'article/<url:[\w-]*>' => 'article/index',
+                'article/<url:[\w-]*>' => 'site/index',
                 // 支付回调路由规则
                 '<module:[\w/]*>/notify/<type:[\d]+>' => '<module>/notify'
             ]

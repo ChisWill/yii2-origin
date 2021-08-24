@@ -14,17 +14,13 @@ class SiteController extends \frontend\components\Controller
         if (user()->isGuest) {
             return $this->redirect(['site/login']);
         } else {
-            if (YII_ENV_PROD) {
-                return $this->redirect(['article/index']);
-            } else {
-                $modules = [
-                    'demo' => 'DEMO',
-                    'manual' => '手册',
-                    'admin' => '后台',
-                    'oa' => 'OA'
-                ];
-                return $this->render('index', compact('modules'));
-            }
+            $modules = [
+                'demo' => 'DEMO',
+                'manual' => '手册',
+                'admin' => '后台',
+                'oa' => 'OA'
+            ];
+            return $this->render('index', compact('modules'));
         }
     }
 

@@ -2,6 +2,8 @@
 
 namespace common\helpers;
 
+use PHPExcel_Cell_DataType;
+use PHPExcel_Worksheet;
 use Yii;
 
 class Excel
@@ -107,14 +109,30 @@ class Excel
     /**
      * 设置Excel列内容
      * 
-     * @param object $sheet    PHPExcel的sheet对象
-     * @param array  $contents 列内容数组
-     * @param int    $row      行数
+     * @param PHPExcel_Worksheet $sheet    PHPExcel的sheet对象
+     * @param array              $contents 列内容数组
+     * @param int                $row      行数
      */
     public static function setContents($sheet, $contents, $row)
     {
         foreach ($contents as $col => $content) {
-            $sheet->setCellValueExplicit(self::getCell($col, $row), strip_tags($content));
+            $value = strip_tags($content);
+            $sheet->setCellValueExplicit(self::getCell($col, $row), $value, static::getValueType($value));
+        }
+    }
+
+    protected static function getValueType($value)
+    {
+        if (is_numeric($value)) {
+            if ($value > pow(2, 31) - 1) {
+                return PHPExcel_Cell_DataType::TYPE_STRING;
+            } else {
+                return PHPExcel_Cell_DataType::TYPE_NUMERIC;
+            }
+        } elseif (is_bool($value)) {
+            return PHPExcel_Cell_DataType::TYPE_BOOL;
+        } else {
+            return PHPExcel_Cell_DataType::TYPE_STRING;
         }
     }
 

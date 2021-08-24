@@ -371,10 +371,10 @@ trait FuncTrait
      * @param  integer       $pageSize 每页显示个数
      * @return array                   当前页的数据
      */
-    public static function paginate($query, $pageSize = PAGE_SIZE)
+    public static function paginate($query, $pageSize = PAGE_SIZE, $db = null)
     {
         if ($query instanceof \yii\db\Query) {
-            self::$_totalCount = $query->count();
+            self::$_totalCount = $query->count('*', $db);
             $pager = self::savePager(Yii::createObject(['class' => 'yii\data\Pagination', 'totalCount' => self::$_totalCount]));
             $pager->defaultPageSize = $pageSize;
             
@@ -384,12 +384,12 @@ trait FuncTrait
                     ':offset' => $pager->offset,
                     ':limit' => $pageSize
                 ];
-                return $query->all();
+                return $query->all($db);
             } else {
                 return $query
                     ->offset($pager->offset)
                     ->limit($pageSize)
-                    ->all();
+                    ->all($db);
             }
         } elseif (is_string($query)) {
             $countSql = "SELECT COUNT(1) FROM ({$query}) AS sub";
@@ -398,6 +398,7 @@ trait FuncTrait
             $pager = self::savePager(Yii::createObject(['class' => 'yii\data\Pagination', 'totalCount' => self::$_totalCount]));
             $pager->defaultPageSize = $pageSize;
 
+            /** @var \yii\db\Command */
             $command = self::db($query . ' LIMIT :offset, :limit');
             $command->bindValues([
                 ':offset' => $pager->offset,

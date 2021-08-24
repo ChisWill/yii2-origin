@@ -15,9 +15,9 @@
 
     <?= $content ?>
 
-   <!--  <div style="position: fixed; bottom: 50px; left: 800px;">
-        <a href="http://www.miitbeian.gov.cn" target="_blank"><?= null//config('web_copyright') ?></a>
-    </div -->
+    <div style="position: fixed; bottom: 50px; left: 800px;">
+        <a href="https://beian.miit.gov.cn" target="_blank"><?= config('web_copyright') ?></a>
+    </div
 
 <?php $this->endBody() ?>
 </body>

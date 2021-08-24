@@ -37,6 +37,9 @@ $(function () {
     // 打开页面加载效果
     window.onbeforeunload = function () {
         $(".loading-mask").show();
+        setTimeout(function () {
+            $(".loading-mask").hide();
+        }, 3 * 1000);
     };
     // 面包屑自动处理
     ;!function () {

@@ -118,7 +118,7 @@ trait QueryTrait
      * @param  string $value 当作值的字段，如果不填表示搜出全部字段
      * @return array         键值对的表数据
      */
-    public function map($key, $value = null)
+    public function map($key, $value = null, $db = null)
     {
         if ($value === null) {
             $select = '*';
@@ -128,15 +128,15 @@ trait QueryTrait
             $findMethod = 'column';
         }
 
-        return $this->select($select)->indexBy($key)->$findMethod();
+        return $this->select($select)->indexBy($key)->$findMethod($db);
     }
 
     /**
      * @see common\traits\FuncTrait::paginate()
      */
-    public function paginate($pageSize = PAGE_SIZE)
+    public function paginate($pageSize = PAGE_SIZE, $db = null)
     {
-        return \common\traits\FuncTrait::paginate($this, $pageSize);
+        return \common\traits\FuncTrait::paginate($this, $pageSize, $db);
     }
 
     /**

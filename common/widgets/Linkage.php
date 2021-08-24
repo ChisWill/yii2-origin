@@ -267,11 +267,11 @@ class Linkage extends \yii\base\Widget
         if ($this->data) {
             $firstRow = $this->data[0];
             // 如果 sort 值不存在，则初始化
-            if ($this->isSort === true && array_key_exists($this->sort, $firstRow) && !$firstRow[$this->sort]) {
+            if ($this->isSort === true && isset($firstRow[$this->sort]) && !$firstRow[$this->sort]) {
                 $this->initSort();
             }
             // 如果 code 值不存在，则初始化
-            if (array_key_exists($this->code, $firstRow) && !$firstRow[$this->code]) {
+            if (isset($firstRow[$this->code]) && !$firstRow[$this->code]) {
                 $this->initCode();
             }
         }
