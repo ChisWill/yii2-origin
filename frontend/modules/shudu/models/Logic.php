@@ -4,7 +4,7 @@ namespace shudu\models;
 
 use Exception;
 
-class Logic extends \yii\base\Object
+class Logic extends \yii\base\BaseObject
 {
     const ROW = 'Row';
     const COL = 'Col';

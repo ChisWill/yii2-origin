@@ -1,0 +1,23 @@
+<!-- book.wxml -->
+<t-tab-bar value="book">
+  <t-tab-bar-item wx:for="{{[{value: 'book',label: '预定'},{value: 'order',label: '我的订单'}]}}" wx:for-item="item" wx:for-index="index" wx:key="index" value="{{item.value}}" data-page="{{item.value}}" bind:tap="goTo">
+    {{item.label}}
+  </t-tab-bar-item>
+</t-tab-bar>
+<t-toast id="apiRes" />
+<form catchsubmit="bookOrder">
+  <view wx:for="{{parentList}}" wx:for-item="item" wx:for-index="index" wx:key="index">
+    <view style="display:flex; flex-direction:column; height: 20px; padding: 10px 0;">
+      <view style="background-color: #F1F1F1; flex: 1;">{{item}}</view>
+    </view>
+    <view style="display: inline-block" wx:for="{{itemList[index]}}" wx:for-item="v" wx:for-index="k" wx:key="k">
+      {{v.name}}
+      <input style="display: inline-block; width: 80px; border: 1px solid;" placeholder="输入数量" type="number" name="{{v.id}}" />
+      <!-- <t-stepper name="cart{{v.id}}" theme="filled" /> -->
+    </view>
+  </view>
+  <t-input placeholder="请输入手机号后四位，让我知道你是谁" value="{{phone}}" bind:change="handlePhone" />
+  <t-cell title="期望到货日期" hover note="{{dateTimeText}}" arrow data-mode="datetime" bindtap="showPicker" />
+  <t-date-time-picker title="选择日期和时间" value="{{dateTimeValue}}" visible="{{datetimeVisible}}" mode="second" format="YYYY-MM-DD HH:mm:ss" bindchange="onConfirm" bindcancel="hidePicker" />
+  <button style="margin-top: 20px;" form-type="submit">预定</button>
+</form>

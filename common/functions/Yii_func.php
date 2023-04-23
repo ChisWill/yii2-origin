@@ -231,6 +231,19 @@ function config($key = '', $default = null)
 }
 
 /**
+ * 快捷获取配置选项
+ *
+ * @param  string $key     配置名
+ * @param  mixed  $default 配置不存在时的默认值
+ * @return mixed
+ */
+function alter($key, $default = [])
+{
+    $config = new common\components\Config;
+    return $config->getAlters($key, $default);
+}
+
+/**
  * 快捷调用option表参数，使用方式如下：
  * option()  =>  获得所有系统参数
  * option('key')  =>  获得指定系统参数
@@ -351,5 +364,5 @@ function t($message, $params = [], $language = null)
     } else {
         $category = Yii::$app->controller->module->id;
     }
-    return Yii::t($category, $message, $params, $language);   
+    return Yii::t($category, $message, $params, $language);
 }

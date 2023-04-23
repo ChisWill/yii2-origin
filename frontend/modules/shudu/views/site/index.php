@@ -1,4 +1,4 @@
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
 <?php common\assets\HuiAsset::register($this) ?>
 <?php common\assets\LayerAsset::register($this) ?>
 <?php common\assets\ICheckAsset::register($this) ?>

@@ -1,0 +1,11 @@
+{
+    "component": true,
+    "usingComponents": {
+        "t-tab-bar": "/miniprogram_npm/tdesign-miniprogram/tab-bar/tab-bar",
+        "t-tab-bar-item": "/miniprogram_npm/tdesign-miniprogram/tab-bar-item/tab-bar-item",
+        "t-grid-item": "/miniprogram_npm/tdesign-miniprogram/grid-item/grid-item",
+        "t-grid": "/miniprogram_npm/tdesign-miniprogram/grid/grid",
+        "t-row": "tdesign-miniprogram/row/row",
+        "t-col": "tdesign-miniprogram/col/col"
+    }
+}

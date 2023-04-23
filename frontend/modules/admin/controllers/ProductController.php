@@ -69,6 +69,7 @@ class ProductController extends \admin\components\Controller
             ['header' => '三级分类', 'value' => function ($row) use($goodsMap, $catMap) {
                 return $this->getCateName($goodsMap, $catMap, $row['bn'], 3);
             }],
+            'point_amount' => '积分支付金额',
             'amount' => '总价'
         ], [
             'searchColumns' => [
@@ -106,7 +107,7 @@ class ProductController extends \admin\components\Controller
         $sum = 0;
         foreach ($groupData as $bn => $amount) {
             $data[] = [
-                'name' => $this->supplyMap[$bn],
+                'name' => ArrayHelper::getValue($this->supplyMap, $bn, '未知'),
                 'amount' => $amount,
                 'percent' => round($amount / $total * 100, 2)
             ];
@@ -136,7 +137,10 @@ class ProductController extends \admin\components\Controller
     private function getCateName($goodsMap, $catMap, $bn, $level)
     {
         $catId = $goodsMap[$bn];
-        $cat = $catMap[$catId];
+        $cat = ArrayHelper::getValue($catMap, $catId, null);
+        if (!$cat) {
+            return '未知';
+        }
         if ($level == 3) {
             return $cat['cat_name'];
         }
@@ -175,7 +179,7 @@ class ProductController extends \admin\components\Controller
         $gets = get('search');
         $params = [];
         $params['companyId'] = ArrayHelper::getValue($gets, 'company_id', 50211);
-        $params['startDate'] = ArrayHelper::getValue($gets, 'start_date', '2021-2-4');
+        $params['startDate'] = ArrayHelper::getValue($gets, 'start_date', '2021-7-4');
         $params['endDate'] = ArrayHelper::getValue($gets, 'end_date', null);
 
         return $params;
@@ -194,7 +198,7 @@ class ProductController extends \admin\components\Controller
     private function getBaseQuery($params)
     {
         return self::dbQuery()
-            ->select(['o.order_id', 'i.name', 'i.bn', 'i.amount'])
+            ->select(['o.order_id', 'i.name', 'i.bn', 'i.amount', 'i.point_amount'])
             ->from('{{%orders}} o')
             ->leftJoin('{{%order_items}} i', 'o.order_id=i.order_id')
             ->where(['company_id' => $params['companyId'], 'create_source' => 'main'])

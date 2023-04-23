@@ -1,0 +1,15 @@
+<!-- pages/order.wxml -->
+<t-tab-bar value="order">
+    <t-tab-bar-item wx:for="{{[{value: 'book',label: '预定'},{value: 'order',label: '我的订单'}]}}" wx:for-item="item" wx:for-index="index" wx:key="index" value="{{item.value}}" data-page="{{item.value}}" bind:tap="goTo">
+        {{item.label}}
+    </t-tab-bar-item>
+</t-tab-bar>
+<view wx:for="{{orderList}}" wx:for-item="item" wx:key="index">
+    <t-row>
+        <t-col span="10" t-class="dark">{{item.created_at}}</t-col>
+        <t-col span="4" offset="10" t-class="light">{{item.order_state}}</t-col>
+    </t-row>
+    <t-grid class="block">
+        <t-grid-item wx:for="{{item.items}}" wx:for-item="row" text="{{row.item.name + ' * ' + row.num}}" />
+    </t-grid>
+</view>

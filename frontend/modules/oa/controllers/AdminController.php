@@ -367,7 +367,7 @@ class AdminController extends \oa\components\Controller
                     $namePieces = explode('-', Inflector::camel2id($model->name));
                     unset($namePieces[0]);
                     return array_shift($namePieces) . '：' . ($action = lcfirst(Inflector::id2camel(implode('-', $namePieces)))) .
-                           Html::hiddenInput("AuthItem[$i][name]", $model->name);
+                        Html::hiddenInput("AuthItem[$i][name]", $model->name);
                 }],
                 'description' => ['header' => '描述', 'value' => function ($model) use (&$i, &$action) {
                     return Hui::textInput("AuthItem[$i][description]", $model->description ?: $action);
@@ -393,7 +393,7 @@ class AdminController extends \oa\components\Controller
 
         try {
             $authItem = AuthItem::findOne($params['key']);
-            $authItem->$params['field'] = $params['value'];
+            $authItem->{$params['field']} = $params['value'];
             if ($authItem->validate()) {
                 $permission = $auth->createPermission($params['key']);
                 $permission->ruleName = $authItem->rule_name;
@@ -425,7 +425,7 @@ class AdminController extends \oa\components\Controller
             'addBtn' => ['addScore' => '录入业绩'],
             'extraBtn' => ['bonusDetailList' => '明细列表'],
             'searchColumns' => [
-                'user.id' => ['type' => 'select' , 'items' => function () {
+                'user.id' => ['type' => 'select', 'items' => function () {
                     return ['' => '选择员工'] + AdminUser::find()->active()->andWhere(u()->isMaster ?: ['id' => u()->id])->map('id', 'realname');
                 }],
                 'date' => ['header' => '月份', 'type' => 'dateRange']
@@ -455,7 +455,7 @@ class AdminController extends \oa\components\Controller
             'extraBtn' => ['bonusList' => '返回'],
             'ajaxReturn' => $map,
             'searchColumns' => [
-                'user.id' => ['type' => 'select' , 'items' => function () {
+                'user.id' => ['type' => 'select', 'items' => function () {
                     return ['' => '选择员工'] + AdminUser::find()->active()->andWhere(u()->isMaster ?: ['id' => u()->id])->map('id', 'realname');
                 }],
                 'comment',

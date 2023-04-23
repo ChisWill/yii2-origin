@@ -1,0 +1,7 @@
+a:4:{s:4:"user";s:8:"oa_order";s:3:"sql";s:284:"CREATE TABLE `oa_order_item` (
+  `order_id` int(10) unsigned NOT NULL,
+  `item_id` int(10) unsigned NOT NULL,
+  `num` int(10) unsigned DEFAULT '1',
+  `amount` decimal(10,2) unsigned DEFAULT '0.00',
+  PRIMARY KEY (`order_id`,`item_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";s:4:"desc";s:8:"oa_order";s:7:"warning";a:0:{}}

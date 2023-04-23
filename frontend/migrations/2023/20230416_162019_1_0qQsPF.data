@@ -1,0 +1,13 @@
+a:4:{s:4:"user";s:8:"oa_order";s:3:"sql";s:860:"CREATE TABLE `oa_order` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `origin_amount` decimal(12,2) unsigned DEFAULT '0.00' COMMENT '订单原始金额',
+  `bonus_amount` decimal(12,2) unsigned DEFAULT '0.00' COMMENT '优惠金额',
+  `arrive_date` datetime DEFAULT NULL COMMENT '期望到货时间',
+  `freight_type` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'none' COMMENT '派送类型',
+  `freight_amount` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '运费',
+  `order_state` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT 'wait' COMMENT '订单状态, 默认wait, cancel',
+  `created_at` datetime DEFAULT NULL COMMENT '下单时间',
+  `updated_at` datetime DEFAULT NULL COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;";s:4:"desc";s:8:"oa_order";s:7:"warning";a:0:{}}

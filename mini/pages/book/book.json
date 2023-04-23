@@ -1,0 +1,12 @@
+{
+    "component": true,
+    "usingComponents": {
+        "t-tab-bar": "/miniprogram_npm/tdesign-miniprogram/tab-bar/tab-bar",
+        "t-tab-bar-item": "/miniprogram_npm/tdesign-miniprogram/tab-bar-item/tab-bar-item",
+        "t-toast": "/miniprogram_npm/tdesign-miniprogram/toast/toast",
+        "t-button": "/miniprogram_npm/tdesign-miniprogram/button/button",
+        "t-input": "/miniprogram_npm/tdesign-miniprogram/input/input",
+        "t-cell": "tdesign-miniprogram/cell/cell",
+        "t-date-time-picker": "tdesign-miniprogram/date-time-picker/date-time-picker"
+    }
+}

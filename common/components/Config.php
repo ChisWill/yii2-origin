@@ -19,10 +19,12 @@ use Yii;
 class Config implements \ArrayAccess
 {
     private $_config = [];
+    private $_alters = [];
 
     public function __construct()
     {
         $this->_config = array_merge(Yii::$app->params, \common\modules\setting\models\Setting::getConfig());
+        $this->_alters = \common\modules\setting\models\Setting::getAlters();
     }
 
     /**
@@ -51,6 +53,19 @@ class Config implements \ArrayAccess
             return $this->has($name) ? $this->_config[$name] : $defaultValue;
         }
     }
+
+    /**
+     * 获取指定配置的选项
+     * 
+     * @param  string $name         配置名
+     * @param  mixed  $defaultValue 默认值
+     * @return mixed
+     */
+    public function getAlters($name, $defaultValue = [])
+    {
+        return isset($this->_alters[$name]) ? array_intersect_key($this->_alters[$name], array_flip(explode(',', $this->get($name)))) : $defaultValue;
+    }
+
 
     /**
      * 暂时设定某配置的值

@@ -7,6 +7,8 @@ use common\helpers\Hui;
 use common\helpers\Html;
 use common\helpers\ArrayHelper;
 use oa\models\OaApp;
+use oa\models\OaItem;
+use oa\models\OaOrder;
 use oa\models\OaTask;
 use oa\models\OaProcess;
 use oa\models\OaServer;
@@ -472,5 +474,139 @@ class AppController extends \oa\components\Controller
         }
 
         return $this->render('saveTask', compact('model'));
+    }
+
+    /**
+     * @authname 物品管理列表
+     */
+    public function actionItemList()
+    {
+        $query = (new OaItem)
+            ->search()
+            ->joinWith(['parent'])
+            ->orderBy('oaItem.pid desc');
+
+        $html = $query->getTable([
+            'id',
+            'name' => ['type' => 'text'],
+            'amount' => ['type' => 'text', 'value' => function ($row) {
+                if ($row->pid === 0) {
+                    return '无';
+                } else {
+                    return $row->amount;
+                }
+            }],
+            'pid' => ['type' => 'select', 'value' => function ($row) {
+                if ($row->pid === 0) {
+                    return '无';
+                } else {
+                    return $row->parent->name;
+                }
+            }],
+            'state' => ['type' => 'toggle'],
+            'created_at' => ['width' => '80px', 'value' => function ($row) {
+                return substr($row->created_at, 0, 10);
+            }]
+        ], [
+            'addBtn' => [
+                'saveItemCategory' => '创建新物品分类',
+                'saveItem' => '创建物品'
+            ],
+            'searchColumns' => [
+                'name'
+            ]
+        ]);
+
+        return $this->render('itemList', compact('html'));
+    }
+
+    /**
+     * @authname 创建新物品分类
+     */
+    public function actionSaveItemCategory($id = null)
+    {
+        $model = OaItem::findModel($id);
+        $oldName = $model->name;
+
+        if ($model->load()) {
+            $model->pid = 0;
+            if ($model->isNewRecord) {
+                $desc = u()->realname . '创建了新物品分类：' . $model->name;
+            } else {
+                $desc = u()->realname . '编辑了物品分类：' . $oldName . ' -> ' . $model->name;
+            }
+            if ($model->save()) {
+                OaProcess::append($model->id, $desc, OaProcess::TYPE_APP);
+                return success();
+            } else {
+                return error($model);
+            }
+        }
+
+        return $this->render('saveItemCategory', compact('model'));
+    }
+
+    /**
+     * @authname 创建新物品
+     */
+    public function actionSaveItem($id = null)
+    {
+        $model = OaItem::findModel($id);
+        $oldName = $model->name;
+
+        if ($model->load()) {
+            if ($model->isNewRecord) {
+                $desc = u()->realname . '创建了新物品：' . $model->name;
+            } else {
+                $desc = u()->realname . '编辑了物品：' . $oldName . ' -> ' . $model->name;
+            }
+            if ($model->save()) {
+                OaProcess::append($model->id, $desc, OaProcess::TYPE_APP);
+                return success();
+            } else {
+                return error($model);
+            }
+        }
+
+        return $this->render('saveItem', compact('model'));
+    }
+
+    /**
+     * @authname 订单列表
+     */
+    public function actionOrderList()
+    {
+        $query = (new OaOrder)->listQuery();
+
+        $html = $query->getTable([
+            'id',
+            'user.mobile',
+            ['header' => '最终金额', 'value' => function ($row) {
+                return round($row->origin_amount - $row->bonus_amount, 2);
+            }],
+            'origin_amount',
+            'bonus_amount',
+            'arrive_date',
+            'freight_amount',
+            'freight_type',
+            ['header' => '物品清单', 'value' => function ($row) {
+                return implode('<br>', array_map(function ($r) {
+                    return sprintf('%s : <span style="color:red">%d</span>个 : %s元', $r->item->name, $r->num, $r->amount);
+                }, $row->items));
+            }],
+            'order_state' => ['type' => 'select'],
+            ['header' => '订单时间', 'width' => '180px', 'value' => function ($row) {
+                return sprintf('下单时间: %s<br>修改时间: %s', $row->created_at, $row->updated_at);
+            }],
+            ['type' => ['delete']]
+        ], [
+            'searchColumns' => [
+                'user.nickname',
+                'freight_type' => 'select',
+                'created_at' => 'dateRange'
+            ]
+        ]);
+
+        return $this->render('orderList', compact('html'));
     }
 }

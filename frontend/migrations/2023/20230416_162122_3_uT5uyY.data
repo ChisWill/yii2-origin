@@ -1,0 +1,9 @@
+a:4:{s:4:"user";s:8:"oa_order";s:3:"sql";s:475:"CREATE TABLE `oa_item` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `pid` int(10) unsigned NOT NULL COMMENT '父类',
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '物品名称',
+  `amount` decimal(10,2) DEFAULT '0.00' COMMENT '金额',
+  `state` tinyint(4) DEFAULT '1' COMMENT '是否启用',
+  `created_at` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;";s:4:"desc";s:7:"oa_item";s:7:"warning";a:0:{}}

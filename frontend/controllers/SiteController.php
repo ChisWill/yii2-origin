@@ -6,6 +6,7 @@ use common\helpers\Curl;
 use Yii;
 use frontend\models\User;
 use common\helpers\Third;
+use common\helpers\Url;
 
 class SiteController extends \frontend\components\Controller
 {
@@ -111,5 +112,25 @@ class SiteController extends \frontend\components\Controller
             'duration' => get('duration', 0),
             'created_at' => self::$time
         ]);
+    }
+
+    public function actionWechatLogin()
+    {
+        $code = get('code') ?: '';
+
+        if (!$code) {
+            return $this->error('The code is not exists.');
+        }
+
+        $params = [
+            'appid' => config('yy_app_id'),
+            'secret' => config('yy_secret_key'),
+            'js_code' => $code,
+            'grant_type' => 'authorization_code',
+        ];
+
+        $result = Curl::get(Url::create('https://api.weixin.qq.com/sns/jscode2session', $params));
+
+        return $this->success(json_decode($result, true));
     }
 }

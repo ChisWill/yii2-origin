@@ -69,7 +69,7 @@ class Setting extends \common\components\Model
                 try {
                     $pieces = explode(',', $this->alter);
                     $alter = [];
-                    array_walk($pieces, function($item) use (&$alter) {
+                    array_walk($pieces, function ($item) use (&$alter) {
                         list($key, $value) = explode('=', $item);
                         $alter[$key] = $value;
                     });
@@ -118,6 +118,11 @@ class Setting extends \common\components\Model
     public static function getConfig()
     {
         return ArrayHelper::map(ArrayHelper::filter(self::getWebSettings(), ['eq' => ['level' => 3]]), 'var', 'value');
+    }
+
+    public static function getAlters()
+    {
+        return array_map('unserialize', array_filter(ArrayHelper::map(ArrayHelper::filter(self::getWebSettings(), ['eq' => ['level' => 3]]), 'var', 'alter')));
     }
 
     public static function getWebSettings($refresh = false)

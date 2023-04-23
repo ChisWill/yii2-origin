@@ -13,7 +13,7 @@ class WeChat extends \yii\base\Object
     {
         $accessToken = $this->getTokenCache();
         if (!empty($accessToken)) {
-             $this->_accessToken = $accessToken;
+            $this->_accessToken = $accessToken;
         } else {
             $url = sprintf('https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s', config('wx_appid'), config('wx_appsecret'));
             $result = $this->curlRequest($url);
