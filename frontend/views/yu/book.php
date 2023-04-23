@@ -13,6 +13,8 @@ fwef
         wx.ready(function() {
             wx.openLocation({
                 name: '共康公寓', // 位置名
+                latitude: 31.0938140000, //要去的纬度-地址
+                longitude: 121.5039390000, //要去的经度-地址
                 address: '上海市宝山区三泉路', // 地址详情说明
                 scale: 1, // 地图缩放级别,整型值,范围从1~28。默认为最大
                 infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
